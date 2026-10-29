@@ -1,0 +1,37 @@
+# Dependencies
+node_modules/
+
+# Build output
+.next/
+out/
+dist/
+build/
+.turbo/
+.wrangler/
+.vercel/
+
+# Generated content snapshot (built in CI, never committed)
+packages/content/snapshot/
+
+# Flutter
+demos/flutter/**/.dart_tool/
+demos/flutter/**/build/
+
+# Env files (templates are committed)
+.env
+.env.*
+!.env.example
+!.env.*.example
+
+# Test output
+coverage/
+playwright-report/
+test-results/
+.lighthouseci/
+
+# OS and editors
+.DS_Store
+.idea/
+.vscode/*
+!.vscode/extensions.json
+*.log
