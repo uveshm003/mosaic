@@ -35,3 +35,10 @@ test-results/
 .vscode/*
 !.vscode/extensions.json
 *.log
+
+# Wrangler local secrets
+.dev.vars
+
+# Next.js generated files
+next-env.d.ts
+*.tsbuildinfo
