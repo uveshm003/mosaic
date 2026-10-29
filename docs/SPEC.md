@@ -1,4 +1,4 @@
-# Portfolio Platform — Build Spec
+# Mosaic — Build Spec
 
 Oct 30, 2026 · @Uvesh
 
@@ -98,7 +98,7 @@ Every word on the live sites must be something Uvesh did, said or approved. Thes
 One pnpm + Turborepo monorepo in a public GitHub repo. Both public sites are static files built from a content snapshot; the admin writes content to Postgres and never runs in public with real data.
 
 ```
-portfolio/
+mosaic/
 ├── apps/
 │   ├── site/        # personal domain: root + flutter, product, freelance, fullstack
 │   ├── brand/       # standalone brand site
@@ -353,7 +353,7 @@ Sources: [Vercel fair use guidelines](https://vercel.com/docs/limits/fair-use-gu
 
 ## Open items
 
-Three items remain open. Everything else is either settled or handled at a checkpoint during development.
+Two items remain open. Everything else is either settled or handled at a checkpoint during development.
 
 - [ ] Personal domain: Uvesh hasn't decided whether to buy one. Until he does, both sites run on free workers.dev addresses, and nothing in the build depends on a domain.
 - [ ] Brand name: the working name is Menpur Studio. Before the brand-name checkpoint, check domain, social handle and trademark availability for it and for the alternatives below.
@@ -365,13 +365,4 @@ Three items remain open. Everything else is either settled or handled at a check
 | Studio Uvesh | The most direct link to Uvesh, and easy to remember |
 | Brandwala | Echoes "Menpurwala" through the Hindi suffix "-wala"; playful and rooted in India, but the most likely to be taken |
 
-- [ ] Project name: the working name is Facets, used for the repo and the package scope (`@facets/ui`, `@facets/content`). Each profile is one side of the same person.
-
-| Name | Meaning | Why it fits |
-| --- | --- | --- |
-| Facets (working name) | From French *facette*, "little face": the flat cut faces of a gem, which together make it shine | Each profile is one face of the same person; short, and works as a package scope |
-| Mosaic | A picture made from many small pieces of stone, glass or tile | Distinct profiles that form one picture; a common name, so expect search clashes |
-| Kaleido | Short for kaleidoscope: Greek *kalos* ("beautiful") + *eidos* ("form") + *skopein* ("to look"); the same pieces, rearranged into new patterns | The same content, arranged into a different design on each profile |
-| Atelier | French for an artist's or designer's workshop | The workshop where all the work gets made; suits the brand side too |
-
-Settled: the employer line is "Halma India PLC", and the about-me file goes in the project folder. Handled at checkpoints during development: each profile's look, the first Flutter demo, the Product framing, and the existing resume Markdown files.
+Settled: the project name is Mosaic (package scope `@mosaic/*`, see `docs/decisions/0001-project-name.md`), the employer line is "Halma India PLC", and the about-me file goes in the project folder. Handled at checkpoints during development: each profile's look, the first Flutter demo, the Product framing, and the existing resume Markdown files.
