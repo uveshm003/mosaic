@@ -1,0 +1,6 @@
+# Copy to .dev.vars for `wrangler dev`. In production these are Worker secrets.
+DATABASE_URL=
+TURNSTILE_SECRET_KEY=
+RESEND_API_KEY=
+NOTIFY_EMAIL=
+ALLOWED_ORIGINS=
