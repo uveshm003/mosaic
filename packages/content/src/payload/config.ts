@@ -47,6 +47,8 @@ export interface MosaicPayloadOptions {
   typesOutputFile: string
   /** Sync the schema on startup. Only for throwaway databases; the rest use migrations. */
   push: boolean
+  /** Admin components shown below the dashboard, as Payload component paths. */
+  afterDashboard?: string[]
 }
 
 export function createPayloadConfig(options: MosaicPayloadOptions): Promise<SanitizedConfig> {
@@ -54,6 +56,7 @@ export function createPayloadConfig(options: MosaicPayloadOptions): Promise<Sani
     admin: {
       user: Users.slug,
       importMap: { baseDir: options.importMapBaseDir },
+      components: { afterDashboard: options.afterDashboard ?? [] },
     },
     collections,
     globals,

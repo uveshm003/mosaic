@@ -59,3 +59,17 @@ describe('allowsSchemaPush', () => {
     expect(allowsSchemaPush(env)).toBe(expected)
   })
 })
+
+describe('publish settings', () => {
+  const testEnv = { ...base, APP_ENV: 'test' }
+
+  it('treats an empty token as unset and defaults the repo', () => {
+    const env = parseCmsEnv({ ...testEnv, GITHUB_DISPATCH_TOKEN: '' })
+    expect(env.GITHUB_DISPATCH_TOKEN).toBeUndefined()
+    expect(env.GITHUB_REPO).toBe('uveshm003/mosaic')
+  })
+
+  it('rejects a malformed repo', () => {
+    expect(() => parseCmsEnv({ ...testEnv, GITHUB_REPO: 'not a repo' })).toThrow(/owner\/name/)
+  })
+})

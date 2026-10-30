@@ -8,6 +8,15 @@ const envSchema = z
     MOSAIC_CMS_TARGET: appEnvSchema.optional(),
     DATABASE_URL: z.url({ protocol: /^postgres(ql)?$/ }),
     PAYLOAD_SECRET: z.string().min(32, 'PAYLOAD_SECRET must be at least 32 characters'),
+    // Publish button (production admin only). Empty counts as unset.
+    GITHUB_DISPATCH_TOKEN: z
+      .string()
+      .optional()
+      .transform((value) => value || undefined),
+    GITHUB_REPO: z
+      .string()
+      .regex(/^[\w.-]+\/[\w.-]+$/, 'GITHUB_REPO must be owner/name')
+      .default('uveshm003/mosaic'),
   })
   .refine(
     (env) =>
