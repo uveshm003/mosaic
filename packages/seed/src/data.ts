@@ -7,7 +7,7 @@ import type {
   GlobalSlug,
   RequiredDataFromCollectionSlug,
 } from 'payload'
-import { richText } from './lexical'
+import { block, richText } from './lexical'
 
 export type SeedVariant = 'dev' | 'demo'
 
@@ -129,6 +129,38 @@ export class SeedData {
     })
   }
 
+  /** One of every rich-text block, so the sites have each kind to render. */
+  private everyBlock(mediaIds: number[]) {
+    const id = () => this.faker.database.mongodbObjectId()
+    return richText([
+      this.faker.lorem.paragraph(),
+      block(id(), 'code', {
+        language: 'dart',
+        code: "void main() => print('Sample');",
+        filename: 'main.dart',
+      }),
+      block(id(), 'mermaid', {
+        definition: 'graph LR\n  Admin --> Snapshot --> Site',
+        caption: this.label('Diagram'),
+      }),
+      block(id(), 'youtube', {
+        url: 'https://www.youtube.com/watch?v=aqz-KE-bpKQ',
+        title: this.label('Video'),
+      }),
+      block(id(), 'flutterDemo', {
+        demo: 'sample-demo',
+        title: this.label('Demo'),
+        poster: mediaIds[0] ?? null,
+      }),
+      block(id(), 'image', { image: mediaIds[1] ?? mediaIds[0], caption: this.label('Caption') }),
+      block(id(), 'callout', { tone: 'tip', text: this.faker.lorem.sentence() }),
+      block(id(), 'metrics', { items: [{ label: this.label('Metric'), value: '42%' }] }),
+      block(id(), 'storeLinks', {
+        links: [{ store: 'play-store', url: this.faker.internet.url() }],
+      }),
+    ])
+  }
+
   posts(mediaIds: number[]): Data<'posts'>[] {
     const posts: Data<'posts'>[] = postTypes.map((type, index) => {
       const title = this.title(4)
@@ -137,7 +169,7 @@ export class SeedData {
         slug: this.slug(title, index),
         site: brandPostTypes.has(type) ? 'brand' : 'personal',
         type,
-        body: this.paragraphs(4),
+        body: index === 0 ? this.everyBlock(mediaIds) : this.paragraphs(4),
         profiles: brandPostTypes.has(type) ? [] : [listingProfileKeys[index % 4] ?? 'flutter'],
         tags: this.faker.helpers.uniqueArray(() => this.faker.word.noun(), 3),
         cover: index % 3 === 0 ? null : (mediaIds[index % mediaIds.length] ?? null),

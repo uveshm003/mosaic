@@ -102,14 +102,29 @@ describe('loadSnapshot', () => {
 })
 
 describe('referencedMediaIds', () => {
-  it('collects ids from populated and unpopulated refs, once each', () => {
-    const projects = [{ media: [{ id: 1 }, 2] }, { media: null }] as unknown as Parameters<
-      typeof referencedMediaIds
-    >[0]
-    const posts = [{ cover: 2 }, { cover: { id: 3 } }, { cover: null }] as unknown as Parameters<
-      typeof referencedMediaIds
-    >[1]
-    expect(referencedMediaIds(projects, posts)).toEqual([1, 2, 3])
+  const block = (blockType: string, fields: Record<string, unknown>) => ({
+    type: 'block',
+    version: 2,
+    fields: { id: 'x', blockName: '', blockType, ...fields },
+  })
+  const doc = (...children: unknown[]) => ({ root: { type: 'root', children } })
+
+  it('collects project media, post covers and rich-text images, once each', () => {
+    const content = {
+      projects: [
+        {
+          media: [{ id: 1 }, 2],
+          body: doc({ type: 'paragraph', children: [block('image', { image: 4 })] }),
+        },
+        { media: null, body: null },
+      ],
+      posts: [
+        { cover: 2, body: doc(block('flutterDemo', { poster: { id: 5 } })) },
+        { cover: { id: 3 }, body: doc(block('callout', { text: 'no media' })) },
+      ],
+      person: { about: doc(block('image', { image: { id: 6 } })) },
+    } as unknown as Parameters<typeof referencedMediaIds>[0]
+    expect(referencedMediaIds(content).sort((a, b) => a - b)).toEqual([1, 2, 3, 4, 5, 6])
   })
 })
 

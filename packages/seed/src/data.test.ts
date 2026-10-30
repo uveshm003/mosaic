@@ -1,5 +1,5 @@
 import { listingProfileKeys } from '@mosaic/content'
-import { demoStatuses, postTypes } from '@mosaic/content/payload'
+import { demoStatuses, postTypes, richTextBlocks } from '@mosaic/content/payload'
 import { describe, expect, it } from 'vitest'
 import { SeedData } from './data'
 
@@ -53,6 +53,16 @@ describe('SeedData', () => {
     }
     expect(new Set(projects.map((doc) => doc.demoStatus))).toEqual(new Set(demoStatuses))
     expect(new Set(posts.map((doc) => doc.type))).toEqual(new Set(postTypes))
+  })
+
+  it('puts every rich-text block in one post', () => {
+    const [first] = new SeedData('dev').posts(mediaIds)
+    const blockTypes = (first?.body?.root.children ?? []).flatMap((node) =>
+      'fields' in node && typeof node.fields === 'object' && node.fields !== null
+        ? [(node.fields as { blockType?: unknown }).blockType]
+        : [],
+    )
+    expect(new Set(blockTypes)).toEqual(new Set(richTextBlocks.map((b) => b.slug)))
   })
 
   it('includes the edge cases', () => {
