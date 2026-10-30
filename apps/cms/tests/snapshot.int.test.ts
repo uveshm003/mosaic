@@ -6,6 +6,11 @@ import config from '../src/payload.config'
 
 let payload: Payload
 
+const onePixelPng = Buffer.from(
+  'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR4nGNgYGBgAAAABQABpfZFQAAAAABJRU5ErkJggg==',
+  'base64',
+)
+
 beforeAll(async () => {
   payload = await getPayload({ config })
   await seed(payload, 'dev')
@@ -43,6 +48,35 @@ describe('buildSnapshot', () => {
     const published = await buildSnapshot(payload, { appEnv: 'test', drafts: false })
     const withDrafts = await buildSnapshot(payload, { appEnv: 'test', drafts: true })
     expect(withDrafts.collections.posts.length).toBeGreaterThan(published.collections.posts.length)
+  })
+
+  it('leaves out media used only by unpublished projects', async () => {
+    const privateImage = await payload.create({
+      collection: 'media',
+      data: { alt: 'Internal screenshot', _seed: true },
+      file: {
+        data: onePixelPng,
+        mimetype: 'image/png',
+        name: 'internal.png',
+        size: onePixelPng.length,
+      },
+    })
+    await payload.create({
+      collection: 'projects',
+      draft: true,
+      data: {
+        title: 'Sample: Restricted',
+        slug: 'sample-restricted-with-image',
+        demoStatus: 'private',
+        kind: 'work',
+        media: [privateImage.id],
+        _seed: true,
+      },
+    })
+    const snapshot = await buildSnapshot(payload, { appEnv: 'test', drafts: false })
+    const ids = snapshot.collections.media.map((doc) => doc.id)
+    expect(ids.length).toBeGreaterThan(0)
+    expect(ids).not.toContain(privateImage.id)
   })
 
   it('round-trips through the schema', async () => {
