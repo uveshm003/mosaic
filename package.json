@@ -14,7 +14,9 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "cms:dev": "pnpm --filter @mosaic/cms start:dev",
-    "cms:prod": "pnpm --filter @mosaic/cms start:prod"
+    "cms:prod": "pnpm --filter @mosaic/cms start:prod",
+    "seed": "pnpm --filter @mosaic/cms seed",
+    "seed:purge": "pnpm --filter @mosaic/cms seed:purge"
   },
   "devDependencies": {
     "@mosaic/config": "workspace:*",

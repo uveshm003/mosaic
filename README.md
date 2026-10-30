@@ -43,6 +43,13 @@ pnpm cms:dev    # dev database, schema synced from code, http://localhost:3000/a
 pnpm cms:prod   # production database, migrations only, http://localhost:3001/admin
 ```
 
+Sample data (dev database only; `seed` refuses `APP_ENV=production` and the production host from `.env.prod`):
+
+```sh
+pnpm seed         # replace sample data: "Sample:" titles, every collection and profile, marked _seed
+pnpm seed:purge   # delete every _seed document and blank seeded globals
+```
+
 Payload CLI commands go through the same files: `pnpm --filter @mosaic/cms payload:dev migrate:status`.
 
 Integration tests and local admin work use the Postgres in `docker-compose.yml`:
