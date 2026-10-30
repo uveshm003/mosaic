@@ -12,7 +12,9 @@
     "typecheck": "turbo run typecheck",
     "test": "turbo run test",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "cms:dev": "pnpm --filter @mosaic/cms start:dev",
+    "cms:prod": "pnpm --filter @mosaic/cms start:prod"
   },
   "devDependencies": {
     "@mosaic/config": "workspace:*",
