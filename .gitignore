@@ -10,6 +10,9 @@ build/
 .wrangler/
 .vercel/
 
+# Payload uploads stored locally until R2 is set up
+apps/cms/media/
+
 # Generated content snapshot (built in CI, never committed)
 packages/content/snapshot/
 
