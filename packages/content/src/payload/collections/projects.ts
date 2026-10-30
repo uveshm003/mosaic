@@ -73,9 +73,9 @@ export const Projects: CollectionConfig = {
       admin: { position: 'sidebar' },
     },
     {
+      // Not required: an empty value is treated like restricted and can't be published.
       name: 'confidentiality',
       type: 'select',
-      required: true,
       defaultValue: 'restricted',
       options: ['public', 'restricted'],
       admin: {

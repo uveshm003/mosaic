@@ -14,7 +14,8 @@ export const Person: GlobalConfig = {
   access,
   versions: { drafts: true },
   fields: [
-    { name: 'name', type: 'text', required: true },
+    // Not required so purge can blank a seeded person; the snapshot export checks it.
+    { name: 'name', type: 'text' },
     { name: 'headlines', type: 'array', fields: [{ name: 'text', type: 'text', required: true }] },
     { name: 'location', type: 'text' },
     { name: 'contactLinks', type: 'array', fields: link },
