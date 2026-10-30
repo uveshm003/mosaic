@@ -36,6 +36,12 @@ describe('users', () => {
     expect(second.role).toBe('reviewer')
   })
 
+  it('refuses anonymous reads', async () => {
+    await expect(payload.find({ collection: 'users', overrideAccess: false })).rejects.toThrow(
+      /not allowed/,
+    )
+  })
+
   it('stops reviewers from writing', async () => {
     const { docs } = await payload.find({
       collection: 'users',
