@@ -1,6 +1,6 @@
 import config from '@payload-config'
-import { revalidatePath } from 'next/cache'
 import { headers } from 'next/headers'
+import { redirect } from 'next/navigation'
 import { getPayload, type ServerProps } from 'payload'
 import { parseCmsEnv } from '../env'
 import { dispatchDeploy, latestDeployRun, type DeployRun } from '../publish/github'
@@ -21,7 +21,9 @@ async function publish() {
   const target = githubTarget()
   if (!target) throw new Error('GITHUB_DISPATCH_TOKEN is not set.')
   await dispatchDeploy(target)
-  revalidatePath('/admin')
+  // GitHub lists the new run a few seconds later, so confirm the request explicitly
+  // rather than showing the previous run as the latest.
+  redirect('/admin?published=1')
 }
 
 function describeRun(run: DeployRun) {
@@ -30,7 +32,7 @@ function describeRun(run: DeployRun) {
 }
 
 // Shown on the production admin's dashboard only; dev and demo never deploy.
-export async function PublishPanel({ user }: ServerProps) {
+export async function PublishPanel({ user, searchParams }: ServerProps) {
   if (parseCmsEnv(process.env).APP_ENV !== 'production' || user?.role !== 'admin') return null
   const target = githubTarget()
 
@@ -56,6 +58,12 @@ export async function PublishPanel({ user }: ServerProps) {
     <section style={{ marginTop: 'var(--base)' }}>
       <h2>Publish</h2>
       <p>Exports published content, builds both sites and deploys them to uveshm003.github.io.</p>
+      {searchParams?.published === '1' && (
+        <p>
+          <strong>Deploy requested.</strong> It shows up below within a few seconds; refresh to
+          follow it.
+        </p>
+      )}
       <p>{status}</p>
       {target && (
         <form action={publish}>
