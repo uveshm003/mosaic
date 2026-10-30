@@ -2,6 +2,7 @@ import type { NextConfig } from 'next'
 
 const config: NextConfig = {
   output: 'export',
+  agentRules: false,
   images: { unoptimized: true },
   transpilePackages: ['@mosaic/content', '@mosaic/tokens', '@mosaic/ui'],
 }
