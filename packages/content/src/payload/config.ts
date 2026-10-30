@@ -20,6 +20,8 @@ export interface MosaicPayloadOptions {
   importMapBaseDir: string
   /** Where `payload generate:types` writes. */
   typesOutputFile: string
+  /** Sync the schema on startup. Only for throwaway databases; the rest use migrations. */
+  push: boolean
 }
 
 export function createPayloadConfig(options: MosaicPayloadOptions): Promise<SanitizedConfig> {
@@ -47,7 +49,10 @@ export function createPayloadConfig(options: MosaicPayloadOptions): Promise<Sani
     graphQL: { disable: true },
     secret: options.secret,
     typescript: { outputFile: options.typesOutputFile },
-    db: postgresAdapter({ pool: { connectionString: options.databaseUrl } }),
+    db: postgresAdapter({
+      pool: { connectionString: options.databaseUrl },
+      push: options.push,
+    }),
     sharp,
   })
 }
