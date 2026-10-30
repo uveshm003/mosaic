@@ -17,8 +17,8 @@ We are building Uvesh Menpurwala's portfolio platform: one monorepo that produce
 
 | Output | What it is | Where it runs |
 | --- | --- | --- |
-| Personal site | Root "about me" page plus four profiles: Flutter, Product, Freelance, Full-stack | A free workers.dev address unless Uvesh buys a domain; name on the site is "Uvesh Menpurwala" |
-| Brand site | Standalone brand for marketing, growth, branding and advertising | Its own free workers.dev address; its own domain only if one is bought |
+| Personal site | Root "about me" page plus four profiles: Flutter, Product, Freelance, Full-stack | GitHub Pages at `uveshm003.github.io` (ADR 0002); name on the site is "Uvesh Menpurwala" |
+| Brand site | Standalone brand for marketing, growth, branding and advertising | GitHub Pages under `uveshm003.github.io/brand` (ADR 0002); its own domain only if one is bought |
 | Admin | Payload CMS holding all content | Uvesh's laptop only |
 | Demo admin | Read-only copy of the admin running on seed data, for reviewers | Public, linked from the Full-stack profile |
 | Contact service | Receives contact-form submissions from every profile | Cloudflare Worker |
@@ -209,14 +209,14 @@ Publish is the only path from the admin to the live sites; the demo admin has it
 
 1. Uvesh edits content in the local admin (`pnpm cms:prod`).
 2. He presses Publish on the admin dashboard. It triggers GitHub's `workflow_dispatch` using a fine-grained token kept in his local env file.
-3. The workflow exports the snapshot (published documents only), builds both sites and the Flutter demos, runs tests and Lighthouse CI, and deploys to Cloudflare.
+3. The workflow exports the snapshot (published documents only), builds both sites and the Flutter demos, runs tests and Lighthouse CI, and deploys to GitHub Pages.
 4. The dashboard shows the last run's status. Pushes to `main` also deploy.
 
 ### Hosting
 
 | Piece | Service (free tier) | Notes |
 | --- | --- | --- |
-| Personal site, brand site | Cloudflare Workers static assets | Free tier allows commercial use. Unless Uvesh buys domains, they run on `*.workers.dev`, with the brand set to `noindex`. |
+| Personal site, brand site | GitHub Pages | One Pages site in the `uveshm003.github.io` repo: the personal site at the root, the brand under `/brand`, set to `noindex`. See ADR 0002. |
 | Contact service | Cloudflare Worker | Turnstile, a honeypot field and Zod validation; inserts into Neon through its serverless driver; one notification email via Resend (without a domain, Resend's default sender to Uvesh's own address; confirm in Phase 1 that the free tier allows this); CORS limited to the site origins. |
 | Database | Neon | One branch or project per environment, as above. |
 | Media | Cloudflare R2 | Images only. Video lives on YouTube. |
@@ -269,11 +269,11 @@ Monorepo, shared configs, CI for lint, typecheck and unit tests, the `docs/` fol
 
 ### Phase 1: Platform
 
-Payload with every collection and global; Neon environments; R2 storage; seed, purge and guards; snapshot export; Publish button and deploy workflow; placeholder pages on Cloudflare; contact Worker; demo admin with nightly reset.
+Payload with every collection and global; Neon environments; R2 storage; seed, purge and guards; snapshot export; Publish button and deploy workflow; placeholder pages on GitHub Pages; contact Worker; demo admin with nightly reset.
 
 - [ ] The admin runs against dev and production through separate commands, and the seed refuses production.
 - [ ] The seed fills every collection; the purge removes every seeded document.
-- [ ] Publish triggers a deploy that shows a content change on `*.workers.dev`.
+- [ ] Publish triggers a deploy that shows a content change on `uveshm003.github.io`.
 - [ ] A production build with seed data in the snapshot fails (covered by a test).
 - [ ] A contact submission lands in the admin and sends one email; Turnstile and the honeypot block a scripted submit.
 - [ ] The demo admin is live, read-only for the reviewer user, and resets nightly.
@@ -341,8 +341,8 @@ These decisions were made with cost (free or nearly free) and Uvesh's priorities
 | Payload instead of a custom admin | Auth, roles, drafts, versions and media out of the box; MIT-licensed and actively maintained | Payload stops being maintained |
 | Production admin runs locally | Payload on Cloudflare Workers needs the paid Workers plan because of bundle size; Vercel Hobby is non-commercial only; Netlify's free plan pauses every site once credits run out. Bonus: no public login page | Uvesh wants to edit away from his laptop |
 | Static export for both sites | Free hosting, fastest pages, no server to attack | A feature genuinely needs server rendering |
-| Cloudflare for public hosting | Free tier allows commercial use, which the Freelance profile and the brand need | Cloudflare's free terms change |
-| Brand as a separate app | It has its own identity and address, so it can be renamed or moved without touching the personal site | Never, unless the brand is dropped |
+| GitHub Pages for public hosting (ADR 0002, replaces Cloudflare Workers) | Uvesh wants his GitHub address and no domain; free | The brand starts selling anything, or a domain is bought |
+| Brand as a separate app | It has its own identity, so it can be renamed or moved to its own address (a `basePath` change) without touching the personal site | Never, unless the brand is dropped |
 | Build-time content snapshot | Sites don't depend on Payload at runtime; builds are reproducible | A feature needs live data |
 | Neon Postgres | Free tier, plus branches per environment | Storage outgrows the free tier |
 | R2 for images, YouTube for video | No video hosting cost | Never in v1 |
@@ -355,7 +355,7 @@ Sources: [Vercel fair use guidelines](https://vercel.com/docs/limits/fair-use-gu
 
 Two items remain open. Everything else is either settled or handled at a checkpoint during development.
 
-- [ ] Personal domain: Uvesh hasn't decided whether to buy one. Until he does, both sites run on free workers.dev addresses, and nothing in the build depends on a domain.
+- [ ] Personal domain: Uvesh hasn't decided whether to buy one. Until he does, both sites run on `uveshm003.github.io`, and nothing in the build depends on a domain.
 - [ ] Brand name: the working name is Menpur Studio. Before the brand-name checkpoint, check domain, social handle and trademark availability for it and for the alternatives below.
 
 | Name | Why it fits |
