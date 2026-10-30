@@ -1,6 +1,6 @@
 export { buildSnapshot, referencedMediaIds } from './export'
 export { productionSnapshotError, seedDocuments } from './guard'
-export { loadSnapshot } from './load'
+export { loadBuildSnapshot, loadSnapshot } from './load'
 export {
   parseSnapshot,
   SNAPSHOT_PATH,

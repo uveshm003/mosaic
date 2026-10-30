@@ -1,11 +1,11 @@
-import { mkdtempSync, writeFileSync } from 'node:fs'
+import { mkdirSync, mkdtempSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
 import { describe, expect, it } from 'vitest'
 import { referencedMediaIds } from './export'
 import { productionSnapshotError, seedDocuments } from './guard'
-import { loadSnapshot } from './load'
-import { parseSnapshot, SNAPSHOT_VERSION } from './schema'
+import { loadBuildSnapshot, loadSnapshot } from './load'
+import { parseSnapshot, SNAPSHOT_PATH, SNAPSHOT_VERSION } from './schema'
 
 function snapshot(
   overrides: { seedProject?: boolean; seedPerson?: boolean; drafts?: boolean } = {},
@@ -110,5 +110,40 @@ describe('referencedMediaIds', () => {
       typeof referencedMediaIds
     >[1]
     expect(referencedMediaIds(projects, posts)).toEqual([1, 2, 3])
+  })
+})
+
+describe('loadBuildSnapshot', () => {
+  function repoWith(json: unknown): string {
+    const root = mkdtempSync(path.join(tmpdir(), 'repo-'))
+    const file = path.join(root, SNAPSHOT_PATH)
+    mkdirSync(path.dirname(file), { recursive: true })
+    writeFileSync(file, JSON.stringify(json))
+    return root
+  }
+  const emptyRepo = () => mkdtempSync(path.join(tmpdir(), 'repo-'))
+
+  it('fails a production build on seed data', () => {
+    const repoRoot = repoWith(snapshot({ seedProject: true }))
+    expect(() => loadBuildSnapshot({ repoRoot, env: { APP_ENV: 'production' } })).toThrow(
+      /seed data/,
+    )
+  })
+
+  it('requires a snapshot in production unless explicitly allowed', () => {
+    const repoRoot = emptyRepo()
+    expect(() => loadBuildSnapshot({ repoRoot, env: { APP_ENV: 'production' } })).toThrow(
+      /need a snapshot/,
+    )
+    expect(
+      loadBuildSnapshot({
+        repoRoot,
+        env: { APP_ENV: 'production', MOSAIC_ALLOW_MISSING_SNAPSHOT: '1' },
+      }),
+    ).toBeNull()
+  })
+
+  it('returns null without a snapshot outside production', () => {
+    expect(loadBuildSnapshot({ repoRoot: emptyRepo(), env: {} })).toBeNull()
   })
 })
