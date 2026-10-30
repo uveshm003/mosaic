@@ -1,19 +1,32 @@
 import '@mosaic/tokens/root.css'
 import { themeClass } from '@mosaic/tokens'
-import { Bricolage_Grotesque, Inter, JetBrains_Mono } from 'next/font/google'
+import localFont from 'next/font/local'
 import type { ReactNode } from 'react'
+import { Reveal } from '../../components/hub/Reveal'
 
-const display = Bricolage_Grotesque({ subsets: ['latin'], variable: '--font-display-family' })
-const body = Inter({ subsets: ['latin'], variable: '--font-body-family' })
-const mono = JetBrains_Mono({ subsets: ['latin'], variable: '--font-mono-family' })
+// Erode by the Indian Type Foundry, self-hosted (Fontshare free licence).
+const erode = localFont({
+  src: [
+    { path: '../../fonts/erode/erode-400.woff2', weight: '400', style: 'normal' },
+    { path: '../../fonts/erode/erode-400-italic.woff2', weight: '400', style: 'italic' },
+    { path: '../../fonts/erode/erode-500.woff2', weight: '500', style: 'normal' },
+    { path: '../../fonts/erode/erode-600.woff2', weight: '600', style: 'normal' },
+  ],
+  variable: '--font-display-family',
+  display: 'swap',
+})
 
-// Root experience: playful and interactive, developer-portfolio layout (design interview, 2026-10-31).
-export default function RootExperienceLayout({ children }: { children: ReactNode }) {
+// Root hub: "The name as a monument", stone and blueprint (design interview, 2026-10-31).
+export default function RootHubLayout({ children }: { children: ReactNode }) {
   return (
     <div
-      className={`${themeClass.root} ${display.variable} ${body.variable} ${mono.variable} relative min-h-screen bg-bg font-body text-fg antialiased selection:bg-accent selection:text-accent-fg`}
+      className={`${themeClass.root} ${erode.variable} min-h-screen bg-bg font-display text-[length:var(--step-body)] text-fg antialiased [--font-body-family:var(--font-display-family)] selection:bg-accent selection:text-accent-fg`}
     >
+      <script
+        dangerouslySetInnerHTML={{ __html: "document.documentElement.classList.add('js')" }}
+      />
       {children}
+      <Reveal />
     </div>
   )
 }

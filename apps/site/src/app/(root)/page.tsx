@@ -1,31 +1,9 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { RichText } from '../../components/RichText'
-import { ContactForm } from '../../components/root/ContactForm'
-import { CursorGlow } from '../../components/root/CursorGlow'
-import { DeviceMock } from '../../components/root/DeviceMock'
-import { ExperienceTabs } from '../../components/root/ExperienceTabs'
-import { Playground } from '../../components/root/Playground'
-import { SideNav } from '../../components/root/SideNav'
-import { SkillBoard } from '../../components/root/SkillBoard'
-import { Terminal } from '../../components/root/Terminal'
-import { WorkDeck } from '../../components/root/WorkDeck'
-import {
-  currentProject,
-  demoStatusLabel,
-  enabledProfiles,
-  experience,
-  featuredProjects,
-  formatMonth,
-  isEnabled,
-  latestPosts,
-  person,
-  platformLabel,
-  profile,
-  profileHref,
-  projectHue,
-  skillsByCategory,
-} from '../../lib/content'
+import { NameMosaic, type Slice } from '../../components/hub/NameMosaic'
+import { enabledProfiles, isEnabled, person, profile, profileHref } from '../../lib/content'
+import { pictures, type Picture } from '../../lib/pictures'
 import { SITE_URL } from '../../lib/site'
 
 export function generateMetadata(): Metadata {
@@ -37,72 +15,92 @@ export function generateMetadata(): Metadata {
 function Placeholder() {
   return (
     <main className="mx-auto max-w-2xl px-5 py-24">
-      <h1 className="font-display text-4xl">Uvesh Menpurwala</h1>
+      <h1 className="text-4xl">Uvesh Menpurwala</h1>
       <p className="mt-4 text-muted">This site is being built.</p>
     </main>
   )
 }
 
-const sections = [
-  { id: 'about', label: 'About' },
-  { id: 'work', label: 'Work' },
-  { id: 'experience', label: 'Experience' },
-  { id: 'skills', label: 'Skills' },
-  { id: 'playground', label: 'Playground' },
-  { id: 'writing', label: 'Writing' },
-  { id: 'contact', label: 'Contact' },
-]
+// What each portfolio holds comes from the spec, not from content.
+const portfolioMeta = [
+  { key: 'flutter', label: 'Flutter', contents: 'Case studies, demo lab, writing' },
+  { key: 'product', label: 'Product', contents: 'Case studies, teardowns, proposals' },
+  { key: 'freelance', label: 'Freelance', contents: 'Services, selected work, contact' },
+  { key: 'fullstack', label: 'Full-stack', contents: 'Systems, architecture, demo admin' },
+  { key: 'brand', label: 'Brand', contents: 'Essays, breakdowns, concepts' },
+] as const
 
-function SectionTitle({ id, index, children }: { id: string; index: number; children: string }) {
+const margin = 'px-[clamp(16px,1.6vw,28px)]'
+
+function Photo({
+  picture,
+  className,
+  priority,
+}: {
+  picture: Picture
+  className?: string
+  priority?: boolean
+}) {
   return (
-    <h2
-      id={`${id}-title`}
-      className="mb-8 flex items-center gap-4 font-display text-2xl font-semibold sm:text-3xl"
-    >
-      <span className="font-mono text-sm font-normal text-accent">
-        {String(index).padStart(2, '0')}.
-      </span>
-      {children}
-      <span aria-hidden className="h-px flex-1 bg-line" />
-    </h2>
+    // Static export: no runtime optimizer; these are pre-sized WebP files.
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src={picture.src}
+      width={picture.width}
+      height={picture.height}
+      alt={picture.alt}
+      loading={priority ? 'eager' : 'lazy'}
+      decoding="async"
+      className={`h-full w-full object-cover ${className ?? ''}`}
+    />
   )
 }
 
-function paragraphs(value: unknown): string[] {
-  const root = (value as { root?: { children?: { children?: { text?: string }[] }[] } } | null)
-    ?.root
-  return (root?.children ?? [])
-    .map((node) => (node.children ?? []).map((c) => c.text ?? '').join(''))
-    .filter(Boolean)
+function displayLink(url: string): string {
+  if (url.startsWith('mailto:')) return url.slice('mailto:'.length)
+  return url.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, '')
 }
 
 export default function Home() {
   if (!isEnabled('root')) return <Placeholder />
 
   const me = person()
-  const name = me.name ?? ''
-  const headline = me.headlines?.[0]?.text ?? ''
+  const fullName = (me.name ?? '').trim()
+  const surname = fullName.split(/\s+/).at(-1) ?? fullName
+  const role = me.headlines?.[0]?.text ?? ''
   const availability = me.headlines?.[1]?.text
-  const work = featuredProjects(5)
-  const current = currentProject()
-  const roles = experience()
-  const skills = skillsByCategory()
-  const posts = latestPosts(3)
+  const location = me.location ?? ''
   const links = me.contactLinks ?? []
-  const flutterLive = enabledProfiles().some(({ key }) => key === 'flutter')
-  const caseStudyHref = (p: { profile: string; slug: string }) =>
-    p.profile === 'flutter' && flutterLive ? `/flutter/${p.slug}` : null
-  const endpoint = process.env.NEXT_PUBLIC_CONTACT_ENDPOINT
-  const siteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY
+  const email = links.find((link) => link.url.startsWith('mailto:'))
+  const webLinks = links.filter((link) => link.url.startsWith('http'))
+  const live = new Set(enabledProfiles().map(({ key }) => key))
 
+  const portfolios = portfolioMeta.map(({ key, label, contents }) => ({
+    key,
+    label,
+    contents,
+    description:
+      key === 'brand'
+        ? 'Marketing, growth, branding and advertising'
+        : (profile(key).tagline ?? contents),
+    href: key !== 'brand' && live.has(key) ? profileHref[key] : null,
+  }))
+  const slices: Slice[] = portfolios.map(({ key, label, description, href }) => ({
+    key,
+    label,
+    description,
+    href,
+  }))
+
+  const credits = Object.values(pictures).map((p) => p.credit)
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'Person',
-    name,
-    jobTitle: headline,
-    homeLocation: me.location ? { '@type': 'Place', name: me.location } : undefined,
+    name: fullName,
+    jobTitle: role,
+    homeLocation: location ? { '@type': 'Place', name: location } : undefined,
     url: SITE_URL,
-    sameAs: links.filter((l) => l.url.startsWith('http')).map((l) => l.url),
+    sameAs: webLinks.map((link) => link.url),
   }
 
   return (
@@ -111,266 +109,325 @@ export default function Home() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <div aria-hidden className="glow pointer-events-none fixed inset-0" />
-      <CursorGlow />
-      <div className="relative z-10 mx-auto max-w-7xl px-6 lg:flex lg:gap-16 lg:px-12">
-        <header className="pt-16 lg:sticky lg:top-0 lg:flex lg:h-screen lg:w-[42%] lg:flex-col lg:justify-between lg:py-20">
-          <div>
-            <h1
-              className="rise font-display text-[clamp(2.8rem,6vw,4.6rem)] leading-[0.95] font-bold tracking-[-0.035em]"
-              aria-label={name}
+
+      {/* Hero: the name across the middle, everything else in the four corners. */}
+      <header
+        className={`relative grid min-h-svh grid-rows-[auto_1fr_auto] gap-6 ${margin} pt-5 pb-6`}
+      >
+        <div className="flex items-start justify-between gap-6">
+          <div className="max-w-[36ch]">
+            <p className="text-[length:var(--step-lead)] leading-snug">
+              {fullName} is a {role.toLowerCase()} in {location}.
+            </p>
+            <a
+              href="#portfolios"
+              className="press mt-4 inline-block bg-fg px-5 py-3 text-bg hover:bg-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent max-sm:w-full max-sm:text-center"
             >
-              {name.split(' ').map((word, w, words) => {
-                // Letter index across the whole name, so the rise staggers left to right.
-                const offset = words.slice(0, w).join(' ').length + (w > 0 ? 1 : 0)
-                return (
-                  <span key={w} aria-hidden className="inline-block whitespace-nowrap">
-                    {Array.from(word).map((char, i) => (
-                      <span key={i} style={{ ['--i' as string]: offset + i }}>
-                        {char}
-                      </span>
-                    ))}
-                    {w < words.length - 1 ? '\u00a0' : ''}
-                  </span>
-                )
-              })}
-            </h1>
-            <p className="mt-4 font-display text-xl text-fg/90">{headline}</p>
-            <p className="mt-3 max-w-sm text-muted">{profile('root').tagline}</p>
-            {availability && (
-              <p className="mt-6 inline-flex items-center gap-2 rounded-full border border-line bg-surface px-3 py-1.5 font-mono text-xs">
-                <span className="relative flex size-2">
-                  <span className="absolute inline-flex size-full animate-ping rounded-full bg-accent opacity-60 motion-reduce:animate-none" />
-                  <span className="relative inline-flex size-2 rounded-full bg-accent" />
-                </span>
-                {availability}
-              </p>
-            )}
-            <div className="mt-14">
-              <SideNav sections={sections} />
-            </div>
+              See the portfolios
+            </a>
           </div>
-          <ul className="mt-8 flex flex-wrap gap-x-5 gap-y-2 font-mono text-xs text-muted lg:mt-0">
-            {links.map((link) => (
+          <nav aria-label="Page" className="hidden gap-5 sm:flex">
+            {[
+              ['#portfolios', 'Portfolios'],
+              ['#about', 'About'],
+              ['#contact', 'Contact'],
+            ].map(([href, label]) => (
+              <a
+                key={href}
+                href={href}
+                className="press hover:text-accent focus-visible:outline-2 focus-visible:outline-accent"
+              >
+                {label}
+              </a>
+            ))}
+          </nav>
+        </div>
+
+        <div className="flex flex-col justify-center gap-6 max-sm:justify-start max-sm:pt-[8vh]">
+          <NameMosaic
+            surname={surname}
+            fullName={fullName}
+            role={role}
+            slices={slices}
+            idleCaption={`${role}. Based in ${location}${availability ? `, ${availability.toLowerCase()}` : ''}.`}
+            captionClassName="max-w-[44ch] sm:absolute sm:bottom-6 sm:left-[clamp(16px,1.6vw,28px)]"
+          />
+          {/* Phone: the first picture fills the lower half, cropped by the edge. */}
+          <div className="-mx-[clamp(16px,1.6vw,28px)] aspect-[4/5] overflow-hidden sm:hidden">
+            <Photo picture={pictures.stepwell} priority />
+          </div>
+        </div>
+
+        <div className="hidden items-end justify-end gap-6 sm:flex">
+          <ul className="flex gap-5">
+            {webLinks.map((link) => (
               <li key={link.url}>
                 <a
                   href={link.url}
-                  className="transition hover:text-accent focus-visible:outline-2 focus-visible:outline-accent"
+                  className="press hover:text-accent focus-visible:outline-2 focus-visible:outline-accent"
                 >
-                  {link.label} ↗
+                  {link.label}
                 </a>
               </li>
             ))}
           </ul>
-        </header>
+        </div>
+      </header>
 
-        <main className="space-y-28 pt-14 pb-24 lg:w-[58%] lg:py-20">
-          <section aria-label="Terminal">
-            <Terminal
-              data={{
-                name,
-                headline,
-                location: me.location ?? '',
-                about: paragraphs(me.about),
-                projects: work.map((p) => ({ title: p.title, href: caseStudyHref(p) })),
-                skills: skills.flatMap((g) => g.skills.map((s) => s.name)),
-                experience: roles.map((r) => `${r.title} @ ${r.employer}`),
-                links: links.map(({ label, url }) => ({ label, url })),
-              }}
-            />
-          </section>
-
-          <section id="about" aria-labelledby="about-title" className="reveal scroll-mt-20">
-            <SectionTitle id="about" index={1}>
-              About
-            </SectionTitle>
-            <div className="space-y-4 text-[1.05rem] leading-relaxed text-fg/80">
-              <RichText value={me.about} />
-            </div>
-            {current && (
-              <div className="card mt-8 flex items-center gap-4 p-5">
-                <span
-                  className="grid size-11 shrink-0 place-items-center rounded-xl bg-accent/15 text-xl"
-                  aria-hidden
-                >
-                  ⚒
-                </span>
-                <div>
-                  <p className="font-mono text-xs text-accent">currently building</p>
-                  <p className="font-medium">{current.title}</p>
-                  {current.summary && <p className="text-sm text-muted">{current.summary}</p>}
-                </div>
-              </div>
-            )}
-          </section>
-
-          <section id="work" aria-labelledby="work-title" className="reveal scroll-mt-20">
-            <SectionTitle id="work" index={2}>
-              Featured work
-            </SectionTitle>
-            <WorkDeck label="Featured projects">
-              {work.map((project) => {
-                const href = caseStudyHref(project)
-                const phone = project.platforms.some((p) => p === 'android' || p === 'ios')
-                const inner = (
-                  <>
-                    <div className="grid h-60 place-items-center overflow-hidden rounded-xl bg-[radial-gradient(circle_at_50%_120%,color-mix(in_oklab,var(--accent)_18%,transparent),transparent_70%)] p-5 transition-transform duration-500 group-hover:scale-[1.03]">
-                      <DeviceMock
-                        kind={phone ? 'phone' : 'desktop'}
-                        hue={projectHue(project.id)}
-                        label={project.title}
-                      />
-                    </div>
-                    <div className="mt-5 flex items-center justify-between gap-3 font-mono text-[11px] text-muted">
-                      <span>{formatMonth(project.start)}</span>
-                      <span className="rounded-full border border-accent/40 px-2 py-0.5 text-accent">
-                        {demoStatusLabel[project.demoStatus]}
-                      </span>
-                    </div>
-                    <h3 className="mt-2 font-display text-xl leading-tight font-semibold">
-                      {project.title}
-                      {href && (
-                        <span className="ml-1 inline-block transition-transform group-hover:translate-x-1">
-                          →
-                        </span>
-                      )}
-                    </h3>
-                    {project.summary && (
-                      <p className="mt-2 text-sm leading-relaxed text-muted">{project.summary}</p>
-                    )}
-                    <ul className="mt-4 flex flex-wrap gap-1.5">
-                      {project.platforms.map((p) => (
-                        <li
-                          key={p}
-                          className="rounded-md bg-surface px-2 py-0.5 font-mono text-[10px] text-fg/70"
-                        >
-                          {platformLabel[p]}
-                        </li>
-                      ))}
-                    </ul>
-                  </>
-                )
-                const cls =
-                  'group card block w-[19rem] shrink-0 snap-start p-4 transition hover:-translate-y-1 hover:border-accent/50 sm:w-[22rem]'
-                return href ? (
-                  <Link
-                    key={project.id}
-                    href={href}
-                    draggable={false}
-                    className={`${cls} focus-visible:outline-2 focus-visible:outline-accent`}
-                  >
-                    {inner}
-                  </Link>
-                ) : (
-                  <article key={project.id} className={cls}>
-                    {inner}
-                  </article>
-                )
-              })}
-            </WorkDeck>
-            {flutterLive && (
-              <Link
-                href={profileHref.flutter}
-                className="mt-6 inline-block font-mono text-sm text-accent hover:underline"
-              >
-                All Flutter work →
-              </Link>
-            )}
-          </section>
-
-          <section
-            id="experience"
-            aria-labelledby="experience-title"
-            className="reveal scroll-mt-20"
+      <main>
+        {/* Line-up: every cell at one size; the column starts do the organising. */}
+        <section
+          id="portfolios"
+          aria-labelledby="portfolios-title"
+          className={`${margin} py-32 lg:py-48`}
+        >
+          <h2
+            id="portfolios-title"
+            data-reveal
+            className="text-[length:var(--step-lead)] leading-[1.5] text-accent"
           >
-            <SectionTitle id="experience" index={3}>
-              Experience
-            </SectionTitle>
-            <ExperienceTabs
-              items={roles.map((role) => ({
-                id: String(role.id),
-                employer: role.employer,
-                employerDetail: role.employerDetail ?? null,
-                title: role.title,
-                period: `${formatMonth(role.period?.start ?? null)} – ${formatMonth(role.period?.end ?? null)}`,
-                location: role.location ?? null,
-                highlights: (role.highlights ?? []).map((h) => h.text),
-              }))}
-            />
-          </section>
-
-          <section id="skills" aria-labelledby="skills-title" className="reveal scroll-mt-20">
-            <SectionTitle id="skills" index={4}>
-              Skills &amp; stack
-            </SectionTitle>
-            <SkillBoard groups={skills} />
-          </section>
-
-          <section
-            id="playground"
-            aria-labelledby="playground-title"
-            className="reveal scroll-mt-20"
-          >
-            <SectionTitle id="playground" index={5}>
-              Playground
-            </SectionTitle>
-            <p className="mb-6 max-w-xl text-muted">
-              Flutter’s starter app, rebuilt in the browser. Tap the button, change the seed colour,
-              and watch the Flutter code update.
-            </p>
-            <Playground />
-          </section>
-
-          {posts.length > 0 && (
-            <section id="writing" aria-labelledby="writing-title" className="reveal scroll-mt-20">
-              <SectionTitle id="writing" index={6}>
-                Writing
-              </SectionTitle>
-              <ul className="divide-y divide-line">
-                {posts.map((post) => (
-                  <li
-                    key={post.id}
-                    className="group flex flex-wrap items-baseline justify-between gap-2 py-4"
+            Portfolios
+          </h2>
+          <ul className="mt-5 text-[length:var(--step-lead)] leading-[1.5]">
+            {portfolios.map((p, row) => {
+              const cells = (
+                <>
+                  <span>{p.label}</span>
+                  <span className="text-muted max-md:text-[length:var(--step-small)] max-md:leading-normal">
+                    {p.contents}
+                  </span>
+                  <span
+                    className={`text-right max-md:text-[length:var(--step-small)] ${p.href ? '' : 'text-muted'}`}
                   >
-                    <span className="font-medium transition group-hover:text-accent">
-                      {post.title}
-                    </span>
-                    <span className="font-mono text-xs text-muted">
-                      {formatMonth(post.publishedAt ?? null)}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            </section>
-          )}
-
-          <section id="contact" aria-labelledby="contact-title" className="reveal scroll-mt-20">
-            <SectionTitle id="contact" index={7}>
-              Contact
-            </SectionTitle>
-            <p className="mb-8 max-w-xl text-lg text-fg/85">
-              Have a project, a role or a question? Send a message and I’ll get back to you by
-              email.
-            </p>
-            {endpoint && siteKey ? (
-              <ContactForm endpoint={endpoint} siteKey={siteKey} />
-            ) : (
-              <ul className="flex flex-wrap gap-3">
-                {links.map((link) => (
-                  <li key={link.url}>
-                    <a
-                      href={link.url}
-                      className="card inline-block px-4 py-2 transition hover:border-accent"
+                    {p.href ? 'Open →' : 'Coming later'}
+                  </span>
+                </>
+              )
+              const grid =
+                'grid grid-cols-[1fr_auto] gap-x-6 py-1 max-md:items-baseline md:grid-cols-[24%_1fr_auto] max-md:[&>*:nth-child(2)]:col-span-2 max-md:[&>*:nth-child(2)]:row-start-2'
+              return (
+                <li key={p.key} data-reveal style={{ ['--i' as string]: row + 1 }}>
+                  {p.href ? (
+                    <Link
+                      href={p.href}
+                      className={`press ${grid} hover:text-accent focus-visible:outline-2 focus-visible:outline-accent [&:hover>*]:text-accent`}
                     >
-                      {link.label}
+                      {cells}
+                    </Link>
+                  ) : (
+                    <div className={grid}>{cells}</div>
+                  )}
+                </li>
+              )
+            })}
+          </ul>
+        </section>
+
+        {/* The city the work comes from, in pictures. */}
+        <section aria-labelledby="city-title" className={`${margin} pb-32 lg:pb-48`}>
+          <h2
+            id="city-title"
+            data-reveal
+            className="text-[length:var(--step-head)] leading-[1.05] tracking-[-0.025em]"
+          >
+            Ahmedabad
+          </h2>
+          <p data-reveal style={{ ['--i' as string]: 1 }} className="mt-4 max-w-[48ch]">
+            The walled city on the Sabarmati, known for its carved stone, its stepwells and the
+            kites that fill the sky every January.
+          </p>
+          <figure data-reveal style={{ ['--i' as string]: 2 }} className="mt-12">
+            <div className="aspect-[16/10] overflow-clip">
+              <Photo picture={pictures.jali} className="drift" />
+            </div>
+            <figcaption className="mt-3 text-[length:var(--step-small)] text-muted">
+              Stone jali at the Sidi Saiyyed Mosque
+            </figcaption>
+          </figure>
+          <div className="mt-6 grid gap-6 sm:grid-cols-2">
+            <figure data-reveal style={{ ['--i' as string]: 1 }}>
+              <div className="aspect-[4/5] overflow-hidden">
+                <Photo picture={pictures.stepwell} />
+              </div>
+              <figcaption className="mt-3 text-[length:var(--step-small)] text-muted">
+                Adalaj stepwell
+              </figcaption>
+            </figure>
+            <figure data-reveal style={{ ['--i' as string]: 2 }}>
+              <div className="aspect-[4/5] overflow-hidden">
+                <Photo picture={pictures.polHouse} />
+              </div>
+              <figcaption className="mt-3 text-[length:var(--step-small)] text-muted">
+                A pol house in the old city
+              </figcaption>
+            </figure>
+          </div>
+        </section>
+
+        {/* About: one paragraph set large, with a square picture as its drop cap. */}
+        <section
+          id="about"
+          aria-labelledby="about-title"
+          className={`${margin} grid gap-10 pb-32 lg:grid-cols-12 lg:pb-48`}
+        >
+          <div className="lg:col-span-2">
+            <h2
+              id="about-title"
+              data-reveal
+              className="text-[length:var(--step-head)] leading-[1.05] tracking-[-0.025em]"
+            >
+              About
+            </h2>
+            <dl
+              data-reveal
+              style={{ ['--i' as string]: 1 }}
+              className="mt-6 space-y-4 text-[length:var(--step-small)] max-lg:flex max-lg:gap-8 max-lg:space-y-0"
+            >
+              <div>
+                <dt className="text-muted">Based in</dt>
+                <dd>{location}</dd>
+              </div>
+              {availability && (
+                <div>
+                  <dt className="text-muted">Availability</dt>
+                  <dd>{availability}</dd>
+                </div>
+              )}
+              {email && (
+                <div>
+                  <dt className="text-muted">Email</dt>
+                  <dd>
+                    <a href={email.url} className="underline underline-offset-4 hover:text-accent">
+                      {displayLink(email.url)}
                     </a>
-                  </li>
-                ))}
-              </ul>
+                  </dd>
+                </div>
+              )}
+            </dl>
+          </div>
+          <div
+            data-reveal
+            style={{ ['--i' as string]: 2 }}
+            className="max-w-[60ch] text-[length:var(--step-lead)] leading-[1.35] lg:col-span-10 [&>p+p]:mt-[1em]"
+          >
+            <div className="float-left mr-[0.5em] mb-[0.2em] size-[3.6em] overflow-hidden max-lg:size-[110px]">
+              <Photo picture={pictures.kite} />
+            </div>
+            <RichText value={me.about} />
+          </div>
+        </section>
+
+        {/* Contact: the old map printed in blue, then the ways to reach out as display rows. */}
+        <section id="contact" aria-labelledby="contact-title" className="pb-32 lg:pb-48">
+          <h2
+            id="contact-title"
+            data-reveal
+            className={`${margin} text-[length:var(--step-head)] leading-[1.05] tracking-[-0.025em]`}
+          >
+            Contact
+          </h2>
+          <figure data-reveal style={{ ['--i' as string]: 1 }} className={`${margin} mt-10`}>
+            <div className="print-blue aspect-[3/1] overflow-hidden max-sm:aspect-[4/3]">
+              <Photo picture={pictures.map1855} />
+            </div>
+          </figure>
+          <ul className="mt-10 text-[length:var(--step-head)] leading-none tracking-[-0.025em] max-sm:text-[7.4vw]">
+            {[
+              ...links.map((link) => ({
+                key: link.url,
+                text: displayLink(link.url),
+                href: link.url,
+              })),
+              { key: 'city', text: location, href: null },
+            ].map((row, i) => (
+              <li
+                key={row.key}
+                data-reveal
+                style={{ ['--i' as string]: i }}
+                className={i % 2 === 0 ? 'bg-surface' : ''}
+              >
+                {row.href ? (
+                  <a
+                    href={row.href}
+                    className={`press flex min-h-[clamp(84px,10vw,150px)] items-end pb-[0.3em] ${margin} [overflow-wrap:anywhere] hover:text-accent focus-visible:outline-2 focus-visible:-outline-offset-4 focus-visible:outline-accent`}
+                  >
+                    {row.text}
+                  </a>
+                ) : (
+                  <p
+                    className={`flex min-h-[clamp(84px,10vw,150px)] items-end pb-[0.3em] ${margin}`}
+                  >
+                    {row.text}
+                  </p>
+                )}
+              </li>
+            ))}
+            {email && (
+              <li data-reveal className="max-sm:bg-accent max-sm:text-accent-fg">
+                <a
+                  href={email.url}
+                  className={`press group flex min-h-[clamp(84px,10vw,150px)] items-end gap-6 pb-[0.3em] ${margin} focus-visible:outline-2 focus-visible:-outline-offset-4 focus-visible:outline-accent`}
+                >
+                  Say hello
+                  <span
+                    aria-hidden
+                    className="mb-[0.15em] grid size-[2em] shrink-0 place-items-center rounded-full bg-accent text-[0.45em] leading-none text-accent-fg transition-transform group-hover:translate-x-2 max-sm:bg-accent-fg max-sm:text-accent"
+                  >
+                    →
+                  </span>
+                </a>
+              </li>
             )}
-          </section>
-        </main>
-      </div>
+          </ul>
+        </section>
+      </main>
+
+      {/* Close: inverse colours, an invitation, and the name cut by the bottom edge. */}
+      <footer className="relative flex flex-col overflow-hidden bg-fg text-bg lg:min-h-svh">
+        <div className={`grid gap-10 ${margin} pt-24 lg:grid-cols-12`}>
+          <div className="lg:col-span-7">
+            <h2 className="text-[length:var(--step-head)] leading-[1] tracking-[-0.03em] max-sm:text-[11vw]">
+              Start with the work.
+            </h2>
+            <a
+              href="#portfolios"
+              className="press mt-8 inline-block bg-accent px-5 py-3 text-accent-fg hover:bg-bg hover:text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-bg max-sm:w-full max-sm:text-center"
+            >
+              See the portfolios
+            </a>
+          </div>
+          <ul className="space-y-2 lg:col-span-3 lg:col-start-10 max-lg:flex max-lg:flex-wrap max-lg:gap-x-5 max-lg:space-y-0">
+            {links.map((link) => (
+              <li key={link.url}>
+                <a
+                  href={link.url}
+                  className="press hover:text-accent focus-visible:outline-2 focus-visible:outline-bg"
+                >
+                  {link.label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+        <p className={`mt-auto ${margin} pt-20 pb-4 text-[length:var(--step-small)] text-bg/70`}>
+          Pictures:{' '}
+          {credits.map((c, i) => (
+            <span key={c.page}>
+              <a href={c.page} className="underline underline-offset-2 hover:text-bg">
+                {c.title}
+              </a>{' '}
+              by {c.creator}, {c.licence}
+              {i < credits.length - 1 ? '; ' : '.'}
+            </span>
+          ))}
+        </p>
+        <p
+          aria-hidden
+          className="pointer-events-none h-[0.62em] text-[clamp(120px,28vw,520px)] leading-[0.9] whitespace-nowrap tracking-[-0.05em] select-none max-sm:text-[34vw]"
+        >
+          <span className="block translate-y-[-8%] pl-[clamp(16px,1.6vw,28px)]">{surname}</span>
+        </p>
+      </footer>
     </>
   )
 }
