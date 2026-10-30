@@ -1,6 +1,9 @@
 # Copy to .dev.vars for `wrangler dev`. In production these are Worker secrets.
+# Neon dev branch as the insert-only contact_worker role.
 DATABASE_URL=
-TURNSTILE_SECRET_KEY=
+# Cloudflare's always-pass test secret; send turnstileToken "XXXX.DUMMY.TOKEN.XXXX".
+TURNSTILE_SECRET_KEY=1x0000000000000000000000000000000AA
+# Resend send-only key.
 RESEND_API_KEY=
-NOTIFY_EMAIL=
-ALLOWED_ORIGINS=
+# Overrides the deployed list so local pages can post.
+ALLOWED_ORIGINS=http://localhost:3000,https://uveshm003.github.io

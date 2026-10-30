@@ -87,3 +87,20 @@ pnpm --filter @mosaic/cms generate:importmap
 Both need `APP_ENV=test`, `DATABASE_URL` and `PAYLOAD_SECRET` set.
 
 Env templates: `apps/cms/.env.{dev,prod}.example`, `apps/site/.env.example`, `apps/brand/.env.example`, `workers/contact/.dev.vars.example`. Copy them without the `.example` suffix; the copies are git-ignored.
+
+### Contact Worker (`workers/contact`)
+
+Receives contact-form posts: checks the origin, validates with Zod, drops honeypot hits,
+verifies Turnstile, inserts into `inquiries` as the insert-only `contact_worker` role, and
+sends one Resend notification with every value HTML-escaped.
+
+```sh
+pnpm --filter @mosaic/contact-worker dev      # local, with workers/contact/.dev.vars
+pnpm --filter @mosaic/contact-worker test     # unit tests
+MIGRATED_DATABASE_URL=… pnpm --filter @mosaic/contact-worker test:int   # against a migrated DB
+pnpm --filter @mosaic/contact-worker deploy   # needs `wrangler login`
+```
+
+Production secrets (`wrangler secret put`): `DATABASE_URL`, `TURNSTILE_SECRET_KEY`, `RESEND_API_KEY`.
+The `contact_worker` role is created by hand on each Neon branch; its grants live in a
+migration, which must be re-run if `inquiries` is rebuilt.

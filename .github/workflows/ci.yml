@@ -67,6 +67,10 @@ jobs:
         run: |
           PGPASSWORD=mosaic psql -h localhost -U mosaic -d mosaic_test -c 'CREATE DATABASE mosaic_migrate'
           pnpm --filter @mosaic/cms exec payload migrate
+      - name: Contact Worker writes to the migrated schema
+        env:
+          MIGRATED_DATABASE_URL: postgres://mosaic:mosaic@localhost:5432/mosaic_migrate
+        run: pnpm --filter @mosaic/contact-worker test:int
       - name: Production build refuses seed data
         env:
           PAYLOAD_SECRET: ci-secret-that-is-at-least-32-chars

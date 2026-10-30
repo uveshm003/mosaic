@@ -20,6 +20,9 @@ jobs:
       url: https://uveshm003.github.io/
     env:
       APP_ENV: production
+      # Public values for the contact form, kept as repo variables so they change without a commit.
+      NEXT_PUBLIC_CONTACT_ENDPOINT: ${{ vars.CONTACT_ENDPOINT }}
+      NEXT_PUBLIC_TURNSTILE_SITE_KEY: ${{ vars.TURNSTILE_SITE_KEY }}
     steps:
       - uses: actions/checkout@v7
       - uses: pnpm/setup@v3
