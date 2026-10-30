@@ -10,6 +10,12 @@
     "typecheck": "tsc",
     "test": "vitest run --passWithNoTests"
   },
+  "dependencies": {
+    "@faker-js/faker": "catalog:",
+    "@mosaic/content": "workspace:*",
+    "payload": "catalog:",
+    "sharp": "catalog:"
+  },
   "devDependencies": {
     "@mosaic/config": "workspace:*",
     "@types/node": "catalog:",

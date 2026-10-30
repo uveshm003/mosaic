@@ -8,6 +8,7 @@ allowBuilds:
 
 catalog:
   '@eslint/js': 10.0.1
+  '@faker-js/faker': 10.6.0
   '@next/eslint-plugin-next': 16.4.3
   '@payloadcms/db-postgres': 3.92.1
   '@payloadcms/next': 3.92.1
