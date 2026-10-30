@@ -1,0 +1,62 @@
+.dir-editorial {
+  --bg: #f4efe6;
+  --fg: #1b1a17;
+  --muted: #6b665c;
+  --accent: #c2412b;
+  --accent-fg: #fff8f0;
+  --line: #d9d1c3;
+  --surface: #ebe4d7;
+}
+
+@media (prefers-color-scheme: dark) {
+  .dir-editorial {
+    --bg: #15130f;
+    --fg: #efe8dc;
+    --muted: #a39b8c;
+    --accent: #ef6a4f;
+    --accent-fg: #15130f;
+    --line: #3a352d;
+    --surface: #1f1c17;
+  }
+}
+
+/* Sections ease in as they scroll into view. Off for reduced motion, and browsers without
+   scroll timelines just show them. */
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .dir-editorial .reveal {
+      animation: editorial-reveal linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 40%;
+    }
+  }
+}
+
+@keyframes editorial-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(1.5rem);
+  }
+}
+
+.dir-editorial .dropcap > p:first-child::first-letter {
+  float: left;
+  font-family: var(--font-display-family);
+  font-size: 4.2em;
+  line-height: 0.8;
+  padding: 0.08em 0.1em 0 0;
+  color: var(--accent);
+}
+
+.dir-editorial .sweep {
+  background-image: linear-gradient(currentColor, currentColor);
+  background-size: 0% 1px;
+  background-position: 0 100%;
+  background-repeat: no-repeat;
+  transition: background-size 0.35s ease;
+}
+
+.dir-editorial .sweep:hover,
+.dir-editorial .sweep:focus-visible {
+  background-size: 100% 1px;
+}
