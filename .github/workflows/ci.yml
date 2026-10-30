@@ -51,6 +51,22 @@ jobs:
           pnpm --filter @mosaic/cms generate:importmap
           git diff --exit-code -- packages/content/src/payload-types.ts 'apps/cms/src/app/(payload)/admin/importMap.js'
       - run: pnpm build
+      - name: Migrations match the schema
+        env:
+          PAYLOAD_SECRET: ci-secret-that-is-at-least-32-chars
+        run: |
+          pnpm --filter @mosaic/cms exec payload migrate:create drift --skip-empty
+          if [ -n "$(git status --porcelain apps/cms/src/migrations)" ]; then
+            echo "The schema changed without a migration. Run: pnpm --filter @mosaic/cms payload:dev migrate:create <name>"
+            exit 1
+          fi
+      - name: Migrations build an empty database
+        env:
+          PAYLOAD_SECRET: ci-secret-that-is-at-least-32-chars
+          DATABASE_URL: postgres://mosaic:mosaic@localhost:5432/mosaic_migrate
+        run: |
+          PGPASSWORD=mosaic psql -h localhost -U mosaic -d mosaic_test -c 'CREATE DATABASE mosaic_migrate'
+          pnpm --filter @mosaic/cms exec payload migrate
       - name: Production build refuses seed data
         env:
           PAYLOAD_SECRET: ci-secret-that-is-at-least-32-chars

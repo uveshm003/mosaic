@@ -60,6 +60,14 @@ pnpm preview                                     # dev content with drafts, then
 
 A production export or build refuses snapshots that contain seed data or drafts.
 
+Migrations: dev syncs its schema from code, production only changes through migrations
+in `apps/cms/src/migrations`. CI fails if the schema changes without one.
+
+```sh
+pnpm --filter @mosaic/cms payload:dev migrate:create <name>   # after changing a collection or global
+pnpm --filter @mosaic/cms payload:prod migrate                 # apply to production
+```
+
 Payload CLI commands go through the same files: `pnpm --filter @mosaic/cms payload:dev migrate:status`.
 
 Integration tests and local admin work use the Postgres in `docker-compose.yml`:

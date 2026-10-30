@@ -22,6 +22,7 @@
   "dependencies": {
     "@mosaic/content": "workspace:*",
     "@mosaic/seed": "workspace:*",
+    "@payloadcms/db-postgres": "catalog:",
     "@payloadcms/next": "catalog:",
     "@payloadcms/richtext-lexical": "catalog:",
     "@payloadcms/ui": "catalog:",

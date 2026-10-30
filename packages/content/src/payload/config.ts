@@ -47,6 +47,8 @@ export interface MosaicPayloadOptions {
   typesOutputFile: string
   /** Sync the schema on startup. Only for throwaway databases; the rest use migrations. */
   push: boolean
+  /** Where Payload reads and writes migrations. */
+  migrationDir: string
   /** Admin components shown below the dashboard, as Payload component paths. */
   afterDashboard?: string[]
 }
@@ -68,6 +70,7 @@ export function createPayloadConfig(options: MosaicPayloadOptions): Promise<Sani
     db: postgresAdapter({
       pool: { connectionString: options.databaseUrl },
       push: options.push,
+      migrationDir: options.migrationDir,
     }),
     sharp,
   })
