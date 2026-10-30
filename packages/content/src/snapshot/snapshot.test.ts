@@ -2,6 +2,7 @@ import { mkdtempSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
 import { describe, expect, it } from 'vitest'
+import { referencedMediaIds } from './export'
 import { productionSnapshotError, seedDocuments } from './guard'
 import { loadSnapshot } from './load'
 import { parseSnapshot, SNAPSHOT_VERSION } from './schema'
@@ -97,5 +98,17 @@ describe('loadSnapshot', () => {
     expect(() => loadSnapshot('/nonexistent/snapshot.json', { production: false })).toThrow(
       /pnpm content:export/,
     )
+  })
+})
+
+describe('referencedMediaIds', () => {
+  it('collects ids from populated and unpopulated refs, once each', () => {
+    const projects = [{ media: [{ id: 1 }, 2] }, { media: null }] as unknown as Parameters<
+      typeof referencedMediaIds
+    >[0]
+    const posts = [{ cover: 2 }, { cover: { id: 3 } }, { cover: null }] as unknown as Parameters<
+      typeof referencedMediaIds
+    >[1]
+    expect(referencedMediaIds(projects, posts)).toEqual([1, 2, 3])
   })
 })

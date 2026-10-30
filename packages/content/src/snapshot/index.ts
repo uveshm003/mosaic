@@ -1,4 +1,4 @@
-export { buildSnapshot } from './export'
+export { buildSnapshot, referencedMediaIds } from './export'
 export { productionSnapshotError, seedDocuments } from './guard'
 export { loadSnapshot } from './load'
 export {
