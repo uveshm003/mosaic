@@ -1,0 +1,60 @@
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+      url: https://uveshm003.github.io/
+    env:
+      APP_ENV: production
+      # There is no production database until #13, so the sites build without a snapshot.
+      MOSAIC_ALLOW_MISSING_SNAPSHOT: '1'
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/setup@v3
+        with:
+          cache: true
+          require-lockfile: true
+      - run: pnpm turbo run build --filter=@mosaic/site --filter=@mosaic/brand
+      - name: Assemble the Pages site
+        run: |
+          mkdir -p dist/brand
+          cp -R apps/site/out/. dist/
+          cp -R apps/brand/out/. dist/brand/
+          # Without this, Pages runs Jekyll, which drops the _next folder.
+          touch dist/.nojekyll
+      - name: Publish to uveshm003.github.io
+        env:
+          DEPLOY_KEY: ${{ secrets.PAGES_DEPLOY_KEY }}
+        run: |
+          mkdir -p ~/.ssh
+          printf '%s\n' "$DEPLOY_KEY" > ~/.ssh/pages_deploy
+          chmod 600 ~/.ssh/pages_deploy
+          # GitHub's published ed25519 host key.
+          echo "github.com ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2l9GKJl" >> ~/.ssh/known_hosts
+          export GIT_SSH_COMMAND="ssh -i ~/.ssh/pages_deploy -o IdentitiesOnly=yes"
+          git clone --depth 1 git@github.com:uveshm003/uveshm003.github.io.git "$RUNNER_TEMP/pages"
+          rsync -a --delete --exclude .git --exclude README.md dist/ "$RUNNER_TEMP/pages/"
+          cd "$RUNNER_TEMP/pages"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No changes to deploy"
+            exit 0
+          fi
+          git -c user.name="github-actions[bot]" \
+              -c user.email="41898282+github-actions[bot]@users.noreply.github.com" \
+              commit -q -m "Deploy uveshm003/mosaic@${GITHUB_SHA}"
+          git push origin HEAD:main
