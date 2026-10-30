@@ -14,4 +14,5 @@ export default createPayloadConfig({
   importMapBaseDir: dirname,
   typesOutputFile: path.resolve(dirname, '../../../packages/content/src/payload-types.ts'),
   push: allowsSchemaPush(env),
+  afterDashboard: ['/components/PublishPanel#PublishPanel'],
 })
