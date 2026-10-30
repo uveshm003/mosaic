@@ -1,0 +1,14 @@
+{
+  "$schema": "../../node_modules/wrangler/config-schema.json",
+  "name": "mosaic-contact",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-10-30",
+  "observability": { "enabled": true },
+  "vars": {
+    "ALLOWED_ORIGINS": "https://uveshm003.github.io",
+    "NOTIFY_EMAIL": "uveshmenpur.03@gmail.com",
+    "RESEND_FROM": "Portfolio contact <onboarding@resend.dev>",
+    "RESEND_TEMPLATE": "contact-notification",
+  },
+  // Secrets, set with `wrangler secret put`: DATABASE_URL, TURNSTILE_SECRET_KEY, RESEND_API_KEY.
+}
