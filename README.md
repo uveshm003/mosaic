@@ -33,4 +33,22 @@ pnpm --filter @mosaic/site dev
 pnpm --filter @mosaic/brand dev
 ```
 
+### Admin (`apps/cms`)
+
+Integration tests and local admin work use the Postgres in `docker-compose.yml`:
+
+```sh
+docker compose up -d
+pnpm --filter @mosaic/cms test
+```
+
+After changing a collection or global, regenerate the committed files (CI fails if they drift):
+
+```sh
+pnpm --filter @mosaic/cms generate:types
+pnpm --filter @mosaic/cms generate:importmap
+```
+
+Both need `DATABASE_URL` and `PAYLOAD_SECRET` set.
+
 Env templates: `apps/cms/.env.{dev,prod}.example`, `apps/site/.env.example`, `apps/brand/.env.example`, `workers/contact/.dev.vars.example`. Copy them without the `.example` suffix; the copies are git-ignored.
