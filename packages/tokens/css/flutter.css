@@ -1,0 +1,39 @@
+.theme-flutter {
+  --bg: #fbfbfa;
+  --fg: #0d0d0e;
+  --muted: #5f6166;
+  --accent: #0b5fff;
+  --accent-fg: #ffffff;
+  --line: #dcdcd8;
+  --surface: #f1f1ee;
+  --grid: rgb(13 13 14 / 0.045);
+}
+
+@media (prefers-color-scheme: dark) {
+  .theme-flutter {
+    --bg: #0e0f11;
+    --fg: #ececea;
+    --muted: #9a9ca3;
+    --accent: #5b8cff;
+    --accent-fg: #0e0f11;
+    --line: #2a2c30;
+    --surface: #16171a;
+    --grid: rgb(255 255 255 / 0.035);
+  }
+}
+
+.theme-flutter .gridlines {
+  background-image:
+    linear-gradient(var(--grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size: 2rem 2rem;
+}
+
+.theme-flutter .row-link {
+  transition: background-color 0.2s ease;
+}
+
+.theme-flutter .row-link:hover,
+.theme-flutter .row-link:focus-visible {
+  background-color: var(--surface);
+}

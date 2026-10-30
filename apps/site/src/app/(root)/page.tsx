@@ -1,0 +1,113 @@
+import type { Metadata } from 'next'
+import Link from 'next/link'
+import { RichText } from '../../components/RichText'
+import { enabledProfiles, isEnabled, person, profile, profileHref } from '../../lib/content'
+import { SITE_URL } from '../../lib/site'
+
+export function generateMetadata(): Metadata {
+  if (!isEnabled('root')) return {}
+  const seo = profile('root')
+  return {
+    title: seo.title ?? person().name ?? undefined,
+    description: seo.tagline ?? undefined,
+  }
+}
+
+function Placeholder() {
+  return (
+    <main className="mx-auto max-w-2xl px-5 py-24">
+      <h1 className="font-display text-4xl">Uvesh Menpurwala</h1>
+      <p className="mt-4 text-muted">This site is being built.</p>
+    </main>
+  )
+}
+
+export default function Home() {
+  // Until the root profile is enabled in the admin, production keeps the placeholder.
+  if (!isEnabled('root')) return <Placeholder />
+
+  const me = person()
+  const profiles = enabledProfiles()
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Person',
+    name: me.name,
+    jobTitle: me.headlines?.[0]?.text,
+    homeLocation: me.location ? { '@type': 'Place', name: me.location } : undefined,
+    url: SITE_URL,
+    sameAs: (me.contactLinks ?? []).map((link) => link.url),
+  }
+
+  return (
+    <main className="mx-auto max-w-6xl px-5 pb-24 sm:px-8">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <header className="border-b border-line pt-10 pb-12 sm:pt-16">
+        <p className="text-xs tracking-[0.25em] text-muted uppercase">
+          {[me.headlines?.[0]?.text, me.location].filter(Boolean).join(' · ')}
+        </p>
+        <h1 className="mt-6 font-display text-[clamp(3.2rem,11vw,9.5rem)] leading-[0.88] font-light tracking-[-0.03em] [font-variation-settings:'opsz'_144,'SOFT'_50]">
+          {me.name}
+        </h1>
+      </header>
+
+      <section
+        className="reveal grid gap-10 border-b border-line py-14 lg:grid-cols-[1fr_2fr]"
+        aria-labelledby="about"
+      >
+        <h2 id="about" className="font-display text-2xl italic">
+          About
+        </h2>
+        <div className="dropcap max-w-prose space-y-5 text-lg leading-relaxed text-fg/90">
+          <RichText value={me.about} />
+        </div>
+      </section>
+
+      {profiles.length > 0 && (
+        <nav aria-labelledby="profiles" className="reveal py-14">
+          <h2 id="profiles" className="font-display text-2xl italic">
+            Profiles
+          </h2>
+          <ol className="mt-8 divide-y divide-line border-y border-line">
+            {profiles.map(({ key, label }, index) => (
+              <li key={key}>
+                <Link
+                  href={profileHref[key]}
+                  className="group grid grid-cols-[2.5rem_1fr_auto] items-baseline gap-4 py-6 focus-visible:outline-2 focus-visible:outline-accent sm:grid-cols-[3rem_1fr_18rem_2rem]"
+                >
+                  <span className="font-display text-sm text-accent tabular-nums">
+                    {String(index + 1).padStart(2, '0')}
+                  </span>
+                  <span className="font-display text-[clamp(1.8rem,5vw,3.4rem)] leading-none">
+                    <span className="sweep">{label}</span>
+                  </span>
+                  <span className="hidden max-w-xs text-sm text-muted sm:block">
+                    {profile(key).tagline}
+                  </span>
+                  <span
+                    aria-hidden
+                    className="text-2xl transition-transform group-hover:translate-x-1"
+                  >
+                    →
+                  </span>
+                </Link>
+              </li>
+            ))}
+          </ol>
+        </nav>
+      )}
+
+      {(me.contactLinks?.length ?? 0) > 0 && (
+        <footer className="flex flex-wrap gap-x-6 gap-y-2 border-t border-line pt-6 text-sm text-muted">
+          {me.contactLinks?.map((link) => (
+            <a key={link.url} href={link.url} className="sweep hover:text-fg">
+              {link.label}
+            </a>
+          ))}
+        </footer>
+      )}
+    </main>
+  )
+}
