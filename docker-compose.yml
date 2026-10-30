@@ -1,4 +1,5 @@
-# Local Postgres for integration tests. Matches the CI service container.
+# Local Postgres for integration tests (mosaic_test, matching CI) and, until Neon
+# is set up, local admin work (create mosaic_dev with `createdb`).
 services:
   postgres:
     image: postgres:17

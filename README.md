@@ -35,6 +35,16 @@ pnpm --filter @mosaic/brand dev
 
 ### Admin (`apps/cms`)
 
+The admin only starts through these commands, each reading its own env file
+(`apps/cms/.env.dev`, `apps/cms/.env.prod`; values in the file win over the shell):
+
+```sh
+pnpm cms:dev    # dev database, schema synced from code, http://localhost:3000/admin
+pnpm cms:prod   # production database, migrations only, http://localhost:3001/admin
+```
+
+Payload CLI commands go through the same files: `pnpm --filter @mosaic/cms payload:dev migrate:status`.
+
 Integration tests and local admin work use the Postgres in `docker-compose.yml`:
 
 ```sh
@@ -49,6 +59,6 @@ pnpm --filter @mosaic/cms generate:types
 pnpm --filter @mosaic/cms generate:importmap
 ```
 
-Both need `DATABASE_URL` and `PAYLOAD_SECRET` set.
+Both need `APP_ENV=test`, `DATABASE_URL` and `PAYLOAD_SECRET` set.
 
 Env templates: `apps/cms/.env.{dev,prod}.example`, `apps/site/.env.example`, `apps/brand/.env.example`, `workers/contact/.dev.vars.example`. Copy them without the `.example` suffix; the copies are git-ignored.
