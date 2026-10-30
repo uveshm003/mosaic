@@ -1,2 +1,3 @@
 pnpm-lock.yaml
 docs/SPEC.md
+packages/content/src/payload-types.ts
