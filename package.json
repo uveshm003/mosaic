@@ -16,7 +16,9 @@
     "cms:dev": "pnpm --filter @mosaic/cms start:dev",
     "cms:prod": "pnpm --filter @mosaic/cms start:prod",
     "seed": "pnpm --filter @mosaic/cms seed",
-    "seed:purge": "pnpm --filter @mosaic/cms seed:purge"
+    "seed:purge": "pnpm --filter @mosaic/cms seed:purge",
+    "content:export": "pnpm --filter @mosaic/cms content:export",
+    "preview": "pnpm --filter @mosaic/cms preview:export && pnpm --filter @mosaic/site dev"
   },
   "devDependencies": {
     "@mosaic/config": "workspace:*",

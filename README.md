@@ -50,6 +50,16 @@ pnpm seed         # replace sample data: "Sample:" titles, every collection and 
 pnpm seed:purge   # delete every _seed document and blank seeded globals
 ```
 
+Content snapshot (what the sites build from; written to `packages/content/snapshot/`, never committed):
+
+```sh
+pnpm content:export                              # CI: reads the env it is given
+pnpm --filter @mosaic/cms content:export:dev     # from the dev database
+pnpm preview                                     # dev content with drafts, then the site dev server
+```
+
+A production export or build refuses snapshots that contain seed data or drafts.
+
 Payload CLI commands go through the same files: `pnpm --filter @mosaic/cms payload:dev migrate:status`.
 
 Integration tests and local admin work use the Postgres in `docker-compose.yml`:
