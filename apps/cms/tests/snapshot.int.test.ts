@@ -79,6 +79,92 @@ describe('buildSnapshot', () => {
     expect(ids).not.toContain(privateImage.id)
   })
 
+  it('includes images used only inside rich text', async () => {
+    const inline = await payload.create({
+      collection: 'media',
+      data: { alt: 'Inline image', _seed: true },
+      file: {
+        data: onePixelPng,
+        mimetype: 'image/png',
+        name: 'inline.png',
+        size: onePixelPng.length,
+      },
+    })
+    await payload.create({
+      collection: 'posts',
+      data: {
+        title: 'Sample: Inline image',
+        slug: 'sample-inline-image',
+        site: 'personal',
+        type: 'essay',
+        body: {
+          root: {
+            type: 'root',
+            format: '',
+            indent: 0,
+            version: 1,
+            direction: 'ltr',
+            children: [
+              {
+                type: 'block',
+                format: '',
+                version: 2,
+                fields: {
+                  id: '6560f0f0f0f0f0f0f0f0f0f0',
+                  blockName: '',
+                  blockType: 'image',
+                  image: inline.id,
+                },
+              },
+            ],
+          },
+        },
+        _status: 'published',
+        _seed: true,
+      },
+    })
+    const snapshot = await buildSnapshot(payload, { appEnv: 'test', drafts: false })
+    expect(snapshot.collections.media.map((doc) => doc.id)).toContain(inline.id)
+  })
+
+  it('rejects an invalid URL inside a YouTube block', async () => {
+    await expect(
+      payload.create({
+        collection: 'posts',
+        data: {
+          title: 'Sample: Bad video',
+          slug: 'sample-bad-video',
+          site: 'personal',
+          type: 'video',
+          body: {
+            root: {
+              type: 'root',
+              format: '',
+              indent: 0,
+              version: 1,
+              direction: 'ltr',
+              children: [
+                {
+                  type: 'block',
+                  format: '',
+                  version: 2,
+                  fields: {
+                    id: '6560f0f0f0f0f0f0f0f0f0f1',
+                    blockName: '',
+                    blockType: 'youtube',
+                    url: 'https://vimeo.com/1',
+                    title: 'Video',
+                  },
+                },
+              ],
+            },
+          },
+          _status: 'published',
+        },
+      }),
+    ).rejects.toThrow(/Body > Url/)
+  })
+
   it('round-trips through the schema', async () => {
     const snapshot = await buildSnapshot(payload, { appEnv: 'test', drafts: false })
     const parsed = parseSnapshot(JSON.parse(JSON.stringify(snapshot)))

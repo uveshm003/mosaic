@@ -1,19 +1,53 @@
 import type { Payload } from 'payload'
 import type { AppEnv } from '../env'
-import type { Media, Post, Project } from '../payload-types'
+import { mediaFieldsByBlock } from '../payload/block-media'
+import type { Person, Post, Project } from '../payload-types'
 import { SNAPSHOT_VERSION, type Snapshot } from './schema'
 
-type MediaRef = number | Media | null | undefined
+function mediaId(ref: unknown): number | null {
+  if (typeof ref === 'number') return ref
+  if (typeof ref === 'object' && ref !== null && 'id' in ref && typeof ref.id === 'number') {
+    return ref.id
+  }
+  return null
+}
+
+/** Media referenced by image and Flutter demo blocks anywhere in a Lexical document. */
+export function richTextMediaRefs(value: unknown): unknown[] {
+  const refs: unknown[] = []
+  const visit = (node: unknown): void => {
+    if (typeof node !== 'object' || node === null) return
+    const { type, fields, children, root } = node as Record<string, unknown>
+    if (type === 'block' && typeof fields === 'object' && fields !== null) {
+      const blockFields = fields as Record<string, unknown>
+      for (const name of mediaFieldsByBlock[String(blockFields.blockType)] ?? []) {
+        refs.push(blockFields[name])
+      }
+    }
+    if (Array.isArray(children)) children.forEach(visit)
+    visit(root)
+  }
+  visit(value)
+  return refs
+}
 
 // Only images that exported content uses leave the admin, so uploads for restricted or
-// draft work stay private. Rich-text uploads join this list with the Lexical blocks (#17).
-export function referencedMediaIds(projects: Project[], posts: Post[]): number[] {
-  const refs: MediaRef[] = [
-    ...projects.flatMap((project) => project.media ?? []),
-    ...posts.map((post) => post.cover),
+// draft work stay private.
+export function referencedMediaIds(content: {
+  projects: Project[]
+  posts: Post[]
+  person: Person
+}): number[] {
+  const refs: unknown[] = [
+    ...content.projects.flatMap((project) => [
+      ...(project.media ?? []),
+      ...richTextMediaRefs(project.body),
+    ]),
+    ...content.posts.flatMap((post) => [post.cover, ...richTextMediaRefs(post.body)]),
+    ...richTextMediaRefs(content.person.about),
   ]
-  const ids = refs.map((ref) => (typeof ref === 'object' && ref !== null ? ref.id : ref))
-  return [...new Set(ids.filter((id): id is number => typeof id === 'number'))]
+  const ids = refs.map(mediaId).filter((id): id is number => id !== null)
+  return [...new Set(ids)]
 }
 
 /**
@@ -44,18 +78,18 @@ export async function buildSnapshot(
       payload.find({ collection: 'skills', ...all }),
       payload.find({ collection: 'tech', ...all }),
     ])
-  const mediaIds = referencedMediaIds(projects.docs, posts.docs)
-  const media = await payload.find({
-    collection: 'media',
-    ...all,
-    where: { id: { in: mediaIds } },
-  })
   const [person, profiles, brandSettings, siteSettings] = await Promise.all([
     payload.findGlobal({ slug: 'person', draft: drafts }),
     payload.findGlobal({ slug: 'profiles' }),
     payload.findGlobal({ slug: 'brandSettings' }),
     payload.findGlobal({ slug: 'siteSettings' }),
   ])
+  const mediaIds = referencedMediaIds({ projects: projects.docs, posts: posts.docs, person })
+  const media = await payload.find({
+    collection: 'media',
+    ...all,
+    where: { id: { in: mediaIds } },
+  })
 
   return {
     version: SNAPSHOT_VERSION,

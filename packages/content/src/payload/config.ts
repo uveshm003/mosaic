@@ -1,6 +1,6 @@
 import { postgresAdapter } from '@payloadcms/db-postgres'
-import { lexicalEditor } from '@payloadcms/richtext-lexical'
 import { buildConfig, type SanitizedConfig } from 'payload'
+import { richTextEditor } from './blocks'
 import sharp from 'sharp'
 import { Inquiries } from './collections/inquiries'
 import { Media } from './collections/media'
@@ -60,7 +60,7 @@ export function createPayloadConfig(options: MosaicPayloadOptions): Promise<Sani
     },
     collections,
     globals,
-    editor: lexicalEditor(),
+    editor: richTextEditor,
     // Sites read a build-time snapshot, so nothing needs GraphQL.
     graphQL: { disable: true },
     secret: options.secret,

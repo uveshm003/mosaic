@@ -1387,6 +1387,114 @@ export interface CollectionsWidget {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CodeBlock".
+ */
+export interface CodeBlock {
+  language: 'dart' | 'kotlin' | 'swift' | 'typescript' | 'javascript' | 'json' | 'yaml' | 'bash' | 'sql' | 'plaintext';
+  code: string;
+  filename?: string | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'code';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "MermaidBlock".
+ */
+export interface MermaidBlock {
+  definition: string;
+  caption?: string | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'mermaid';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "YouTubeBlock".
+ */
+export interface YouTubeBlock {
+  url: string;
+  /**
+   * Used as the player’s accessible name.
+   */
+  title: string;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'youtube';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "FlutterDemoBlock".
+ */
+export interface FlutterDemoBlock {
+  /**
+   * Folder name under demos/flutter.
+   */
+  demo: string;
+  title: string;
+  /**
+   * Shown until the visitor clicks to load the demo.
+   */
+  poster?: (number | null) | Media;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'flutterDemo';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ImageBlock".
+ */
+export interface ImageBlock {
+  image: number | Media;
+  caption?: string | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'image';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CalloutBlock".
+ */
+export interface CalloutBlock {
+  tone: 'note' | 'tip' | 'warning';
+  text: string;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'callout';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "MetricsBlock".
+ */
+export interface MetricsBlock {
+  /**
+   * Only metrics Uvesh has supplied and approved.
+   */
+  items: {
+    label: string;
+    value: string;
+    id?: string | null;
+  }[];
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'metrics';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "StoreLinksBlock".
+ */
+export interface StoreLinksBlock {
+  links: {
+    store: 'app-store' | 'play-store' | 'microsoft-store' | 'mac-app-store' | 'other';
+    url: string;
+    id?: string | null;
+  }[];
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'storeLinks';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "auth".
  */
 export interface Auth {

@@ -1,3 +1,5 @@
 export { collections, createPayloadConfig, globals, type MosaicPayloadOptions } from './config'
 export { demoStatuses } from './collections/projects'
 export { postTypes } from './collections/posts'
+export { mediaFieldsByBlock } from './block-media'
+export { codeLanguages, richTextBlocks } from './blocks'
