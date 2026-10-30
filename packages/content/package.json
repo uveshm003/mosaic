@@ -3,7 +3,9 @@
   "private": true,
   "type": "module",
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./payload": "./src/payload/index.ts",
+    "./payload-types": "./src/payload-types.ts"
   },
   "scripts": {
     "lint": "eslint .",
@@ -11,6 +13,10 @@
     "test": "vitest run --passWithNoTests"
   },
   "dependencies": {
+    "@payloadcms/db-postgres": "catalog:",
+    "@payloadcms/richtext-lexical": "catalog:",
+    "payload": "catalog:",
+    "sharp": "catalog:",
     "zod": "catalog:"
   },
   "devDependencies": {
