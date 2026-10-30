@@ -1,0 +1,10 @@
+# Local Postgres for integration tests. Matches the CI service container.
+services:
+  postgres:
+    image: postgres:17
+    environment:
+      POSTGRES_USER: mosaic
+      POSTGRES_PASSWORD: mosaic
+      POSTGRES_DB: mosaic_test
+    ports:
+      - '5432:5432'
