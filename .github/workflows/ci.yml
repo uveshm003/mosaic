@@ -15,6 +15,22 @@ concurrency:
 jobs:
   check:
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: mosaic
+          POSTGRES_PASSWORD: mosaic
+          POSTGRES_DB: mosaic_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U mosaic"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      DATABASE_URL: postgres://mosaic:mosaic@localhost:5432/mosaic_test
     steps:
       - uses: actions/checkout@v7
       # Installs Node from .nvmrc and pnpm from packageManager, then runs a frozen install.
@@ -26,4 +42,11 @@ jobs:
       - run: pnpm lint
       - run: pnpm typecheck
       - run: pnpm test
+      - name: Generated Payload files are up to date
+        env:
+          PAYLOAD_SECRET: ci-secret-that-is-at-least-32-chars
+        run: |
+          pnpm --filter @mosaic/cms generate:types
+          pnpm --filter @mosaic/cms generate:importmap
+          git diff --exit-code -- packages/content/src/payload-types.ts 'apps/cms/src/app/(payload)/admin/importMap.js'
       - run: pnpm build
