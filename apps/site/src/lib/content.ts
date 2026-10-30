@@ -1,6 +1,6 @@
 import type { ListingProfileKey, ProfileKey } from '@mosaic/content'
 import type { Snapshot } from '@mosaic/content/snapshot'
-import type { Post, Project, Tech } from '@mosaic/content/payload-types'
+import type { Experience, Post, Project, Skill, Tech } from '@mosaic/content/payload-types'
 import { getSnapshot } from './snapshot'
 
 function snapshot(): Snapshot {
@@ -143,3 +143,56 @@ export const profileHref: Record<ListingProfileKey, string> = {
   freelance: '/freelance',
   fullstack: '/fullstack',
 }
+
+/** Every published project, each with the wording of the first profile it appears on. */
+export function allProjects(): (ProjectView & { profile: ListingProfileKey })[] {
+  return snapshot().collections.projects.flatMap((project) => {
+    const first = listingProfiles.find(({ key }) => project.profiles?.includes(key))?.key
+    return first ? [{ ...view(project, first), profile: first }] : []
+  })
+}
+
+/** Projects flagged as featured in any profile override, topped up to `count`. */
+export function featuredProjects(count = 4) {
+  const projects = allProjects()
+  const featured = projects.filter((project) =>
+    snapshot()
+      .collections.projects.find((p) => p.id === project.id)
+      ?.overrides?.some((row) => row.featured),
+  )
+  const rest = projects.filter((project) => !featured.includes(project))
+  return [...featured, ...rest].slice(0, count)
+}
+
+/** The ongoing project with the latest start, for "currently building". */
+export function currentProject() {
+  return allProjects()
+    .filter((project) => project.end === null && project.start !== null)
+    .sort((a, b) => (b.start ?? '').localeCompare(a.start ?? ''))[0]
+}
+
+export function experience(): Experience[] {
+  return [...snapshot().collections.experience].sort((a, b) =>
+    (b.period?.start ?? '').localeCompare(a.period?.start ?? ''),
+  )
+}
+
+export function skillsByCategory(): { category: string; skills: Skill[] }[] {
+  const groups = new Map<string, Skill[]>()
+  for (const skill of [...snapshot().collections.skills].sort(
+    (a, b) => (a.order ?? 0) - (b.order ?? 0),
+  )) {
+    groups.set(skill.category, [...(groups.get(skill.category) ?? []), skill])
+  }
+  return [...groups].map(([category, skills]) => ({ category, skills }))
+}
+
+export function latestPosts(count = 3): Post[] {
+  return snapshot()
+    .collections.posts.filter((post) => post.site === 'personal' && post.publishedAt)
+    .sort((a, b) => (b.publishedAt ?? '').localeCompare(a.publishedAt ?? ''))
+    .slice(0, count)
+}
+
+/** A stable hue per project, used by the drawn device mockups until real screenshots exist. */
+export const projectHue = (id: number) => (id * 47 + 160) % 360

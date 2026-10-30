@@ -23,3 +23,12 @@ Answers from each checkpoint in `docs/SPEC.md`, recorded before work continues. 
 - Flutter profile: Swiss and technical (IBM Plex Sans and Mono, grid, case-study table with a platform per column, CSS-only platform filter).
 - The dark, immersive direction was set aside: busiest visually, and the only one needing JavaScript.
 - Still open for Phase 2: the about-me file, confidentiality per project, and the first Flutter demo.
+
+### Root page revised
+
+2026-10-31. Uvesh found the editorial root too basic and too thin, so the design interview was run properly:
+
+- Ambition: playful and interactive. References: Brittany Chiang's developer portfolio, Awwwards-style motion, Bruno Simon's playfulness (no WebGL; the spec keeps 3D on the brand site).
+- Root sections: an interactive terminal, about with "currently building", draggable featured work, experience tabs, a skills board, a Flutter counter-app playground, writing, and contact with a form.
+- Seed data now uses realistic, clearly fictional English instead of lorem ipsum, so reviews read like a real portfolio.
+- The Flutter profile gets the same treatment next.

@@ -15,6 +15,8 @@ export default tseslint.config(
     rules: {
       '@typescript-eslint/no-explicit-any': 'error',
       '@typescript-eslint/consistent-type-imports': 'error',
+      // Allows `onClick={() => setOpen(true)}`, the idiomatic React handler shorthand.
+      '@typescript-eslint/no-confusing-void-expression': ['error', { ignoreArrowShorthand: true }],
     },
   },
   {
