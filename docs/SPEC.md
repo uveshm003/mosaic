@@ -262,10 +262,10 @@ Eight phases, each shippable on its own. Every phase also keeps Playwright smoke
 
 Monorepo, shared configs, CI for lint, typecheck and unit tests, the `docs/` folder, env templates.
 
-- [ ] `pnpm install && pnpm build` passes on a clean clone.
-- [ ] CI runs lint, typecheck and tests on every push and pull request.
-- [ ] `.env.example` files list every variable; no secrets committed.
-- [ ] Accounts and domain checkpoint recorded.
+- [x] `pnpm install && pnpm build` passes on a clean clone.
+- [x] CI runs lint, typecheck and tests on every push and pull request.
+- [x] `.env.example` files list every variable; no secrets committed.
+- [x] Accounts and domain checkpoint recorded.
 
 ### Phase 1: Platform
 
