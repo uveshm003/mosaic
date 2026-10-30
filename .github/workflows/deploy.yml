@@ -20,14 +20,18 @@ jobs:
       url: https://uveshm003.github.io/
     env:
       APP_ENV: production
-      # There is no production database until #13, so the sites build without a snapshot.
-      MOSAIC_ALLOW_MISSING_SNAPSHOT: '1'
     steps:
       - uses: actions/checkout@v7
       - uses: pnpm/setup@v3
         with:
           cache: true
           require-lockfile: true
+      - name: Export published content from production
+        env:
+          MOSAIC_CMS_TARGET: production
+          DATABASE_URL: ${{ secrets.PRODUCTION_DATABASE_URL }}
+          PAYLOAD_SECRET: ${{ secrets.PRODUCTION_PAYLOAD_SECRET }}
+        run: pnpm content:export
       - run: pnpm turbo run build --filter=@mosaic/site --filter=@mosaic/brand
       - name: Assemble the Pages site
         run: |

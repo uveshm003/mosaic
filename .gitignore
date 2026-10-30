@@ -45,3 +45,4 @@ test-results/
 # Next.js generated files
 next-env.d.ts
 *.tsbuildinfo
+.neon
