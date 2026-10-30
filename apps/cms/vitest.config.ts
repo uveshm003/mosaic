@@ -3,6 +3,8 @@ import { defineConfig } from 'vitest/config'
 export default defineConfig({
   test: {
     environment: 'node',
+    // Test files share one database, so they run one at a time.
+    fileParallelism: false,
     // CI and docker-compose.yml both expose this database.
     env: {
       APP_ENV: 'test',

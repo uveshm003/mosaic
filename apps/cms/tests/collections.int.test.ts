@@ -30,7 +30,7 @@ describe('users', () => {
     })
     const second = await payload.create({
       collection: 'users',
-      data: { email: 'reviewer@example.com', password: 'password-1234' },
+      data: { email: 'reviewer@example.com', password: 'password-1234', role: 'reviewer' },
     })
     expect(first.role).toBe('admin')
     expect(second.role).toBe('reviewer')

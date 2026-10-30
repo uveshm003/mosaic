@@ -1,4 +1,6 @@
 import { createPayloadConfig } from '@mosaic/content/payload'
+// Brings the generated collection types into Payload's Local API types.
+import type {} from '@mosaic/content/payload-types'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { allowsSchemaPush, parseCmsEnv } from './env'
