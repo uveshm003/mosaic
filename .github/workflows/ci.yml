@@ -51,3 +51,14 @@ jobs:
           pnpm --filter @mosaic/cms generate:importmap
           git diff --exit-code -- packages/content/src/payload-types.ts 'apps/cms/src/app/(payload)/admin/importMap.js'
       - run: pnpm build
+      - name: Production build refuses seed data
+        env:
+          PAYLOAD_SECRET: ci-secret-that-is-at-least-32-chars
+        run: |
+          pnpm --filter @mosaic/cms exec payload run scripts/seed.ts
+          pnpm --filter @mosaic/cms exec payload run scripts/export.ts
+          if APP_ENV=production pnpm --filter @mosaic/site build > "$RUNNER_TEMP/build.log" 2>&1; then
+            echo "A production build accepted a seeded snapshot"
+            exit 1
+          fi
+          grep "Snapshot contains seed data" "$RUNNER_TEMP/build.log"
