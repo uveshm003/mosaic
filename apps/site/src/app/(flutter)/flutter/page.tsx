@@ -1,30 +1,23 @@
 import type { Metadata } from 'next'
-import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import { RichText } from '../../../components/RichText'
-import { ContactForm } from '../../../components/flutter/ContactForm'
-import { CursorGlow } from '../../../components/flutter/CursorGlow'
-import { DeviceMock } from '../../../components/flutter/DeviceMock'
-import { ExperienceTabs } from '../../../components/flutter/ExperienceTabs'
-import { Playground } from '../../../components/flutter/Playground'
-import { SideNav } from '../../../components/flutter/SideNav'
-import { SkillBoard } from '../../../components/flutter/SkillBoard'
-import { Terminal } from '../../../components/flutter/Terminal'
-import { WorkDeck } from '../../../components/flutter/WorkDeck'
+import { CrossLinks } from '../../../components/CrossLinks'
+import { LabControls } from '../../../components/flutter/LabControls'
+import { CounterPhone, Stage, type StageProject } from '../../../components/flutter/Stage'
+import { StageSections } from '../../../components/flutter/StageSections'
+import { WorkIndex } from '../../../components/flutter/WorkIndex'
 import {
-  currentProject,
   demoStatusLabel,
   experience,
   formatMonth,
   isEnabled,
-  latestPosts,
   person,
   platformLabel,
-  projectsFor,
   profile,
   projectHue,
+  projectsFor,
   skillsByCategory,
 } from '../../../lib/content'
+import { flutterPictures, type Picture } from '../../../lib/pictures'
 import { SITE_URL } from '../../../lib/site'
 
 export function generateMetadata(): Metadata {
@@ -33,64 +26,63 @@ export function generateMetadata(): Metadata {
   return { title: seo.title ?? 'Flutter', description: seo.tagline ?? undefined }
 }
 
-const sections = [
-  { id: 'about', label: 'About' },
-  { id: 'work', label: 'Work' },
-  { id: 'experience', label: 'Experience' },
-  { id: 'skills', label: 'Skills' },
-  { id: 'playground', label: 'Playground' },
-  { id: 'writing', label: 'Writing' },
-  { id: 'contact', label: 'Contact' },
-]
+const margin = 'px-[clamp(20px,2.4vw,40px)]'
+const year = (iso: string | null) => (iso ? String(new Date(iso).getFullYear()) : '')
 
-function SectionTitle({ id, index, children }: { id: string; index: number; children: string }) {
+function Photo({ picture, className }: { picture: Picture; className?: string }) {
   return (
-    <h2
-      id={`${id}-title`}
-      className="mb-8 flex items-center gap-4 font-display text-2xl font-semibold sm:text-3xl"
-    >
-      <span className="font-mono text-sm font-normal text-accent">
-        {String(index).padStart(2, '0')}.
-      </span>
-      {children}
-      <span aria-hidden className="h-px flex-1 bg-line" />
-    </h2>
+    // Static export: no runtime optimizer; these are pre-sized WebP files.
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src={picture.src}
+      width={picture.width}
+      height={picture.height}
+      alt={picture.alt}
+      loading="lazy"
+      decoding="async"
+      className={`h-full w-full object-cover ${className ?? ''}`}
+    />
   )
-}
-
-function paragraphs(value: unknown): string[] {
-  const root = (value as { root?: { children?: { children?: { text?: string }[] }[] } } | null)
-    ?.root
-  return (root?.children ?? [])
-    .map((node) => (node.children ?? []).map((c) => c.text ?? '').join(''))
-    .filter(Boolean)
 }
 
 export default function FlutterHome() {
   if (!isEnabled('flutter')) notFound()
 
   const me = person()
-  const name = me.name ?? ''
-  const headline = me.headlines?.[0]?.text ?? ''
-  const availability = me.headlines?.[1]?.text
-  const work = projectsFor('flutter')
-  const current = currentProject()
+  const settings = profile('flutter')
+  const fullName = (me.name ?? '').trim()
+  const surname = (fullName.split(/\s+/).at(-1) ?? fullName).toLowerCase()
+  const role = me.headlines?.[0]?.text ?? ''
+  const location = me.location ?? ''
+  const links = me.contactLinks ?? []
+  const email = links.find((l) => l.url.startsWith('mailto:'))
+  const webLinks = links.filter((l) => l.url.startsWith('http'))
+  const github = webLinks.find((l) => /github\.com/.test(l.url))
+  const action = settings.primaryAction.label
+    ? { label: settings.primaryAction.label, url: settings.primaryAction.url ?? '#contact' }
+    : github
+      ? { label: 'GitHub', url: github.url }
+      : null
+
+  const projects = projectsFor('flutter')
+  const stageProjects: StageProject[] = projects.map((p) => ({
+    id: p.id,
+    title: p.title,
+    summary: p.summary,
+    platforms: p.platforms.map((x) => platformLabel[x] ?? x),
+    status: demoStatusLabel[p.demoStatus],
+    hue: projectHue(p.id),
+    mobile: p.platforms.some((x) => x === 'android' || x === 'ios'),
+  }))
   const roles = experience()
   const skills = skillsByCategory()
-  const posts = latestPosts(3)
-  const links = me.contactLinks ?? []
-  const caseStudyHref = (p: { slug: string }) => `/flutter/${p.slug}`
-  const endpoint = process.env.NEXT_PUBLIC_CONTACT_ENDPOINT
-  const siteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY
+  const emailText = email ? email.url.slice('mailto:'.length) : null
 
   const jsonLd = {
     '@context': 'https://schema.org',
-    '@type': 'Person',
-    name,
-    jobTitle: headline,
-    homeLocation: me.location ? { '@type': 'Place', name: me.location } : undefined,
+    '@type': 'ProfilePage',
     url: `${SITE_URL}/flutter`,
-    sameAs: links.filter((l) => l.url.startsWith('http')).map((l) => l.url),
+    mainEntity: { '@type': 'Person', name: fullName, jobTitle: role },
   }
 
   return (
@@ -99,258 +91,297 @@ export default function FlutterHome() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <div aria-hidden className="glow pointer-events-none fixed inset-0" />
-      <CursorGlow />
-      <div className="relative z-10 mx-auto max-w-7xl px-6 lg:flex lg:gap-16 lg:px-12">
-        <header className="pt-16 lg:sticky lg:top-0 lg:flex lg:h-screen lg:w-[42%] lg:flex-col lg:justify-between lg:py-20">
-          <div>
-            <h1
-              className="rise font-display text-[clamp(2.8rem,6vw,4.6rem)] leading-[0.95] font-bold tracking-[-0.035em]"
-              aria-label={name}
+      <StageSections />
+
+      <div className="relative lg:grid lg:grid-cols-[47%_1fr]">
+        {/* The fixed half: the app keeps running while the column scrolls. */}
+        <aside
+          aria-label="Live Flutter stage"
+          className="sticky top-0 z-0 h-[42svh] p-3 lg:h-svh lg:p-5"
+        >
+          <Stage
+            projects={stageProjects}
+            terminal={{
+              name: fullName,
+              headline: role,
+              location,
+              projects: projects.map((p) => ({ title: p.title, href: `/flutter/${p.slug}` })),
+              skills: skills.flatMap((g) => g.skills.map((s) => s.name)),
+              experience: roles.map((r) => `${r.title} @ ${r.employer}`),
+              links: links.map(({ label, url }) => ({ label, url })),
+            }}
+          />
+        </aside>
+
+        <div className={`relative z-10 ${margin} max-lg:bg-bg lg:pr-10 lg:pl-14`}>
+          <header
+            data-scene="run"
+            className="relative flex min-h-[58svh] flex-col pt-6 pb-10 lg:min-h-svh lg:pb-0"
+          >
+            <nav
+              aria-label="Page"
+              className="flex flex-wrap items-center justify-end gap-x-6 gap-y-2 text-[length:var(--step-small)]"
             >
-              {name.split(' ').map((word, w, words) => {
-                // Letter index across the whole name, so the rise staggers left to right.
-                const offset = words.slice(0, w).join(' ').length + (w > 0 ? 1 : 0)
-                return (
-                  <span key={w} aria-hidden className="inline-block whitespace-nowrap">
-                    {Array.from(word).map((char, i) => (
-                      <span key={i} style={{ ['--i' as string]: offset + i }}>
-                        {char}
-                      </span>
-                    ))}
-                    {w < words.length - 1 ? '\u00a0' : ''}
-                  </span>
-                )
-              })}
-            </h1>
-            <p className="mt-4 font-display text-xl text-fg/90">{headline}</p>
-            <p className="mt-3 max-w-sm text-muted">{profile('flutter').tagline}</p>
-            {availability && (
-              <p className="mt-6 inline-flex items-center gap-2 rounded-full border border-line bg-surface px-3 py-1.5 font-mono text-xs">
-                <span className="relative flex size-2">
-                  <span className="absolute inline-flex size-full animate-ping rounded-full bg-accent opacity-60 motion-reduce:animate-none" />
-                  <span className="relative inline-flex size-2 rounded-full bg-accent" />
-                </span>
-                {availability}
-              </p>
-            )}
-            <div className="mt-14">
-              <SideNav sections={sections} />
-            </div>
-          </div>
-          <ul className="mt-8 flex flex-wrap gap-x-5 gap-y-2 font-mono text-xs text-muted lg:mt-0">
-            {links.map((link) => (
-              <li key={link.url}>
+              {[
+                ['#work', 'Work'],
+                ['#lab', 'Demo lab'],
+                ['#experience', 'Experience'],
+                ['#skills', 'Skills'],
+              ].map(([href, label]) => (
                 <a
-                  href={link.url}
-                  className="transition hover:text-accent focus-visible:outline-2 focus-visible:outline-accent"
+                  key={href}
+                  href={href}
+                  className="press hover:text-accent focus-visible:outline-2 focus-visible:outline-fg max-sm:hidden"
                 >
-                  {link.label} ↗
+                  {label}
                 </a>
-              </li>
-            ))}
-          </ul>
-        </header>
-
-        <main className="space-y-28 pt-14 pb-24 lg:w-[58%] lg:py-20">
-          <section aria-label="Terminal">
-            <Terminal
-              data={{
-                name,
-                headline,
-                location: me.location ?? '',
-                about: paragraphs(me.about),
-                projects: work.map((p) => ({ title: p.title, href: caseStudyHref(p) })),
-                skills: skills.flatMap((g) => g.skills.map((s) => s.name)),
-                experience: roles.map((r) => `${r.title} @ ${r.employer}`),
-                links: links.map(({ label, url }) => ({ label, url })),
-              }}
-            />
-          </section>
-
-          <section id="about" aria-labelledby="about-title" className="reveal scroll-mt-20">
-            <SectionTitle id="about" index={1}>
-              About
-            </SectionTitle>
-            <div className="space-y-4 text-[1.05rem] leading-relaxed text-fg/80">
-              <RichText value={me.about} />
-            </div>
-            {current && (
-              <div className="card mt-8 flex items-center gap-4 p-5">
-                <span
-                  className="grid size-11 shrink-0 place-items-center rounded-xl bg-accent/15 text-xl"
-                  aria-hidden
+              ))}
+              {action && (
+                <a
+                  href={action.url}
+                  className="press bg-accent px-4 py-2.5 text-accent-fg hover:bg-fg hover:text-bg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
                 >
-                  ⚒
-                </span>
-                <div>
-                  <p className="font-mono text-xs text-accent">currently building</p>
-                  <p className="font-medium">{current.title}</p>
-                  {current.summary && <p className="text-sm text-muted">{current.summary}</p>}
-                </div>
-              </div>
-            )}
+                  {action.label}
+                </a>
+              )}
+            </nav>
+            <p className="mt-10 max-w-[26ch] text-[length:var(--step-lead)] leading-snug lg:mt-[34vh]">
+              {role} in {location}. One Flutter codebase, six platforms.
+            </p>
+            <h1
+              aria-label={`${fullName}, Flutter engineer`}
+              className="monument mt-auto pt-10 font-bold leading-[0.9] tracking-[-0.05em] whitespace-nowrap lowercase lg:absolute lg:bottom-10 lg:-left-[10vw] lg:pt-0"
+              style={{ fontSize: surname.length > 9 ? '9vw' : 'clamp(80px, 12vw, 200px)' }}
+            >
+              {surname}
+            </h1>
+          </header>
+
+          <section
+            id="work"
+            data-scene="work"
+            aria-labelledby="work-title"
+            className="scroll-mt-10 py-28 lg:py-40"
+          >
+            <h2
+              id="work-title"
+              data-reveal
+              className="mb-12 text-[length:var(--step-lead)] font-medium"
+            >
+              Selected work
+            </h2>
+            <div data-reveal style={{ ['--i' as string]: 1 }}>
+              <WorkIndex
+                items={projects.map((p) => ({
+                  id: p.id,
+                  slug: p.slug,
+                  title: p.title,
+                  role: p.role,
+                  year: year(p.start),
+                }))}
+              />
+            </div>
           </section>
 
-          <section id="work" aria-labelledby="work-title" className="reveal scroll-mt-20">
-            <SectionTitle id="work" index={2}>
-              Featured work
-            </SectionTitle>
-            <WorkDeck label="Featured projects">
-              {work.map((project) => {
-                const href: string | null = caseStudyHref(project)
-                const phone = project.platforms.some((p) => p === 'android' || p === 'ios')
-                const inner = (
-                  <>
-                    <div className="grid h-60 place-items-center overflow-hidden rounded-xl bg-[radial-gradient(circle_at_50%_120%,color-mix(in_oklab,var(--accent)_18%,transparent),transparent_70%)] p-5 transition-transform duration-500 group-hover:scale-[1.03]">
-                      <DeviceMock
-                        kind={phone ? 'phone' : 'desktop'}
-                        hue={projectHue(project.id)}
-                        label={project.title}
-                      />
-                    </div>
-                    <div className="mt-5 flex items-center justify-between gap-3 font-mono text-[11px] text-muted">
-                      <span>{formatMonth(project.start)}</span>
-                      <span className="rounded-full border border-accent/40 px-2 py-0.5 text-accent">
-                        {demoStatusLabel[project.demoStatus]}
-                      </span>
-                    </div>
-                    <h3 className="mt-2 font-display text-xl leading-tight font-semibold">
-                      {project.title}
-                      {href && (
-                        <span className="ml-1 inline-block transition-transform group-hover:translate-x-1">
-                          →
-                        </span>
-                      )}
-                    </h3>
-                    {project.summary && (
-                      <p className="mt-2 text-sm leading-relaxed text-muted">{project.summary}</p>
-                    )}
-                    <ul className="mt-4 flex flex-wrap gap-1.5">
-                      {project.platforms.map((p) => (
-                        <li
-                          key={p}
-                          className="rounded-md bg-surface px-2 py-0.5 font-mono text-[10px] text-fg/70"
-                        >
-                          {platformLabel[p]}
-                        </li>
-                      ))}
-                    </ul>
-                  </>
-                )
-                const cls =
-                  'group card block w-[19rem] shrink-0 snap-start p-4 transition hover:-translate-y-1 hover:border-accent/50 sm:w-[22rem]'
-                return href ? (
-                  <Link
-                    key={project.id}
-                    href={href}
-                    draggable={false}
-                    className={`${cls} focus-visible:outline-2 focus-visible:outline-accent`}
-                  >
-                    {inner}
-                  </Link>
-                ) : (
-                  <article key={project.id} className={cls}>
-                    {inner}
-                  </article>
-                )
-              })}
-            </WorkDeck>
+          <section
+            id="lab"
+            data-scene="lab"
+            aria-labelledby="lab-title"
+            className="scroll-mt-10 py-28 lg:py-40"
+          >
+            <h2
+              id="lab-title"
+              data-reveal
+              className="text-[length:var(--step-head)] leading-none font-bold tracking-[-0.05em] lowercase"
+            >
+              The demo lab
+            </h2>
+            <p data-reveal style={{ ['--i' as string]: 1 }} className="mt-6 mb-10 max-w-[34ch]">
+              Flutter’s starter counter app, running on the stage. Change its theme and shape, and
+              read the code that draws it.
+            </p>
+            {/* Phones: the stage is covered by now, so the app runs inline. */}
+            <div className="mb-10 grid h-[520px] place-items-center bg-[var(--field-2)] lg:hidden">
+              <CounterPhone />
+            </div>
+            <div data-reveal style={{ ['--i' as string]: 2 }}>
+              <LabControls />
+            </div>
           </section>
 
           <section
             id="experience"
+            data-scene="devices"
             aria-labelledby="experience-title"
-            className="reveal scroll-mt-20"
+            className="scroll-mt-10 py-28 lg:py-40"
           >
-            <SectionTitle id="experience" index={3}>
+            <h2
+              id="experience-title"
+              data-reveal
+              className="mb-8 text-[length:var(--step-lead)] font-medium"
+            >
               Experience
-            </SectionTitle>
-            <ExperienceTabs
-              items={roles.map((role) => ({
-                id: String(role.id),
-                employer: role.employer,
-                employerDetail: role.employerDetail ?? null,
-                title: role.title,
-                period: `${formatMonth(role.period?.start ?? null)} – ${formatMonth(role.period?.end ?? null)}`,
-                location: role.location ?? null,
-                highlights: (role.highlights ?? []).map((h) => h.text),
-              }))}
-            />
-          </section>
-
-          <section id="skills" aria-labelledby="skills-title" className="reveal scroll-mt-20">
-            <SectionTitle id="skills" index={4}>
-              Skills &amp; stack
-            </SectionTitle>
-            <SkillBoard groups={skills} />
-          </section>
-
-          <section
-            id="playground"
-            aria-labelledby="playground-title"
-            className="reveal scroll-mt-20"
-          >
-            <SectionTitle id="playground" index={5}>
-              Playground
-            </SectionTitle>
-            <p className="mb-6 max-w-xl text-muted">
-              Flutter’s starter app, rebuilt in the browser. Tap the button, change the seed colour,
-              and watch the Flutter code update.
-            </p>
-            <Playground />
-          </section>
-
-          {posts.length > 0 && (
-            <section id="writing" aria-labelledby="writing-title" className="reveal scroll-mt-20">
-              <SectionTitle id="writing" index={6}>
-                Writing
-              </SectionTitle>
-              <ul className="divide-y divide-line">
-                {posts.map((post) => (
-                  <li
-                    key={post.id}
-                    className="group flex flex-wrap items-baseline justify-between gap-2 py-4"
-                  >
-                    <span className="font-medium transition group-hover:text-accent">
-                      {post.title}
+            </h2>
+            <ul className="max-w-[520px]">
+              {roles.map((r, i) => (
+                <li
+                  key={r.id}
+                  data-reveal
+                  style={{ ['--i' as string]: i + 1 }}
+                  className="flex items-baseline justify-between gap-6 py-2.5"
+                >
+                  <span className="flex items-baseline gap-2">
+                    <span
+                      aria-hidden
+                      className="inline-block size-4 shrink-0 translate-y-0.5 rounded-full"
+                      style={{ background: `oklch(0.55 0.1 ${String(projectHue(r.id))})` }}
+                    />
+                    <span>
+                      {r.title}, {r.employer}
                     </span>
-                    <span className="font-mono text-xs text-muted">
-                      {formatMonth(post.publishedAt ?? null)}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            </section>
-          )}
-
-          <section id="contact" aria-labelledby="contact-title" className="reveal scroll-mt-20">
-            <SectionTitle id="contact" index={7}>
-              Contact
-            </SectionTitle>
-            <p className="mb-8 max-w-xl text-lg text-fg/85">
-              Have a project, a role or a question? Send a message and I’ll get back to you by
-              email.
-            </p>
-            {endpoint && siteKey ? (
-              <ContactForm endpoint={endpoint} siteKey={siteKey} />
-            ) : (
-              <ul className="flex flex-wrap gap-3">
-                {links.map((link) => (
-                  <li key={link.url}>
-                    <a
-                      href={link.url}
-                      className="card inline-block px-4 py-2 transition hover:border-accent"
-                    >
-                      {link.label}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            )}
+                  </span>
+                  <span className="shrink-0 text-[length:var(--step-small)] text-muted tabular-nums">
+                    {formatMonth(r.period?.start ?? null)} – {formatMonth(r.period?.end ?? null)}
+                  </span>
+                </li>
+              ))}
+            </ul>
           </section>
-        </main>
+        </div>
       </div>
+
+      {/* Skills: one saturated field, the heading pinned while the groups pass. */}
+      <section
+        id="skills"
+        aria-labelledby="skills-title"
+        className={`bg-[var(--field-2)] ${margin} py-28 lg:py-40`}
+      >
+        <div className="grid gap-12 lg:grid-cols-12">
+          <h2
+            id="skills-title"
+            className="relative z-10 text-[length:var(--step-head)] leading-[0.9] font-bold tracking-[-0.05em] lowercase lg:sticky lg:top-8 lg:col-span-5 lg:self-start"
+          >
+            Skills &amp; stack
+          </h2>
+          <div className="grid gap-x-10 gap-y-[72px] sm:grid-cols-2 lg:col-span-6 lg:col-start-7 lg:grid-cols-1 lg:gap-y-[120px]">
+            {skills.map((group, gi) => {
+              const picture =
+                gi === 0 ? flutterPictures.fuertes : gi === 2 ? flutterPictures.photo : null
+              return (
+                <div key={group.category} data-reveal style={{ ['--i' as string]: gi % 3 }}>
+                  <h3 className="text-[length:var(--step-lead)] font-bold lowercase">
+                    {group.category}
+                  </h3>
+                  <div
+                    className={`mt-5 flex gap-8 max-sm:flex-col ${gi === 2 ? 'sm:flex-row-reverse sm:justify-end' : ''}`}
+                  >
+                    {picture && (
+                      <div className="aspect-[3/4] w-[200px] shrink-0 overflow-hidden max-sm:aspect-[4/3] max-sm:w-full">
+                        <Photo picture={picture} />
+                      </div>
+                    )}
+                    <ul className="space-y-3.5">
+                      {group.skills.map((s) => (
+                        <li key={s.id}>{s.name}</li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* Contact: the email as display type on the deep field. */}
+      <section
+        id="contact"
+        aria-labelledby="contact-title"
+        className={`relative flex min-h-[86svh] flex-col justify-between gap-16 bg-[var(--field-4)] text-[var(--field-4-ink)] ${margin} py-10 lg:min-h-svh`}
+      >
+        <h2
+          id="contact-title"
+          data-reveal
+          className="max-w-[30ch] text-[length:var(--step-lead)] leading-snug"
+        >
+          Building something in Flutter, or hiring for it? Write to me.
+        </h2>
+        {emailText && email && (
+          <a
+            href={email.url}
+            data-reveal
+            style={{ ['--i' as string]: 1 }}
+            className="press block leading-[0.95] font-bold tracking-[-0.05em] break-words lowercase hover:text-[var(--field-2)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--field-4-ink)]"
+          >
+            <span
+              style={{
+                fontSize: `min(9vw, calc((100vw - 2 * clamp(20px, 2.4vw, 40px)) / ${(emailText.length * 0.56).toFixed(2)}))`,
+              }}
+            >
+              {emailText.length > 26 ? (
+                <>
+                  {emailText.split('@')[0]}@
+                  <br />
+                  {emailText.split('@')[1]}
+                </>
+              ) : (
+                emailText
+              )}
+            </span>
+          </a>
+        )}
+        <div className="flex flex-wrap items-end justify-between gap-6 text-[length:var(--step-small)] max-sm:flex-col max-sm:items-start">
+          <p>{location}</p>
+          <ul className="flex gap-6">
+            {webLinks.map((l) => (
+              <li key={l.url}>
+                <a
+                  href={l.url}
+                  className="press hover:text-[var(--field-2)] focus-visible:outline-2 focus-visible:outline-[var(--field-4-ink)]"
+                >
+                  {l.label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+
+      {/* Close: the name across the last picture, Haeckel's hummingbirds (Dash's relatives). */}
+      <footer className="relative flex min-h-[88svh] flex-col justify-between overflow-hidden text-[var(--field-4-ink)] lg:min-h-svh">
+        <div className="absolute inset-0">
+          <Photo picture={flutterPictures.haeckel} className="brightness-[0.62]" />
+        </div>
+        <div className={`relative flex flex-wrap justify-between gap-6 ${margin} pt-8`}>
+          <CrossLinks current="flutter" className="text-[var(--field-4-ink)]" />
+          {emailText && email && (
+            <a href={email.url} className="press hover:text-[var(--field-2)]">
+              {emailText}
+            </a>
+          )}
+        </div>
+        <div className={`relative ${margin} pb-6`}>
+          <p
+            aria-hidden
+            className="leading-[0.85] font-bold tracking-[-0.05em] whitespace-nowrap lowercase"
+            style={{ fontSize: surname.length > 9 ? '15vw' : '18vw' }}
+          >
+            {surname}
+          </p>
+          <p className="mt-4 text-[length:var(--step-small)]">
+            Pictures:{' '}
+            {Object.values(flutterPictures).map((p, i, all) => (
+              <span key={p.credit.page}>
+                <a href={p.credit.page} className="underline underline-offset-2">
+                  {p.credit.title}
+                </a>{' '}
+                by {p.credit.creator}, {p.credit.licence}
+                {i < all.length - 1 ? '; ' : '.'}
+              </span>
+            ))}
+          </p>
+        </div>
+      </footer>
     </>
   )
 }

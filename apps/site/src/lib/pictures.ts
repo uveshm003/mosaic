@@ -82,3 +82,47 @@ export const pictures = {
     },
   },
 } satisfies Record<string, Picture>
+
+// Hummingbirds for the Flutter profile: a nod to Dash, Flutter's mascot. Natural-history
+// plates and a photograph of real birds, never Flutter's own artwork.
+export const flutterPictures = {
+  haeckel: {
+    src: '/images/flutter/haeckel-trochilidae.webp',
+    width: 1400,
+    height: 1963,
+    alt: 'Ernst Haeckel’s 1904 plate of hummingbirds in flight among ferns and flowers',
+    credit: {
+      title: 'Trochilidae (Kunstformen der Natur)',
+      creator: 'Ernst Haeckel',
+      licence: 'public domain',
+      licenceUrl: 'https://creativecommons.org/publicdomain/mark/1.0/',
+      page: 'https://commons.wikimedia.org/wiki/File:Haeckel_Trochilidae.jpg',
+    },
+  },
+  fuertes: {
+    src: '/images/flutter/fuertes-ruby-throated.webp',
+    width: 900,
+    height: 1193,
+    alt: 'Painting of two ruby-throated hummingbirds hovering by a nest',
+    credit: {
+      title: 'Plate 54, Ruby-throated Hummingbird',
+      creator: 'Louis Agassiz Fuertes',
+      licence: 'public domain',
+      licenceUrl: 'https://creativecommons.org/publicdomain/mark/1.0/',
+      page: 'https://commons.wikimedia.org/wiki/File:Plate_54-_Ruby-throated_Hummingbird_-_DPLA_-_3b72af2e8798c3b844e30cc86a42230a.jpg',
+    },
+  },
+  photo: {
+    src: '/images/flutter/ruby-throated-photo.webp',
+    width: 1100,
+    height: 733,
+    alt: 'A ruby-throated hummingbird perched on a wire',
+    credit: {
+      title: 'Ruby-throated hummingbird, Bafflin Sanctuary',
+      creator: 'Paul Danese',
+      licence: 'CC BY-SA 4.0',
+      licenceUrl: 'https://creativecommons.org/licenses/by-sa/4.0',
+      page: 'https://commons.wikimedia.org/wiki/File:20260613_ruby_throated_hummingbird_bafflin_audubon_PD06622.jpg',
+    },
+  },
+} satisfies Record<string, Picture>

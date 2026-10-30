@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { oklchToHex } from './Playground'
+import { oklchToHex } from './color'
 
 describe('oklchToHex', () => {
   it('converts known colours', () => {

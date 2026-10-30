@@ -2,7 +2,7 @@ import '@mosaic/tokens/root.css'
 import { themeClass } from '@mosaic/tokens'
 import localFont from 'next/font/local'
 import type { ReactNode } from 'react'
-import { Reveal } from '../../components/hub/Reveal'
+import { Reveal } from '../../components/Reveal'
 
 // Erode by the Indian Type Foundry, self-hosted (Fontshare free licence).
 const erode = localFont({

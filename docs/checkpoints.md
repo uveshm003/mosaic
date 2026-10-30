@@ -32,3 +32,11 @@ Answers from each checkpoint in `docs/SPEC.md`, recorded before work continues. 
 - Root sections: an interactive terminal, about with "currently building", draggable featured work, experience tabs, a skills board, a Flutter counter-app playground, writing, and contact with a form.
 - Seed data now uses realistic, clearly fictional English instead of lorem ipsum, so reviews read like a real portfolio.
 - The Flutter profile gets the same treatment next.
+
+### Hub and Flutter redesigned with art direction
+
+2026-10-31. Uvesh asked for the root to be a hub linking every portfolio (not a portfolio itself), for each portfolio to look like its own domain, and for less "AI-made" colour and glow.
+
+- Root hub: "the name as a monument" in stone and blueprint, Erode. The surname is cut into one slice per portfolio and each slice links to it; pictures of Ahmedabad from open collections, credited on the page.
+- Flutter: "the split stage" in blush, sage and slate (close to Material 3 tonal palettes), Pilcrow Rounded instead of the dealt serif, because a serif suits neither the domain nor a look distinct from the hub. The fixed half runs the app: terminal, then each project's screen, the counter app, then the six targets. Hummingbird plates nod to Dash; all public domain or CC BY-SA, credited.
+- Both pass the art-direction inspector with no failures. Remaining warnings: no video (an honest clip would cost the mobile performance budget), and the Flutter type change above.
