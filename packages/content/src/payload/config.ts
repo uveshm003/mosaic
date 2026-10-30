@@ -11,7 +11,32 @@ import { Services } from './collections/services'
 import { Tech } from './collections/tech'
 import { Testimonials } from './collections/testimonials'
 import { Users } from './collections/users'
+import type { CollectionConfig, GlobalConfig } from 'payload'
+import { seedFlagField } from './fields'
 import { BrandSettings, Person, Profiles, SiteSettings } from './globals'
+
+export const collections: CollectionConfig[] = [
+  Projects,
+  Posts,
+  Services,
+  Testimonials,
+  Inquiries,
+  Experience,
+  Education,
+  Skills,
+  Tech,
+  Media,
+  Users,
+].map((collection) =>
+  // Users are never seeded; demo reviewers are created by the demo reset.
+  collection.slug === 'users'
+    ? collection
+    : { ...collection, fields: [...collection.fields, seedFlagField] },
+)
+
+export const globals: GlobalConfig[] = [Person, Profiles, BrandSettings, SiteSettings].map(
+  (global) => ({ ...global, fields: [...global.fields, seedFlagField] }),
+)
 
 export interface MosaicPayloadOptions {
   databaseUrl: string
@@ -30,20 +55,8 @@ export function createPayloadConfig(options: MosaicPayloadOptions): Promise<Sani
       user: Users.slug,
       importMap: { baseDir: options.importMapBaseDir },
     },
-    collections: [
-      Projects,
-      Posts,
-      Services,
-      Testimonials,
-      Inquiries,
-      Experience,
-      Education,
-      Skills,
-      Tech,
-      Media,
-      Users,
-    ],
-    globals: [Person, Profiles, BrandSettings, SiteSettings],
+    collections,
+    globals,
     editor: lexicalEditor(),
     // Sites read a build-time snapshot, so nothing needs GraphQL.
     graphQL: { disable: true },

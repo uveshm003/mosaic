@@ -1,4 +1,4 @@
-import type { ArrayField, Field, SelectField, TextField } from 'payload'
+import type { ArrayField, CheckboxField, Field, SelectField, TextField } from 'payload'
 import { listingProfileKeys, profileKeys } from '../profiles'
 import { slugError } from './rules'
 
@@ -68,4 +68,13 @@ export const highlightsField: ArrayField = {
   name: 'highlights',
   type: 'array',
   fields: [{ name: 'text', type: 'text', required: true }],
+}
+
+// Marks seeded sample data so purge can find it and production builds can refuse it.
+export const seedFlagField: CheckboxField = {
+  name: '_seed',
+  type: 'checkbox',
+  defaultValue: false,
+  index: true,
+  admin: { position: 'sidebar', readOnly: true, description: 'Seeded sample data.' },
 }

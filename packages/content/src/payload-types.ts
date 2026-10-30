@@ -196,7 +196,7 @@ export interface Project {
   /**
    * Stays restricted until the confidentiality checkpoint clears it.
    */
-  confidentiality: 'public' | 'restricted';
+  confidentiality?: ('public' | 'restricted') | null;
   kind: 'work' | 'freelance' | 'personal' | 'open-source';
   employer?: string | null;
   /**
@@ -233,6 +233,10 @@ export interface Project {
         id?: string | null;
       }[]
     | null;
+  /**
+   * Seeded sample data.
+   */
+  _seed?: boolean | null;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -245,6 +249,10 @@ export interface Tech {
   id: number;
   name: string;
   kind: 'language' | 'framework' | 'tool' | 'platform';
+  /**
+   * Seeded sample data.
+   */
+  _seed?: boolean | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -256,6 +264,10 @@ export interface Media {
   id: number;
   alt: string;
   caption?: string | null;
+  /**
+   * Seeded sample data.
+   */
+  _seed?: boolean | null;
   updatedAt: string;
   createdAt: string;
   url?: string | null;
@@ -352,6 +364,10 @@ export interface Post {
     | null;
   series?: string | null;
   publishedAt?: string | null;
+  /**
+   * Seeded sample data.
+   */
+  _seed?: boolean | null;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -372,6 +388,10 @@ export interface Service {
     | null;
   typicalTimeline?: string | null;
   order?: number | null;
+  /**
+   * Seeded sample data.
+   */
+  _seed?: boolean | null;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -391,6 +411,10 @@ export interface Testimonial {
    * The person agreed to this being published.
    */
   consentConfirmed?: boolean | null;
+  /**
+   * Seeded sample data.
+   */
+  _seed?: boolean | null;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -408,6 +432,10 @@ export interface Inquiry {
   message: string;
   timeline?: string | null;
   status: 'new' | 'replied' | 'archived';
+  /**
+   * Seeded sample data.
+   */
+  _seed?: boolean | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -445,6 +473,10 @@ export interface Experience {
    */
   variants?: ('product-company' | 'android' | 'flutter' | 'broad' | 'fullstack')[] | null;
   order?: number | null;
+  /**
+   * Seeded sample data.
+   */
+  _seed?: boolean | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -476,6 +508,10 @@ export interface Education {
    */
   variants?: ('product-company' | 'android' | 'flutter' | 'broad' | 'fullstack')[] | null;
   order?: number | null;
+  /**
+   * Seeded sample data.
+   */
+  _seed?: boolean | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -492,6 +528,10 @@ export interface Skill {
    */
   variants?: ('product-company' | 'android' | 'flutter' | 'broad' | 'fullstack')[] | null;
   order?: number | null;
+  /**
+   * Seeded sample data.
+   */
+  _seed?: boolean | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -694,6 +734,7 @@ export interface ProjectsSelect<T extends boolean = true> {
         featured?: T;
         id?: T;
       };
+  _seed?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
@@ -721,6 +762,7 @@ export interface PostsSelect<T extends boolean = true> {
       };
   series?: T;
   publishedAt?: T;
+  _seed?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
@@ -740,6 +782,7 @@ export interface ServicesSelect<T extends boolean = true> {
       };
   typicalTimeline?: T;
   order?: T;
+  _seed?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
@@ -755,6 +798,7 @@ export interface TestimonialsSelect<T extends boolean = true> {
   company?: T;
   project?: T;
   consentConfirmed?: T;
+  _seed?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
@@ -771,6 +815,7 @@ export interface InquiriesSelect<T extends boolean = true> {
   message?: T;
   timeline?: T;
   status?: T;
+  _seed?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -797,6 +842,7 @@ export interface ExperienceSelect<T extends boolean = true> {
       };
   variants?: T;
   order?: T;
+  _seed?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -823,6 +869,7 @@ export interface EducationSelect<T extends boolean = true> {
       };
   variants?: T;
   order?: T;
+  _seed?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -835,6 +882,7 @@ export interface SkillsSelect<T extends boolean = true> {
   category?: T;
   variants?: T;
   order?: T;
+  _seed?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -845,6 +893,7 @@ export interface SkillsSelect<T extends boolean = true> {
 export interface TechSelect<T extends boolean = true> {
   name?: T;
   kind?: T;
+  _seed?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -855,6 +904,7 @@ export interface TechSelect<T extends boolean = true> {
 export interface MediaSelect<T extends boolean = true> {
   alt?: T;
   caption?: T;
+  _seed?: T;
   updatedAt?: T;
   createdAt?: T;
   url?: T;
@@ -981,7 +1031,7 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
  */
 export interface Person {
   id: number;
-  name: string;
+  name?: string | null;
   headlines?:
     | {
         text: string;
@@ -1011,6 +1061,10 @@ export interface Person {
     };
     [k: string]: unknown;
   } | null;
+  /**
+   * Seeded sample data.
+   */
+  _seed?: boolean | null;
   _status?: ('draft' | 'published') | null;
   updatedAt?: string | null;
   createdAt?: string | null;
@@ -1106,6 +1160,10 @@ export interface Profile {
       url?: string | null;
     };
   };
+  /**
+   * Seeded sample data.
+   */
+  _seed?: boolean | null;
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -1121,6 +1179,10 @@ export interface BrandSetting {
   name?: string | null;
   domain?: string | null;
   voiceNotes?: string | null;
+  /**
+   * Seeded sample data.
+   */
+  _seed?: boolean | null;
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -1138,6 +1200,10 @@ export interface SiteSetting {
       }[]
     | null;
   analyticsToken?: string | null;
+  /**
+   * Seeded sample data.
+   */
+  _seed?: boolean | null;
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -1162,6 +1228,7 @@ export interface PersonSelect<T extends boolean = true> {
         id?: T;
       };
   about?: T;
+  _seed?: T;
   _status?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -1272,6 +1339,7 @@ export interface ProfilesSelect<T extends boolean = true> {
               url?: T;
             };
       };
+  _seed?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;
@@ -1284,6 +1352,7 @@ export interface BrandSettingsSelect<T extends boolean = true> {
   name?: T;
   domain?: T;
   voiceNotes?: T;
+  _seed?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;
@@ -1301,6 +1370,7 @@ export interface SiteSettingsSelect<T extends boolean = true> {
         id?: T;
       };
   analyticsToken?: T;
+  _seed?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;
