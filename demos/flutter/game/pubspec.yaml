@@ -1,0 +1,23 @@
+name: hot_reload_game
+description: 'Flame mini-game demo'
+publish_to: 'none'
+version: 0.1.0+1
+
+environment:
+  sdk: ^3.12.2
+
+dependencies:
+  flutter:
+    sdk: flutter
+  demo_kit:
+    path: ../demo_kit
+  flame: ^1.38.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+  flame_test: ^2.3.1
+
+flutter:
+  uses-material-design: true

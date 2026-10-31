@@ -82,3 +82,17 @@ jobs:
             exit 1
           fi
           grep "Snapshot contains seed data" "$RUNNER_TEMP/build.log"
+
+  flutter-demos:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: 3.44.9
+          cache: true
+      - name: Analyze and test every demo
+        run: node demos/flutter/build.mjs check
+      - name: Every demo builds
+        run: node demos/flutter/build.mjs build

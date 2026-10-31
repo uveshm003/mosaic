@@ -18,7 +18,9 @@
     "seed": "pnpm --filter @mosaic/cms seed",
     "seed:purge": "pnpm --filter @mosaic/cms seed:purge",
     "content:export": "pnpm --filter @mosaic/cms content:export",
-    "preview": "pnpm --filter @mosaic/cms preview:export && pnpm --filter @mosaic/site dev"
+    "preview": "pnpm --filter @mosaic/cms preview:export && pnpm --filter @mosaic/site dev",
+    "demos:build": "node demos/flutter/build.mjs",
+    "demos:check": "node demos/flutter/build.mjs check"
   },
   "devDependencies": {
     "@mosaic/config": "workspace:*",

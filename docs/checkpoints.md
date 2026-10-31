@@ -49,3 +49,13 @@ Answers from each checkpoint in `docs/SPEC.md`, recorded before work continues. 
 - Root: a hub in the same style. A terminal where `ls` lists the portfolios and `cd <name>` opens a built one, a bento of portfolio cards (unbuilt ones say "Coming later"), about and contact.
 - The art-directed versions (name monument, split stage) and their pictures and fonts are removed; they stay in this branch's history.
 - Per-portfolio identities for Product, Freelance, Full-stack and Brand are still to be designed when those profiles are built.
+
+## Phase 1: what waits
+
+2026-10-31. Uvesh asked to keep the remaining Phase 1 account steps for later and move on: the Vercel deploy of the demo admin (with where demo media lives, since Vercel can't keep uploads on disk) and the Publish token. Phase 1 is not signed off yet.
+
+- Media: Uvesh chose not to add a payment card, which Cloudflare needs before R2 can be enabled. Uploads stay on the admin's local disk for now; R2, or another store, gets decided later.
+
+## Flutter demos
+
+2026-10-31. Proposed: an animation playground, a simulated device dashboard, a Riverpod state visualiser and a Flame mini-game. Uvesh asked for all of them. They live in `demos/flutter`, share one engine copy and the site's theme, load no third-party resources, and load on the Flutter page only when the visitor presses Run.

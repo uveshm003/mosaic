@@ -35,6 +35,13 @@ jobs:
           DATABASE_URL: ${{ secrets.PRODUCTION_DATABASE_URL }}
           PAYLOAD_SECRET: ${{ secrets.PRODUCTION_PAYLOAD_SECRET }}
         run: pnpm content:export
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: 3.44.9
+          cache: true
+      - name: Build the Flutter demos into the site
+        run: pnpm demos:build
       - run: pnpm turbo run build --filter=@mosaic/site --filter=@mosaic/brand
       - name: Assemble the Pages site
         run: |

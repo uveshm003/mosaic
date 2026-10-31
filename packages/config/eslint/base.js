@@ -4,7 +4,16 @@ import globals from 'globals'
 import tseslint from 'typescript-eslint'
 
 export default tseslint.config(
-  { ignores: ['**/dist/**', '**/out/**', '**/.next/**', '**/next-env.d.ts'] },
+  // Flutter demo builds are generated into the site's public folder.
+  {
+    ignores: [
+      '**/dist/**',
+      '**/out/**',
+      '**/.next/**',
+      '**/next-env.d.ts',
+      '**/public/flutter/demos/**',
+    ],
+  },
   js.configs.recommended,
   tseslint.configs.strictTypeChecked,
   {
