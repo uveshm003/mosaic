@@ -107,6 +107,15 @@ export const Profiles: GlobalConfig = {
         ],
       },
       ...(key === 'freelance' ? freelanceFields : []),
+      ...(key === 'fullstack'
+        ? [
+            {
+              name: 'demoAdminUrl',
+              type: 'text',
+              admin: { description: 'The public demo admin. Its card shows once this is set.' },
+            } satisfies Field,
+          ]
+        : []),
     ],
   })),
 }

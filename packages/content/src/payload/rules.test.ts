@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import {
   duplicateProfileError,
+  architectureError,
   projectPublishError,
   slugError,
   testimonialPublishError,
@@ -70,5 +71,30 @@ describe('testimonialPublishError', () => {
   it('allows drafts without consent and published with consent', () => {
     expect(testimonialPublishError({ _status: 'draft' })).toBeNull()
     expect(testimonialPublishError({ _status: 'published', consentConfirmed: true })).toBeNull()
+  })
+})
+
+describe('architectureError', () => {
+  const nodes = [{ key: 'app' }, { key: 'api' }, { key: 'db' }]
+
+  it('accepts edges and traces between known nodes, and an empty diagram', () => {
+    expect(
+      architectureError({
+        nodes,
+        edges: [{ from: 'app', to: 'api' }],
+        trace: [{ from: 'api', to: 'db' }],
+      }),
+    ).toBeNull()
+    expect(architectureError(null)).toBeNull()
+  })
+
+  it('rejects unknown ends and duplicate keys', () => {
+    expect(architectureError({ nodes, edges: [{ from: 'app', to: 'cache' }] })).toMatch(/"cache"/)
+    expect(architectureError({ nodes, trace: [{ from: '', to: 'db' }] })).toMatch(/trace step/)
+    expect(architectureError({ nodes: [{ key: 'a' }, { key: 'a' }] })).toMatch(/twice/)
+  })
+
+  it('rejects data in the wrong shape', () => {
+    expect(architectureError({ nodes: 'app' })).toMatch(/expected shape/)
   })
 })
