@@ -13,16 +13,21 @@
     "@mosaic/content": "workspace:*",
     "@mosaic/tokens": "workspace:*",
     "@mosaic/ui": "workspace:*",
+    "@react-three/fiber": "^9.8.2",
     "next": "catalog:",
     "react": "catalog:",
-    "react-dom": "catalog:"
+    "react-dom": "catalog:",
+    "three": "^0.187.0"
   },
   "devDependencies": {
     "@mosaic/config": "workspace:*",
+    "@tailwindcss/postcss": "catalog:",
     "@types/node": "catalog:",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
+    "@types/three": "^0.186.0",
     "eslint": "catalog:",
+    "tailwindcss": "catalog:",
     "typescript": "catalog:",
     "vitest": "catalog:"
   }

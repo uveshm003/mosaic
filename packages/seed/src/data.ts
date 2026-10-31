@@ -185,22 +185,33 @@ export class SeedData {
     ])
   }
 
+  private brandParagraphs(count: number, offset: number) {
+    return richText(
+      Array.from(
+        { length: count },
+        (_, i) => copy.brandParagraphs[(offset + i) % copy.brandParagraphs.length] ?? '',
+      ),
+    )
+  }
+
   posts(mediaIds: number[]): Data<'posts'>[] {
-    const posts: Data<'posts'>[] = postTypes.map((type, index) => {
+    // Personal-site posts, one per type; the brand site's come from copy.brandPosts.
+    const personalTypes = postTypes.filter((type) => !brandPostTypes.has(type))
+    const posts: Data<'posts'>[] = personalTypes.map((type, index) => {
       const title = this.label(copy.postTitles[index % copy.postTitles.length] ?? 'Notes')
       return {
         title,
         slug: this.slug(title, index),
-        site: brandPostTypes.has(type) ? 'brand' : 'personal',
+        site: 'personal',
         type,
         body: index === 0 ? this.everyBlock(mediaIds) : this.paragraphs(4),
-        profiles: brandPostTypes.has(type) ? [] : [listingProfileKeys[index % 4] ?? 'flutter'],
+        profiles: [listingProfileKeys[index % 4] ?? 'flutter'],
         tags: this.faker.helpers.arrayElements(
           ['flutter', 'dart', 'kotlin', 'performance', 'design', 'sync', 'native'],
           3,
         ),
         cover: index % 3 === 0 ? null : (mediaIds[index % mediaIds.length] ?? null),
-        youtubeUrl: type === 'video' ? 'https://www.youtube.com/watch?v=aqz-KE-bpKQ' : null,
+        youtubeUrl: null,
         references: [{ title: 'Flutter documentation', url: 'https://docs.flutter.dev' }],
         series: index < 3 ? this.label('Series') : null,
         publishedAt: this.faker.date.past({ years: 1 }).toISOString(),
@@ -222,6 +233,32 @@ export class SeedData {
       tags: this.faker.helpers.uniqueArray(() => this.faker.word.sample(), 30),
       _status: 'published',
       _seed: true,
+    })
+    // The brand site, with every type and a couple of series.
+    copy.brandPosts.forEach(([type, text, series], index) => {
+      const title = this.label(text)
+      posts.push({
+        title,
+        slug: this.slug(title, posts.length),
+        site: 'brand',
+        type: type as Data<'posts'>['type'],
+        body: this.brandParagraphs(3 + (index % 3), index),
+        profiles: [],
+        tags: this.faker.helpers.arrayElements(
+          ['positioning', 'identity', 'naming', 'advertising', 'growth', 'retail', 'india'],
+          2,
+        ),
+        cover: index % 4 === 1 ? null : (mediaIds[index % mediaIds.length] ?? null),
+        youtubeUrl: type === 'video' ? 'https://www.youtube.com/watch?v=aqz-KE-bpKQ' : null,
+        references:
+          type === 'research-note' || type === 'book-notes'
+            ? [{ title: this.label('Source'), url: this.faker.internet.url() }]
+            : [],
+        series: series ? this.label(series) : null,
+        publishedAt: this.faker.date.past({ years: 1 }).toISOString(),
+        _status: 'published',
+        _seed: true,
+      })
     })
     const draft = this.label('Draft: notes on a rebrand')
     posts.push({
@@ -370,7 +407,8 @@ export class SeedData {
 
   brandSettings(): GlobalData<'brandSettings'> {
     return {
-      name: this.label(this.faker.company.name()),
+      // The working name from the spec, until the brand-name checkpoint.
+      name: this.label('Menpur Studio'),
       domain: null,
       voiceNotes: 'Curious, direct, a little playful.',
       _seed: true,

@@ -4,7 +4,7 @@ import { getSnapshot } from '../lib/snapshot'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'Coming soon',
+  title: { default: 'Coming soon', template: '%s' },
   // Stays noindex until the brand-name checkpoint.
   robots: { index: false, follow: false },
 }
