@@ -3,6 +3,7 @@ import * as migration_20261030_190830_contact_worker_grants from './20261030_190
 import * as migration_20261031_092606_posts_subject from './20261031_092606_posts_subject';
 import * as migration_20261031_103100_freelance_profile from './20261031_103100_freelance_profile';
 import * as migration_20261031_112707_fullstack_architecture from './20261031_112707_fullstack_architecture';
+import * as migration_20261031_151336_product_canvas from './20261031_151336_product_canvas';
 
 export const migrations = [
   {
@@ -28,6 +29,11 @@ export const migrations = [
   {
     up: migration_20261031_112707_fullstack_architecture.up,
     down: migration_20261031_112707_fullstack_architecture.down,
-    name: '20261031_112707_fullstack_architecture'
+    name: '20261031_112707_fullstack_architecture',
+  },
+  {
+    up: migration_20261031_151336_product_canvas.up,
+    down: migration_20261031_151336_product_canvas.down,
+    name: '20261031_151336_product_canvas'
   },
 ];

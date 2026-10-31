@@ -1,6 +1,6 @@
 import type { CollectionConfig } from 'payload'
 import { adminOnly } from '../access'
-import { listingProfilesField, slugField } from '../fields'
+import { listingProfilesField, productCanvasField, slugField } from '../fields'
 import { youTubeUrlError } from '../rules'
 
 export const postTypes = [
@@ -68,6 +68,7 @@ export const Posts: CollectionConfig = {
       },
     },
     { name: 'series', type: 'text' },
+    productCanvasField,
     { name: 'publishedAt', type: 'date', admin: { position: 'sidebar' } },
   ],
 }

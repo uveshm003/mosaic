@@ -109,14 +109,18 @@ describe('referencedMediaIds', () => {
   })
   const doc = (...children: unknown[]) => ({ root: { type: 'root', children } })
 
-  it('collects project media, post covers and rich-text images, once each', () => {
+  it('collects project media, post covers, rich-text and canvas images, once each', () => {
     const content = {
       projects: [
         {
           media: [{ id: 1 }, 2],
           body: doc({ type: 'paragraph', children: [block('image', { image: 4 })] }),
         },
-        { media: null, body: null },
+        {
+          media: null,
+          body: null,
+          canvas: { comparison: { beforeImage: 7, afterImage: { id: 8 } } },
+        },
       ],
       posts: [
         { cover: 2, body: doc(block('flutterDemo', { poster: { id: 5 } })) },
@@ -124,7 +128,7 @@ describe('referencedMediaIds', () => {
       ],
       person: { about: doc(block('image', { image: { id: 6 } })) },
     } as unknown as Parameters<typeof referencedMediaIds>[0]
-    expect(referencedMediaIds(content).sort((a, b) => a - b)).toEqual([1, 2, 3, 4, 5, 6])
+    expect(referencedMediaIds(content).sort((a, b) => a - b)).toEqual([1, 2, 3, 4, 5, 6, 7, 8])
   })
 })
 

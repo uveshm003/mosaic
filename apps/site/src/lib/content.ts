@@ -61,6 +61,63 @@ export interface ProjectView {
   body: unknown
   demoAdmin: boolean
   architecture: Architecture | null
+  canvas: ProductCanvas | null
+}
+
+export interface ProductCanvas {
+  journey: { stage: string; userDoes: string | null; pain: string | null; fix: string | null }[]
+  decisions: { question: string; options: string[]; chosen: string | null; why: string | null }[]
+  comparison: {
+    beforeTitle: string | null
+    afterTitle: string | null
+    before: string[]
+    after: string[]
+    beforeImage: string | null
+    afterImage: string | null
+  } | null
+}
+
+type CanvasSource = NonNullable<Project['canvas']> | NonNullable<Post['canvas']>
+
+/** Absolute image URLs only: the static sites can't serve the admin's local uploads. */
+function imageUrl(value: unknown): string | null {
+  const url =
+    typeof value === 'object' && value !== null && 'url' in value
+      ? (value as { url?: unknown }).url
+      : null
+  return typeof url === 'string' && /^https?:\/\//.test(url) ? url : null
+}
+
+export function canvasOf(source: CanvasSource | null | undefined): ProductCanvas | null {
+  if (!source) return null
+  const c = source.comparison
+  const comparison =
+    c && ((c.before ?? []).length > 0 || (c.after ?? []).length > 0)
+      ? {
+          beforeTitle: c.beforeTitle ?? null,
+          afterTitle: c.afterTitle ?? null,
+          before: (c.before ?? []).map((row) => row.text),
+          after: (c.after ?? []).map((row) => row.text),
+          beforeImage: imageUrl(c.beforeImage),
+          afterImage: imageUrl(c.afterImage),
+        }
+      : null
+  const canvas: ProductCanvas = {
+    journey: (source.journey ?? []).map((j) => ({
+      stage: j.stage,
+      userDoes: j.userDoes ?? null,
+      pain: j.pain ?? null,
+      fix: j.fix ?? null,
+    })),
+    decisions: (source.decisions ?? []).map((d) => ({
+      question: d.question,
+      options: (d.options ?? []).map((o) => o.text),
+      chosen: d.chosen ?? null,
+      why: d.why ?? null,
+    })),
+    comparison,
+  }
+  return canvas.journey.length || canvas.decisions.length || canvas.comparison ? canvas : null
 }
 
 export type NodeKind = 'client' | 'service' | 'data' | 'queue' | 'external'
@@ -130,6 +187,7 @@ function view(project: Project, profile: ListingProfileKey): ProjectView {
     body: project.body ?? null,
     demoAdmin: project.links?.demoAdmin ?? false,
     architecture: architectureOf(project),
+    canvas: canvasOf(project.canvas),
   }
 }
 
@@ -185,7 +243,7 @@ export const listingProfiles: { key: ListingProfileKey; label: string }[] = [
 export const isEnabled = (key: ProfileKey) => profile(key).enabled
 
 // Profiles whose pages exist in this app. A profile is linked only when it is built and enabled.
-const builtProfiles = new Set<ListingProfileKey>(['flutter', 'freelance', 'fullstack'])
+const builtProfiles = new Set<ListingProfileKey>(['flutter', 'freelance', 'fullstack', 'product'])
 
 export const enabledProfiles = () =>
   listingProfiles.filter(({ key }) => builtProfiles.has(key) && isEnabled(key))
@@ -324,4 +382,69 @@ export function techCatalog(
     groups.set(kind, [...(groups.get(kind) ?? []), { name, count }])
   }
   return [...groups].map(([kind, tech]) => ({ kind, tech }))
+}
+
+export type ProductKind = 'case-study' | 'teardown' | 'proposal'
+
+export const productKindLabel: Record<ProductKind, string> = {
+  'case-study': 'Case study',
+  teardown: 'Teardown',
+  proposal: 'Proposal',
+}
+
+export const productKindSlug: Record<ProductKind, string> = {
+  'case-study': 'case-studies',
+  teardown: 'teardowns',
+  proposal: 'proposals',
+}
+
+export interface ProductItem {
+  kind: ProductKind
+  slug: string
+  title: string
+  summary: string | null
+  date: string | null
+  subject: string | null
+  canvas: ProductCanvas | null
+  body: unknown
+  project: ProjectView | null
+}
+
+/**
+ * Case studies, teardowns and proposals as one body of work, newest first (Product
+ * framing: equal weight). Teardowns and proposals are personal-site posts on this profile.
+ */
+export function productWork(): ProductItem[] {
+  const projects = projectsFor('product').map((p): ProductItem => ({
+    kind: 'case-study',
+    slug: p.slug,
+    title: p.title,
+    summary: p.summary,
+    date: p.end ?? p.start,
+    subject: null,
+    canvas: p.canvas,
+    body: p.body,
+    project: p,
+  }))
+  const posts = postsFor('product')
+    .filter((post) => post.type === 'teardown' || post.type === 'improvement-proposal')
+    .map((post): ProductItem => ({
+      kind: post.type === 'teardown' ? 'teardown' : 'proposal',
+      slug: post.slug,
+      title: post.title,
+      summary: null,
+      date: post.publishedAt ?? null,
+      subject: post.subject ?? null,
+      canvas: canvasOf(post.canvas),
+      body: post.body ?? null,
+      project: null,
+    }))
+  return [...projects, ...posts].sort((a, b) => (b.date ?? '').localeCompare(a.date ?? ''))
+}
+
+/** Teardowns and proposals carry the independent-analysis label (spec: Content ground rules). */
+export function productLabel(item: Pick<ProductItem, 'kind' | 'subject'>): string | null {
+  if (item.kind === 'case-study') return null
+  const name = item.subject?.trim() || 'the companies discussed'
+  return `Independent analysis. Not affiliated with ${name}${name.endsWith('.') ? '' : '.'}`
 }

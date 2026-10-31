@@ -78,3 +78,68 @@ export const seedFlagField: CheckboxField = {
   index: true,
   admin: { position: 'sidebar', readOnly: true, description: 'Seeded sample data.' },
 }
+
+const pointsField: ArrayField = {
+  name: 'points',
+  type: 'array',
+  fields: [{ name: 'text', type: 'text', required: true }],
+}
+
+/**
+ * The interactive canvas on Product pages: a journey to scrub through, the decisions made
+ * along the way, and a before/after to compare. Every part is optional.
+ */
+export const productCanvasField: Field = {
+  name: 'canvas',
+  type: 'group',
+  admin: { description: 'Shown on the Product profile. Leave a part empty to hide it.' },
+  fields: [
+    {
+      name: 'journey',
+      type: 'array',
+      admin: { description: 'The user’s journey, one stage per row.' },
+      fields: [
+        { name: 'stage', type: 'text', required: true },
+        { name: 'userDoes', type: 'text', admin: { description: 'What the user does here.' } },
+        { name: 'pain', type: 'text' },
+        { name: 'fix', type: 'text' },
+      ],
+    },
+    {
+      name: 'decisions',
+      type: 'array',
+      fields: [
+        { name: 'question', type: 'text', required: true },
+        {
+          name: 'options',
+          type: 'array',
+          fields: [{ name: 'text', type: 'text', required: true }],
+        },
+        { name: 'chosen', type: 'text', admin: { description: 'Must match one option.' } },
+        { name: 'why', type: 'textarea' },
+      ],
+    },
+    {
+      name: 'comparison',
+      type: 'group',
+      fields: [
+        {
+          type: 'row',
+          fields: [
+            { name: 'beforeTitle', type: 'text' },
+            { name: 'afterTitle', type: 'text' },
+          ],
+        },
+        { ...pointsField, name: 'before' },
+        { ...pointsField, name: 'after' },
+        {
+          type: 'row',
+          fields: [
+            { name: 'beforeImage', type: 'upload', relationTo: 'media' },
+            { name: 'afterImage', type: 'upload', relationTo: 'media' },
+          ],
+        },
+      ],
+    },
+  ],
+}

@@ -38,12 +38,22 @@ export function referencedMediaIds(content: {
   posts: Post[]
   person: Person
 }): number[] {
+  // The Product canvas's before/after pictures.
+  const canvas = (doc: Project | Post) => [
+    doc.canvas?.comparison?.beforeImage,
+    doc.canvas?.comparison?.afterImage,
+  ]
   const refs: unknown[] = [
     ...content.projects.flatMap((project) => [
       ...(project.media ?? []),
       ...richTextMediaRefs(project.body),
+      ...canvas(project),
     ]),
-    ...content.posts.flatMap((post) => [post.cover, ...richTextMediaRefs(post.body)]),
+    ...content.posts.flatMap((post) => [
+      post.cover,
+      ...richTextMediaRefs(post.body),
+      ...canvas(post),
+    ]),
     ...richTextMediaRefs(content.person.about),
   ]
   const ids = refs.map(mediaId).filter((id): id is number => id !== null)

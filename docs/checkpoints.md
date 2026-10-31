@@ -86,3 +86,12 @@ Answers from each checkpoint in `docs/SPEC.md`, recorded before work continues. 
 - With every answer being "all", one combined design was built instead of separate directions, and reviewed through its pull request.
 - Diagrams are structured data on each project (nodes, connections and a request trace), editable in the admin and checked so every connection points at a real node.
 - The platform's own case study is drafted from facts in this repository (`docs/case-studies/mosaic.md`) for Uvesh to approve before it reaches production. The demo admin card appears once the demo admin is deployed.
+
+## Product framing and design interview
+
+2026-10-31.
+
+- Framing: both product-management roles and product-minded engineering roles.
+- Weight: case studies, teardowns and proposals side by side, equally. Dasher, SyncIT and Odigo still need their confidentiality and credit-wording checkpoints before they appear in production.
+- Feel: editorial memo pages with an interactive canvas underneath. Light and dark follow the system. Signature interactions: all three (journey map, decision log, before/after slider), each used where a piece of work has the data for it.
+- Teardowns and proposals always carry "Independent analysis. Not affiliated with <company>."

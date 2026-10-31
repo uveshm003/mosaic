@@ -1,0 +1,47 @@
+/* Product: memo paper with a canvas underneath. Marker coral for what matters, sticky-note
+   yellow for the canvas. */
+.theme-product {
+  --bg: #fbfaf6;
+  --fg: #1a1916;
+  --muted: #6c675e;
+  --accent: #e8492b;
+  --accent-2: #ffd94a;
+  --accent-fg: #ffffff;
+  --sticky-fg: #2a2414;
+  --line: #1a19161a;
+  --surface: #ffffff;
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  .theme-product {
+    --bg: #141311;
+    --fg: #eeeae1;
+    --muted: #a39d91;
+    --accent: #ff7556;
+    --accent-2: #e9c53d;
+    --accent-fg: #141311;
+    --sticky-fg: #241f10;
+    --line: #eeeae11c;
+    --surface: #1d1c19;
+    color-scheme: dark;
+  }
+}
+
+/* The canvas: a quiet dot grid, like a whiteboard. */
+.theme-product .canvas {
+  background-color: color-mix(in oklab, var(--bg) 92%, var(--fg));
+  background-image: radial-gradient(
+    color-mix(in oklab, var(--fg) 18%, transparent) 1px,
+    transparent 1px
+  );
+  background-size: 20px 20px;
+}
+
+/* A marker highlight behind words. */
+.theme-product .marker {
+  background: linear-gradient(
+    transparent 58%,
+    color-mix(in oklab, var(--accent-2) 75%, transparent) 58%
+  );
+}
