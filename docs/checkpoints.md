@@ -40,3 +40,12 @@ Answers from each checkpoint in `docs/SPEC.md`, recorded before work continues. 
 - Root hub: "the name as a monument" in stone and blueprint, Erode. The surname is cut into one slice per portfolio and each slice links to it; pictures of Ahmedabad from open collections, credited on the page.
 - Flutter: "the split stage" in blush, sage and slate (close to Material 3 tonal palettes), Pilcrow Rounded instead of the dealt serif, because a serif suits neither the domain nor a look distinct from the hub. The fixed half runs the app: terminal, then each project's screen, the counter app, then the six targets. Hummingbird plates nod to Dash; all public domain or CC BY-SA, credited.
 - Both pass the art-direction inspector with no failures. Remaining warnings: no video (an honest clip would cost the mobile performance budget), and the Flutter type change above.
+
+### Back to the dark, playful design
+
+2026-10-31. Uvesh preferred the earlier dark, playful build to the art-directed one and asked for it on both pages, as it was.
+
+- Flutter: the playful portfolio is restored (terminal, draggable work deck, experience tabs, skills board, counter-app playground, contact form).
+- Root: a hub in the same style. A terminal where `ls` lists the portfolios and `cd <name>` opens a built one, a bento of portfolio cards (unbuilt ones say "Coming later"), about and contact.
+- The art-directed versions (name monument, split stage) and their pictures and fonts are removed; they stay in this branch's history.
+- Per-portfolio identities for Product, Freelance, Full-stack and Brand are still to be designed when those profiles are built.

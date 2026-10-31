@@ -6,7 +6,8 @@ export interface TerminalData {
   name: string
   headline: string
   location: string
-  projects: { title: string; href: string }[]
+  about: string[]
+  projects: { title: string; href: string | null }[]
   skills: string[]
   experience: string[]
   links: { label: string; url: string }[]
@@ -14,42 +15,58 @@ export interface TerminalData {
 
 type Line = { id: number; prompt?: string; body: ReactNode }
 
+const chips = ['help', 'whoami', 'projects', 'skills', 'contact'] as const
 const CLEAR = Symbol('clear')
-const BOOT = 'flutter run -d all'
-const targets = ['Android', 'iOS', 'Chrome', 'macOS', 'Windows', 'Linux']
 
 function run(command: string, data: TerminalData): ReactNode | typeof CLEAR {
-  const [cmd = ''] = command.trim().toLowerCase().split(/\s+/)
+  const [cmd = '', ...args] = command.trim().toLowerCase().split(/\s+/)
   switch (cmd) {
     case '':
       return null
-    case 'flutter':
+    case 'help':
       return (
-        <ul>
-          {targets.map((t) => (
-            <li key={t}>
-              Launched on {t} <span className="text-[#9fd8b4]">done</span>
+        <ul className="grid grid-cols-[7rem_1fr] gap-x-3">
+          {[
+            ['whoami', 'who is this?'],
+            ['about', 'the longer story'],
+            ['projects', 'selected work'],
+            ['skills', 'what I build with'],
+            ['experience', 'where I have worked'],
+            ['contact', 'ways to reach me'],
+            ['clear', 'clear the screen'],
+          ].map(([c, d]) => (
+            <li key={c} className="contents">
+              <span className="text-accent">{c}</span>
+              <span className="text-muted">{d}</span>
             </li>
           ))}
-          <li className="mt-1 opacity-70">Type “help” to look around.</li>
         </ul>
       )
-    case 'help':
-      return 'whoami · projects · skills · experience · contact · clear'
     case 'whoami':
-      return `${data.name}, ${data.headline.toLowerCase()} in ${data.location}.`
+      return `${data.name}, ${data.headline.toLowerCase()} based in ${data.location}.`
+    case 'about':
+      return data.about.map((p, i) => (
+        <p key={i} className="mb-2 last:mb-0">
+          {p}
+        </p>
+      ))
     case 'projects':
     case 'ls':
       return (
         <ul>
           {data.projects.map((p) => (
-            <li key={p.href}>
-              <a
-                href={p.href}
-                className="underline decoration-dotted underline-offset-4 hover:text-[#9fd8b4]"
-              >
-                {p.title}
-              </a>
+            <li key={p.title}>
+              <span className="text-accent-2">▸ </span>
+              {p.href ? (
+                <a
+                  href={p.href}
+                  className="underline decoration-dotted underline-offset-4 hover:text-accent"
+                >
+                  {p.title}
+                </a>
+              ) : (
+                p.title
+              )}
             </li>
           ))}
         </ul>
@@ -69,7 +86,7 @@ function run(command: string, data: TerminalData): ReactNode | typeof CLEAR {
         <ul>
           {data.links.map((l) => (
             <li key={l.url}>
-              <a href={l.url} className="underline underline-offset-4 hover:text-[#9fd8b4]">
+              <a href={l.url} className="text-accent underline-offset-4 hover:underline">
                 {l.label}
               </a>
             </li>
@@ -78,15 +95,22 @@ function run(command: string, data: TerminalData): ReactNode | typeof CLEAR {
       )
     case 'clear':
       return CLEAR
+    case 'sudo':
+      return args.join(' ') === 'hire'
+        ? 'Permission granted. Scroll down to “contact” ↓'
+        : 'Nice try.'
     default:
       return `command not found: ${cmd}. Try “help”.`
   }
 }
 
-// A real terminal window on the stage: it boots with `flutter run`, then takes commands.
 export function Terminal({ data }: { data: TerminalData }) {
-  const [lines, setLines] = useState<Line[]>([])
-  const [typed, setTyped] = useState('')
+  const [lines, setLines] = useState<Line[]>([
+    {
+      id: 0,
+      body: <span className="text-muted">Type a command, or tap one below. Try “help”.</span>,
+    },
+  ])
   const [value, setValue] = useState('')
   const [history, setHistory] = useState<string[]>([])
   const [cursor, setCursor] = useState(-1)
@@ -94,41 +118,21 @@ export function Terminal({ data }: { data: TerminalData }) {
   const input = useRef<HTMLInputElement>(null)
   const nextId = useRef(1)
 
+  useEffect(() => {
+    screen.current?.scrollTo({ top: screen.current.scrollHeight })
+  }, [lines])
+
   const submit = (command: string) => {
     const output = run(command, data)
-    if (output === CLEAR) setLines([])
-    else setLines((prev) => [...prev, { id: nextId.current++, prompt: command, body: output }])
+    if (output === CLEAR) {
+      setLines([])
+    } else {
+      setLines((prev) => [...prev, { id: nextId.current++, prompt: command, body: output }])
+    }
     if (command.trim()) setHistory((prev) => [command, ...prev].slice(0, 20))
     setCursor(-1)
     setValue('')
   }
-
-  // Boot: type the command, then show the launch. Instant under reduced motion.
-  useEffect(() => {
-    if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      setLines([{ id: 0, prompt: BOOT, body: run(BOOT, data) as ReactNode }])
-      return
-    }
-    let i = 0
-    const timer = setInterval(() => {
-      i += 1
-      setTyped(BOOT.slice(0, i))
-      if (i >= BOOT.length) {
-        clearInterval(timer)
-        setTimeout(() => {
-          setTyped('')
-          setLines([{ id: 0, prompt: BOOT, body: run(BOOT, data) as ReactNode }])
-        }, 350)
-      }
-    }, 45)
-    return () => {
-      clearInterval(timer)
-    }
-  }, [data])
-
-  useEffect(() => {
-    screen.current?.scrollTo({ top: screen.current.scrollHeight })
-  }, [lines])
 
   const onKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Enter') submit(value)
@@ -147,42 +151,34 @@ export function Terminal({ data }: { data: TerminalData }) {
   }
 
   return (
-    <div
-      data-ui
-      className="flex h-full w-full flex-col overflow-hidden rounded-xl bg-[#1d211b] font-mono text-[13px] text-[#e3e2da]" // taste-skill-ignore: a terminal shows literal code
-    >
-      <div className="flex items-center gap-2 px-4 py-3">
+    <div className="card overflow-hidden font-mono text-[13px] shadow-[0_30px_80px_-40px_var(--accent)]">
+      <div className="flex items-center gap-2 border-b border-line px-4 py-3">
         <span className="size-3 rounded-full bg-[#ff5f57]" />
         <span className="size-3 rounded-full bg-[#febc2e]" />
         <span className="size-3 rounded-full bg-[#28c840]" />
-        <span className="ml-3 text-xs opacity-70">~/portfolio</span>
+        <span className="ml-3 text-xs text-muted">~/portfolio — zsh</span>
       </div>
       <div
         ref={screen}
         role="log"
         aria-live="polite"
         aria-label="Terminal output"
-        className="flex-1 space-y-3 overflow-y-auto px-4 pb-4 leading-relaxed"
+        className="h-64 space-y-3 overflow-y-auto px-4 py-4 leading-relaxed"
         onClick={() => input.current?.focus()}
       >
         {lines.map((line) => (
           <div key={line.id}>
             {line.prompt !== undefined && (
               <p>
-                <span className="text-[#9fd8b4]">$</span> {line.prompt}
+                <span className="text-accent">❯</span> {line.prompt}
               </p>
             )}
-            <div className="opacity-90">{line.body}</div>
+            <div className="text-fg/85">{line.body}</div>
           </div>
         ))}
-        {typed && (
-          <p aria-hidden>
-            <span className="text-[#9fd8b4]">$</span> {typed}
-          </p>
-        )}
         <label className="flex items-center gap-2">
-          <span className="text-[#9fd8b4]" aria-hidden>
-            $
+          <span className="text-accent" aria-hidden>
+            ❯
           </span>
           <span className="sr-only">Terminal command</span>
           <input
@@ -193,9 +189,21 @@ export function Terminal({ data }: { data: TerminalData }) {
             autoComplete="off"
             autoCapitalize="off"
             spellCheck={false}
-            className="w-full bg-transparent caret-[#9fd8b4] outline-none"
+            className="w-full bg-transparent caret-accent outline-none"
           />
         </label>
+      </div>
+      <div className="flex flex-wrap gap-2 border-t border-line px-4 py-3">
+        {chips.map((chip) => (
+          <button
+            key={chip}
+            type="button"
+            onClick={() => submit(chip)}
+            className="wiggle rounded-full border border-line px-3 py-1 text-xs text-muted transition hover:border-accent hover:text-accent focus-visible:outline-2 focus-visible:outline-accent"
+          >
+            {chip}
+          </button>
+        ))}
       </div>
     </div>
   )

@@ -1,9 +1,9 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import { CursorGlow } from '../../components/CursorGlow'
+import { HubTerminal } from '../../components/HubTerminal'
 import { RichText } from '../../components/RichText'
-import { NameMosaic, type Slice } from '../../components/hub/NameMosaic'
 import { enabledProfiles, isEnabled, person, profile, profileHref } from '../../lib/content'
-import { pictures, type Picture } from '../../lib/pictures'
 import { SITE_URL } from '../../lib/site'
 
 export function generateMetadata(): Metadata {
@@ -15,7 +15,7 @@ export function generateMetadata(): Metadata {
 function Placeholder() {
   return (
     <main className="mx-auto max-w-2xl px-5 py-24">
-      <h1 className="text-4xl">Uvesh Menpurwala</h1>
+      <h1 className="font-display text-4xl">Uvesh Menpurwala</h1>
       <p className="mt-4 text-muted">This site is being built.</p>
     </main>
   )
@@ -30,30 +30,27 @@ const portfolioMeta = [
   { key: 'brand', label: 'Brand', contents: 'Essays, breakdowns, concepts' },
 ] as const
 
-const margin = 'px-[clamp(16px,1.6vw,28px)]'
-
-function Photo({
-  picture,
-  className,
-  priority,
-}: {
-  picture: Picture
-  className?: string
-  priority?: boolean
-}) {
+function SectionTitle({ id, index, children }: { id: string; index: number; children: string }) {
   return (
-    // Static export: no runtime optimizer; these are pre-sized WebP files.
-    // eslint-disable-next-line @next/next/no-img-element
-    <img
-      src={picture.src}
-      width={picture.width}
-      height={picture.height}
-      alt={picture.alt}
-      loading={priority ? 'eager' : 'lazy'}
-      decoding="async"
-      className={`h-full w-full object-cover ${className ?? ''}`}
-    />
+    <h2
+      id={`${id}-title`}
+      className="mb-8 flex items-center gap-4 font-display text-2xl font-semibold sm:text-3xl"
+    >
+      <span className="font-mono text-sm font-normal text-accent">
+        {String(index).padStart(2, '0')}.
+      </span>
+      {children}
+      <span aria-hidden className="h-px flex-1 bg-line" />
+    </h2>
   )
+}
+
+function paragraphs(value: unknown): string[] {
+  const root = (value as { root?: { children?: { children?: { text?: string }[] }[] } } | null)
+    ?.root
+  return (root?.children ?? [])
+    .map((node) => (node.children ?? []).map((c) => c.text ?? '').join(''))
+    .filter(Boolean)
 }
 
 function displayLink(url: string): string {
@@ -65,14 +62,12 @@ export default function Home() {
   if (!isEnabled('root')) return <Placeholder />
 
   const me = person()
-  const fullName = (me.name ?? '').trim()
-  const surname = fullName.split(/\s+/).at(-1) ?? fullName
-  const role = me.headlines?.[0]?.text ?? ''
+  const name = (me.name ?? '').trim()
+  const headline = me.headlines?.[0]?.text ?? ''
   const availability = me.headlines?.[1]?.text
   const location = me.location ?? ''
   const links = me.contactLinks ?? []
-  const email = links.find((link) => link.url.startsWith('mailto:'))
-  const webLinks = links.filter((link) => link.url.startsWith('http'))
+  const email = links.find((l) => l.url.startsWith('mailto:'))
   const live = new Set(enabledProfiles().map(({ key }) => key))
 
   const portfolios = portfolioMeta.map(({ key, label, contents }) => ({
@@ -85,22 +80,15 @@ export default function Home() {
         : (profile(key).tagline ?? contents),
     href: key !== 'brand' && live.has(key) ? profileHref[key] : null,
   }))
-  const slices: Slice[] = portfolios.map(({ key, label, description, href }) => ({
-    key,
-    label,
-    description,
-    href,
-  }))
 
-  const credits = Object.values(pictures).map((p) => p.credit)
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'Person',
-    name: fullName,
-    jobTitle: role,
+    name,
+    jobTitle: headline,
     homeLocation: location ? { '@type': 'Place', name: location } : undefined,
     url: SITE_URL,
-    sameAs: webLinks.map((link) => link.url),
+    sameAs: links.filter((l) => l.url.startsWith('http')).map((l) => l.url),
   }
 
   return (
@@ -109,325 +97,193 @@ export default function Home() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
+      <div aria-hidden className="glow pointer-events-none fixed inset-0" />
+      <CursorGlow />
 
-      {/* Hero: the name across the middle, everything else in the four corners. */}
-      <header
-        className={`relative grid min-h-svh grid-rows-[auto_1fr_auto] gap-6 ${margin} pt-5 pb-6`}
-      >
-        <div className="flex items-start justify-between gap-6">
-          <div className="max-w-[36ch]">
-            <p className="text-[length:var(--step-lead)] leading-snug">
-              {fullName} is a {role.toLowerCase()} in {location}.
-            </p>
-            <a
-              href="#portfolios"
-              className="press mt-4 inline-block bg-fg px-5 py-3 text-bg hover:bg-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent max-sm:w-full max-sm:text-center"
+      <div className="relative z-10 mx-auto max-w-7xl px-6 lg:px-12">
+        <header className="grid min-h-svh items-center gap-12 py-16 lg:grid-cols-[1fr_1.05fr] lg:gap-16">
+          <div>
+            <h1
+              className="rise font-display text-[clamp(2.8rem,6vw,4.8rem)] leading-[0.95] font-bold tracking-[-0.035em]"
+              aria-label={name}
             >
-              See the portfolios
-            </a>
-          </div>
-          <nav aria-label="Page" className="hidden gap-5 sm:flex">
-            {[
-              ['#portfolios', 'Portfolios'],
-              ['#about', 'About'],
-              ['#contact', 'Contact'],
-            ].map(([href, label]) => (
-              <a
-                key={href}
-                href={href}
-                className="press hover:text-accent focus-visible:outline-2 focus-visible:outline-accent"
-              >
-                {label}
-              </a>
-            ))}
-          </nav>
-        </div>
-
-        <div className="flex flex-col justify-center gap-6 max-sm:justify-start max-sm:pt-[8vh]">
-          <NameMosaic
-            surname={surname}
-            fullName={fullName}
-            role={role}
-            slices={slices}
-            idleCaption={`${role}. Based in ${location}${availability ? `, ${availability.toLowerCase()}` : ''}.`}
-            captionClassName="max-w-[44ch] sm:absolute sm:bottom-6 sm:left-[clamp(16px,1.6vw,28px)]"
-          />
-          {/* Phone: the first picture fills the lower half, cropped by the edge. */}
-          <div className="-mx-[clamp(16px,1.6vw,28px)] aspect-[4/5] overflow-hidden sm:hidden">
-            <Photo picture={pictures.stepwell} priority />
-          </div>
-        </div>
-
-        <div className="hidden items-end justify-end gap-6 sm:flex">
-          <ul className="flex gap-5">
-            {webLinks.map((link) => (
-              <li key={link.url}>
-                <a
-                  href={link.url}
-                  className="press hover:text-accent focus-visible:outline-2 focus-visible:outline-accent"
-                >
-                  {link.label}
-                </a>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </header>
-
-      <main>
-        {/* Line-up: every cell at one size; the column starts do the organising. */}
-        <section
-          id="portfolios"
-          aria-labelledby="portfolios-title"
-          className={`${margin} py-32 lg:py-48`}
-        >
-          <h2
-            id="portfolios-title"
-            data-reveal
-            className="text-[length:var(--step-lead)] leading-[1.5] text-accent"
-          >
-            Portfolios
-          </h2>
-          <ul className="mt-5 text-[length:var(--step-lead)] leading-[1.5]">
-            {portfolios.map((p, row) => {
-              const cells = (
-                <>
-                  <span>{p.label}</span>
-                  <span className="text-muted max-md:text-[length:var(--step-small)] max-md:leading-normal">
-                    {p.contents}
+              {name.split(' ').map((word, w, words) => {
+                const offset = words.slice(0, w).join(' ').length + (w > 0 ? 1 : 0)
+                return (
+                  <span key={w} aria-hidden className="inline-block whitespace-nowrap">
+                    {Array.from(word).map((char, i) => (
+                      <span key={i} style={{ ['--i' as string]: offset + i }}>
+                        {char}
+                      </span>
+                    ))}
+                    {w < words.length - 1 ? ' ' : ''}
                   </span>
-                  <span
-                    className={`text-right max-md:text-[length:var(--step-small)] ${p.href ? '' : 'text-muted'}`}
-                  >
-                    {p.href ? 'Open →' : 'Coming later'}
-                  </span>
-                </>
-              )
-              const grid =
-                'grid grid-cols-[1fr_auto] gap-x-6 py-1 max-md:items-baseline md:grid-cols-[24%_1fr_auto] max-md:[&>*:nth-child(2)]:col-span-2 max-md:[&>*:nth-child(2)]:row-start-2'
-              return (
-                <li key={p.key} data-reveal style={{ ['--i' as string]: row + 1 }}>
-                  {p.href ? (
-                    <Link
-                      href={p.href}
-                      className={`press ${grid} hover:text-accent focus-visible:outline-2 focus-visible:outline-accent [&:hover>*]:text-accent`}
-                    >
-                      {cells}
-                    </Link>
-                  ) : (
-                    <div className={grid}>{cells}</div>
-                  )}
-                </li>
-              )
-            })}
-          </ul>
-        </section>
-
-        {/* The city the work comes from, in pictures. */}
-        <section aria-labelledby="city-title" className={`${margin} pb-32 lg:pb-48`}>
-          <h2
-            id="city-title"
-            data-reveal
-            className="text-[length:var(--step-head)] leading-[1.05] tracking-[-0.025em]"
-          >
-            Ahmedabad
-          </h2>
-          <p data-reveal style={{ ['--i' as string]: 1 }} className="mt-4 max-w-[48ch]">
-            The walled city on the Sabarmati, known for its carved stone, its stepwells and the
-            kites that fill the sky every January.
-          </p>
-          <figure data-reveal style={{ ['--i' as string]: 2 }} className="mt-12">
-            <div className="aspect-[16/10] overflow-clip">
-              <Photo picture={pictures.jali} className="drift" />
-            </div>
-            <figcaption className="mt-3 text-[length:var(--step-small)] text-muted">
-              Stone jali at the Sidi Saiyyed Mosque
-            </figcaption>
-          </figure>
-          <div className="mt-6 grid gap-6 sm:grid-cols-2">
-            <figure data-reveal style={{ ['--i' as string]: 1 }}>
-              <div className="aspect-[4/5] overflow-hidden">
-                <Photo picture={pictures.stepwell} />
-              </div>
-              <figcaption className="mt-3 text-[length:var(--step-small)] text-muted">
-                Adalaj stepwell
-              </figcaption>
-            </figure>
-            <figure data-reveal style={{ ['--i' as string]: 2 }}>
-              <div className="aspect-[4/5] overflow-hidden">
-                <Photo picture={pictures.polHouse} />
-              </div>
-              <figcaption className="mt-3 text-[length:var(--step-small)] text-muted">
-                A pol house in the old city
-              </figcaption>
-            </figure>
-          </div>
-        </section>
-
-        {/* About: one paragraph set large, with a square picture as its drop cap. */}
-        <section
-          id="about"
-          aria-labelledby="about-title"
-          className={`${margin} grid gap-10 pb-32 lg:grid-cols-12 lg:pb-48`}
-        >
-          <div className="lg:col-span-2">
-            <h2
-              id="about-title"
-              data-reveal
-              className="text-[length:var(--step-head)] leading-[1.05] tracking-[-0.025em]"
-            >
-              About
-            </h2>
-            <dl
-              data-reveal
-              style={{ ['--i' as string]: 1 }}
-              className="mt-6 space-y-4 text-[length:var(--step-small)] max-lg:flex max-lg:gap-8 max-lg:space-y-0"
-            >
-              <div>
-                <dt className="text-muted">Based in</dt>
-                <dd>{location}</dd>
-              </div>
-              {availability && (
-                <div>
-                  <dt className="text-muted">Availability</dt>
-                  <dd>{availability}</dd>
-                </div>
-              )}
-              {email && (
-                <div>
-                  <dt className="text-muted">Email</dt>
-                  <dd>
-                    <a href={email.url} className="underline underline-offset-4 hover:text-accent">
-                      {displayLink(email.url)}
-                    </a>
-                  </dd>
-                </div>
-              )}
-            </dl>
-          </div>
-          <div
-            data-reveal
-            style={{ ['--i' as string]: 2 }}
-            className="max-w-[60ch] text-[length:var(--step-lead)] leading-[1.35] lg:col-span-10 [&>p+p]:mt-[1em]"
-          >
-            <div className="float-left mr-[0.5em] mb-[0.2em] size-[3.6em] overflow-hidden max-lg:size-[110px]">
-              <Photo picture={pictures.kite} />
-            </div>
-            <RichText value={me.about} />
-          </div>
-        </section>
-
-        {/* Contact: the old map printed in blue, then the ways to reach out as display rows. */}
-        <section id="contact" aria-labelledby="contact-title" className="pb-32 lg:pb-48">
-          <h2
-            id="contact-title"
-            data-reveal
-            className={`${margin} text-[length:var(--step-head)] leading-[1.05] tracking-[-0.025em]`}
-          >
-            Contact
-          </h2>
-          <figure data-reveal style={{ ['--i' as string]: 1 }} className={`${margin} mt-10`}>
-            <div className="print-blue aspect-[3/1] overflow-hidden max-sm:aspect-[4/3]">
-              <Photo picture={pictures.map1855} />
-            </div>
-          </figure>
-          <ul className="mt-10 text-[length:var(--step-head)] leading-none tracking-[-0.025em] max-sm:text-[7.4vw]">
-            {[
-              ...links.map((link) => ({
-                key: link.url,
-                text: displayLink(link.url),
-                href: link.url,
-              })),
-              { key: 'city', text: location, href: null },
-            ].map((row, i) => (
-              <li
-                key={row.key}
-                data-reveal
-                style={{ ['--i' as string]: i }}
-                className={i % 2 === 0 ? 'bg-surface' : ''}
-              >
-                {row.href ? (
-                  <a
-                    href={row.href}
-                    className={`press flex min-h-[clamp(84px,10vw,150px)] items-end pb-[0.3em] ${margin} [overflow-wrap:anywhere] hover:text-accent focus-visible:outline-2 focus-visible:-outline-offset-4 focus-visible:outline-accent`}
-                  >
-                    {row.text}
-                  </a>
-                ) : (
-                  <p
-                    className={`flex min-h-[clamp(84px,10vw,150px)] items-end pb-[0.3em] ${margin}`}
-                  >
-                    {row.text}
-                  </p>
-                )}
-              </li>
-            ))}
-            {email && (
-              <li data-reveal className="max-sm:bg-accent max-sm:text-accent-fg">
-                <a
-                  href={email.url}
-                  className={`press group flex min-h-[clamp(84px,10vw,150px)] items-end gap-6 pb-[0.3em] ${margin} focus-visible:outline-2 focus-visible:-outline-offset-4 focus-visible:outline-accent`}
-                >
-                  Say hello
-                  <span
-                    aria-hidden
-                    className="mb-[0.15em] grid size-[2em] shrink-0 place-items-center rounded-full bg-accent text-[0.45em] leading-none text-accent-fg transition-transform group-hover:translate-x-2 max-sm:bg-accent-fg max-sm:text-accent"
-                  >
-                    →
-                  </span>
-                </a>
-              </li>
+                )
+              })}
+            </h1>
+            <p className="mt-4 font-display text-xl text-fg/90">{headline}</p>
+            <p className="mt-3 max-w-md text-muted">{profile('root').tagline}</p>
+            {availability && (
+              <p className="mt-6 inline-flex items-center gap-2 rounded-full border border-line bg-surface px-3 py-1.5 font-mono text-xs">
+                <span className="relative flex size-2">
+                  <span className="absolute inline-flex size-full animate-ping rounded-full bg-accent opacity-60 motion-reduce:animate-none" />
+                  <span className="relative inline-flex size-2 rounded-full bg-accent" />
+                </span>
+                {availability}
+              </p>
             )}
-          </ul>
-        </section>
-      </main>
-
-      {/* Close: inverse colours, an invitation, and the name cut by the bottom edge. */}
-      <footer className="relative flex flex-col overflow-hidden bg-fg text-bg lg:min-h-svh">
-        <div className={`grid gap-10 ${margin} pt-24 lg:grid-cols-12`}>
-          <div className="lg:col-span-7">
-            <h2 className="text-[length:var(--step-head)] leading-[1] tracking-[-0.03em] max-sm:text-[11vw]">
-              Start with the work.
-            </h2>
-            <a
-              href="#portfolios"
-              className="press mt-8 inline-block bg-accent px-5 py-3 text-accent-fg hover:bg-bg hover:text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-bg max-sm:w-full max-sm:text-center"
-            >
-              See the portfolios
-            </a>
+            <div className="mt-8 flex flex-wrap gap-3">
+              <a
+                href="#portfolios"
+                className="rounded-full bg-accent px-6 py-3 font-medium text-accent-fg transition hover:brightness-110 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+              >
+                See the portfolios
+              </a>
+              <a
+                href="#about"
+                className="rounded-full border border-line px-6 py-3 transition hover:border-accent focus-visible:outline-2 focus-visible:outline-accent"
+              >
+                About me
+              </a>
+            </div>
           </div>
-          <ul className="space-y-2 lg:col-span-3 lg:col-start-10 max-lg:flex max-lg:flex-wrap max-lg:gap-x-5 max-lg:space-y-0">
-            {links.map((link) => (
-              <li key={link.url}>
-                <a
-                  href={link.url}
-                  className="press hover:text-accent focus-visible:outline-2 focus-visible:outline-bg"
-                >
-                  {link.label}
-                </a>
-              </li>
-            ))}
-          </ul>
-        </div>
-        <p className={`mt-auto ${margin} pt-20 pb-4 text-[length:var(--step-small)] text-bg/70`}>
-          Pictures:{' '}
-          {credits.map((c, i) => (
-            <span key={c.page}>
-              <a href={c.page} className="underline underline-offset-2 hover:text-bg">
-                {c.title}
-              </a>{' '}
-              by {c.creator}, {c.licence}
-              {i < credits.length - 1 ? '; ' : '.'}
-            </span>
-          ))}
-        </p>
-        <p
-          aria-hidden
-          className="pointer-events-none h-[0.62em] text-[clamp(120px,28vw,520px)] leading-[0.9] whitespace-nowrap tracking-[-0.05em] select-none max-sm:text-[34vw]"
-        >
-          <span className="block translate-y-[-8%] pl-[clamp(16px,1.6vw,28px)]">{surname}</span>
-        </p>
-      </footer>
+          <HubTerminal
+            data={{
+              name,
+              headline,
+              location,
+              about: paragraphs(me.about),
+              portfolios: portfolios.map(({ key, label, description, href }) => ({
+                key,
+                label,
+                description,
+                href,
+              })),
+              links: links.map(({ label, url }) => ({ label, url })),
+            }}
+          />
+        </header>
+
+        <main className="space-y-28 pb-24">
+          <section
+            id="portfolios"
+            aria-labelledby="portfolios-title"
+            className="reveal scroll-mt-20"
+          >
+            <SectionTitle id="portfolios" index={1}>
+              Portfolios
+            </SectionTitle>
+            <ul className="grid auto-rows-[minmax(11rem,auto)] gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {portfolios.map((p, i) => {
+                const big = i === 0
+                const inner = (
+                  <>
+                    <span className="flex items-center justify-between gap-3 font-mono text-[11px] text-muted">
+                      <span>{p.key}/</span>
+                      <span
+                        className={`rounded-full border px-2 py-0.5 ${p.href ? 'border-accent/50 text-accent' : 'border-line'}`}
+                      >
+                        {p.href ? 'Open' : 'Coming later'}
+                      </span>
+                    </span>
+                    <span className="mt-auto block">
+                      <span
+                        className={`block font-display font-semibold tracking-tight ${big ? 'text-5xl sm:text-6xl' : 'text-3xl'}`}
+                      >
+                        {p.label}
+                        {p.href && (
+                          <span className="ml-2 inline-block transition-transform group-hover:translate-x-1">
+                            →
+                          </span>
+                        )}
+                      </span>
+                      <span className="mt-2 block max-w-md text-sm text-muted">
+                        {p.description}
+                      </span>
+                      <span className="mt-3 block font-mono text-[11px] text-fg/60">
+                        {p.contents}
+                      </span>
+                    </span>
+                  </>
+                )
+                const cls = `card group relative flex h-full flex-col gap-4 overflow-hidden p-6 transition ${big ? 'sm:p-8' : ''}`
+                return (
+                  <li key={p.key} className={big ? 'sm:col-span-2 lg:row-span-2' : ''}>
+                    {p.href ? (
+                      <Link
+                        href={p.href}
+                        className={`${cls} hover:-translate-y-1 hover:border-accent/60 focus-visible:outline-2 focus-visible:outline-accent`}
+                      >
+                        {big && (
+                          <span
+                            aria-hidden
+                            className="absolute -right-16 -bottom-24 size-72 rounded-full bg-[radial-gradient(circle,var(--accent),var(--accent-2)_45%,transparent_70%)] opacity-40 blur-2xl transition-transform duration-700 group-hover:scale-110"
+                          />
+                        )}
+                        {inner}
+                      </Link>
+                    ) : (
+                      <div className={`${cls} opacity-70`}>{inner}</div>
+                    )}
+                  </li>
+                )
+              })}
+            </ul>
+          </section>
+
+          <section id="about" aria-labelledby="about-title" className="reveal scroll-mt-20">
+            <SectionTitle id="about" index={2}>
+              About
+            </SectionTitle>
+            <div className="grid gap-10 lg:grid-cols-[1.6fr_1fr]">
+              <div className="space-y-4 text-[1.05rem] leading-relaxed text-fg/80">
+                <RichText value={me.about} />
+              </div>
+              <dl className="grid content-start gap-3">
+                {[
+                  ['Based in', location],
+                  ['Availability', availability],
+                  ['Email', email ? displayLink(email.url) : undefined],
+                ]
+                  .filter((row): row is [string, string] => Boolean(row[1]))
+                  .map(([label, value]) => (
+                    <div key={label} className="card wiggle px-5 py-4">
+                      <dt className="font-mono text-xs text-accent">{label.toLowerCase()}</dt>
+                      <dd className="mt-1 font-medium">{value}</dd>
+                    </div>
+                  ))}
+              </dl>
+            </div>
+          </section>
+
+          <section id="contact" aria-labelledby="contact-title" className="reveal scroll-mt-20">
+            <SectionTitle id="contact" index={3}>
+              Contact
+            </SectionTitle>
+            <p className="mb-8 max-w-xl text-lg text-fg/85">
+              Have a project, a role or a question? Pick a portfolio above, or reach me directly.
+            </p>
+            <ul className="flex flex-wrap gap-3">
+              {links.map((link) => (
+                <li key={link.url}>
+                  <a
+                    href={link.url}
+                    className="card wiggle inline-flex items-center gap-2 px-5 py-3 transition hover:border-accent focus-visible:outline-2 focus-visible:outline-accent"
+                  >
+                    {link.label}
+                    <span className="font-mono text-xs text-muted">{displayLink(link.url)}</span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </section>
+        </main>
+
+        <footer className="flex flex-wrap justify-between gap-4 border-t border-line py-8 font-mono text-xs text-muted">
+          <span>{name}</span>
+          <span>{location}</span>
+        </footer>
+      </div>
     </>
   )
 }
