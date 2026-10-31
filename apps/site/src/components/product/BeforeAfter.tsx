@@ -25,7 +25,7 @@ function Frame({
       <div
         className={`flex flex-col ${image ? 'w-full' : 'w-[44%]'} ${after && !image ? 'items-end text-right' : ''}`}
       >
-        <p className="font-mono text-[11px] uppercase opacity-70">{tone}</p>
+        <p className="font-mono text-[11px] uppercase">{tone}</p>
         {title && <p className="mt-1 font-display text-2xl leading-tight sm:text-4xl">{title}</p>}
         {image ? (
           // eslint-disable-next-line @next/next/no-img-element -- static export, no optimizer

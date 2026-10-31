@@ -75,17 +75,17 @@ export function PosterWall({
                   {p.typeLabel}
                   {p.draft && ' · Draft'}
                 </span>
-                <span className="opacity-70">{p.date}</span>
+                <span>{p.date}</span>
               </span>
               <span className="block">
                 <span className="block font-serif text-[clamp(1.7rem,2.6vw,2.6rem)] leading-[0.98] italic">
                   {p.title}
                 </span>
                 {i % spans.length === 0 && !filter && (
-                  <span className="mt-4 block max-w-md text-sm opacity-80">{p.excerpt}</span>
+                  <span className="mt-4 block max-w-md text-sm">{p.excerpt}</span>
                 )}
                 {p.series && (
-                  <span className="mt-3 block text-xs font-semibold uppercase opacity-80">
+                  <span className="mt-3 block text-xs font-semibold uppercase">
                     Series · {p.series}
                   </span>
                 )}

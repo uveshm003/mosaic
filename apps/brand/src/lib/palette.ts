@@ -2,7 +2,7 @@ import type { BrandPostType } from './content'
 
 /** One loud colour per post type, with the ink that reads on it. */
 export const typeColor: Record<BrandPostType, { bg: string; fg: string }> = {
-  essay: { bg: '#ff3b1f', fg: '#ffffff' },
+  essay: { bg: '#d42d16', fg: '#ffffff' },
   'brand-breakdown': { bg: '#2f43ff', fg: '#ffffff' },
   'campaign-concept': { bg: '#c8ff3d', fg: '#0e0e0e' },
   'book-notes': { bg: '#ffb800', fg: '#0e0e0e' },

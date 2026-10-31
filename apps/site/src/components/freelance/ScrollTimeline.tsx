@@ -46,9 +46,7 @@ export function ScrollTimeline({ steps }: { steps: EngagementStep[] }) {
             >
               {i + 1}
             </span>
-            <div
-              className={`${right ? 'sm:col-start-2' : 'sm:text-right'} transition-opacity duration-500 ${on ? 'opacity-100' : 'opacity-50'}`}
-            >
+            <div className={right ? 'sm:col-start-2' : 'sm:text-right'}>
               <p className="font-mono text-xs tracking-widest text-muted uppercase">
                 {right ? '' : '— '}
                 {s.when}

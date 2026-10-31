@@ -99,7 +99,7 @@ export default async function PostPage({ params }: Props) {
           <Link href={`/${typeSlug[post.type]}`} className="hover:underline">
             {typeSingular[post.type]}
           </Link>
-          <span className="opacity-75">{formatDate(post.publishedAt)}</span>
+          <span>{formatDate(post.publishedAt)}</span>
           {post._status === 'draft' && <span>Draft</span>}
         </p>
         <h1 className="mt-8 max-w-[20ch] font-serif text-[clamp(2.6rem,7vw,6.5rem)] leading-[0.95] italic">

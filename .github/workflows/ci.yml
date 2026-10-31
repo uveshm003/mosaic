@@ -82,6 +82,21 @@ jobs:
             exit 1
           fi
           grep "Snapshot contains seed data" "$RUNNER_TEMP/build.log"
+      # The seed step above left a snapshot of every profile and the brand. Build both sites
+      # from it directly (Turborepo doesn't see the snapshot as an input), assemble them like
+      # the deploy, then crawl and smoke-test every experience.
+      - name: Build both sites from seed data
+        env:
+          NEXT_PUBLIC_CONTACT_ENDPOINT: https://contact.example.invalid
+          NEXT_PUBLIC_TURNSTILE_SITE_KEY: 1x00000000000000000000AA
+        run: |
+          pnpm --filter @mosaic/site build
+          pnpm --filter @mosaic/brand build
+          pnpm --filter @mosaic/e2e assemble
+      - name: Install the browser for end-to-end tests
+        run: pnpm --filter @mosaic/e2e exec playwright install --with-deps chromium
+      - name: End-to-end tests
+        run: pnpm --filter @mosaic/e2e test:e2e
 
   flutter-demos:
     runs-on: ubuntu-latest

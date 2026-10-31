@@ -12,6 +12,10 @@ export default tseslint.config(
       '**/.next/**',
       '**/next-env.d.ts',
       '**/public/flutter/demos/**',
+      // The assembled end-to-end build and Playwright's reports.
+      '**/.dist/**',
+      '**/test-results/**',
+      '**/playwright-report/**',
     ],
   },
   js.configs.recommended,

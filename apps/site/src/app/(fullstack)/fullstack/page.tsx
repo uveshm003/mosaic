@@ -207,17 +207,20 @@ export default function Fullstack() {
 
       <div className="grid gap-5 lg:grid-cols-2">
         <Panel id="activity" title="Activity log">
-          <ol className="space-y-1 font-mono text-xs">
+          <ol className="font-mono text-xs">
             {activity.map((a) => (
               <li
                 key={`${a.project.slug}-${a.verb}`}
-                className="grid grid-cols-[5.5rem_4.5rem_1fr] gap-2"
+                className="grid grid-cols-[5.5rem_4.5rem_1fr] items-center gap-2"
               >
                 <span className="text-muted">{formatMonth(a.at)}</span>
                 <span className={a.verb === 'shipped' ? 'text-[var(--ok)]' : 'text-accent'}>
                   {a.verb}
                 </span>
-                <Link href={`/fullstack/${a.project.slug}`} className="truncate hover:underline">
+                <Link
+                  href={`/fullstack/${a.project.slug}`}
+                  className="block truncate py-1.5 hover:underline"
+                >
                   {strip(a.project.title)}
                 </Link>
               </li>

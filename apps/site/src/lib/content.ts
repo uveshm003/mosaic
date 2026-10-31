@@ -448,3 +448,8 @@ export function productLabel(item: Pick<ProductItem, 'kind' | 'subject'>): strin
   const name = item.subject?.trim() || 'the companies discussed'
   return `Independent analysis. Not affiliated with ${name}${name.endsWith('.') ? '' : '.'}`
 }
+
+/** The brand site (a separate app under /brand) is linked once it has a published post. */
+export const brandHref = '/brand/'
+export const brandIsLive = () =>
+  (getSnapshot()?.collections.posts ?? []).some((p) => p.site === 'brand' && p._status !== 'draft')

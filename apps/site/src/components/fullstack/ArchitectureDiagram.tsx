@@ -180,7 +180,7 @@ export function ArchitectureDiagram({
                   className={`absolute w-[9.5rem] -translate-x-1/2 -translate-y-1/2 rounded-lg border-2 bg-surface px-3 py-2 transition duration-300 ${kindStyle[n.kind]} ${dim ? 'opacity-30' : ''} ${lit || busy.has(n.key) ? 'shadow-[0_0_0_4px_color-mix(in_oklab,var(--accent-2)_35%,transparent)]' : ''}`}
                   style={{ left: `${String(p.x)}%`, top: `${String(p.y)}%` }}
                 >
-                  <span className="block font-mono text-[10px] uppercase opacity-80">
+                  <span className="block font-mono text-[10px] text-muted uppercase">
                     {kindLabel[n.kind]}
                   </span>
                   <span className="block text-sm font-semibold text-fg">{n.label}</span>
