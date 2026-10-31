@@ -8,7 +8,8 @@
     "./flutter.css": "./css/flutter.css",
     "./brand.css": "./css/brand.css",
     "./freelance.css": "./css/freelance.css",
-    "./fullstack.css": "./css/fullstack.css"
+    "./fullstack.css": "./css/fullstack.css",
+    "./product.css": "./css/product.css"
   },
   "scripts": {
     "lint": "eslint .",

@@ -1,7 +1,13 @@
 import { APIError, type CollectionConfig } from 'payload'
 import { listingProfileKeys } from '../../profiles'
 import { adminOnly } from '../access'
-import { highlightsField, listingProfilesField, periodField, slugField } from '../fields'
+import {
+  highlightsField,
+  listingProfilesField,
+  periodField,
+  productCanvasField,
+  slugField,
+} from '../fields'
 import { architectureError, duplicateProfileError, projectPublishError } from '../rules'
 
 export const demoStatuses = ['live', 'demo-build', 'video', 'repo-only', 'private'] as const
@@ -110,6 +116,7 @@ export const Projects: CollectionConfig = {
       ],
     },
     { name: 'media', type: 'upload', relationTo: 'media', hasMany: true },
+    productCanvasField,
     {
       // The system diagram and request trace on full-stack case studies.
       name: 'architecture',

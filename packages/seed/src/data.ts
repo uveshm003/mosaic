@@ -10,6 +10,24 @@ import type {
 import * as copy from './copy'
 import { block, heading, richText } from './lexical'
 
+function canvas(c: copy.CanvasCopy) {
+  return {
+    journey: c.journey.map(([stage, userDoes, pain, fix]) => ({ stage, userDoes, pain, fix })),
+    decisions: c.decisions.map(([question, options, chosen, why]) => ({
+      question,
+      options: options.map((text) => ({ text })),
+      chosen,
+      why,
+    })),
+    comparison: {
+      beforeTitle: c.comparison.beforeTitle,
+      afterTitle: c.comparison.afterTitle,
+      before: c.comparison.before.map((text) => ({ text })),
+      after: c.comparison.after.map((text) => ({ text })),
+    },
+  }
+}
+
 function architecture(a: copy.ArchitectureCopy) {
   return {
     nodes: a.nodes.map(([key, label, kind, tech, column, row]) => ({
@@ -148,20 +166,33 @@ export class SeedData {
         // Index 1 covers missing media.
         media: index === 1 ? [] : this.faker.helpers.arrayElements(mediaIds, { min: 1, max: 2 }),
         profiles,
-        overrides: profiles.includes('freelance')
-          ? [
-              {
-                profile: 'freelance' as const,
-                title: this.label(
-                  `${copy.appNames[index % copy.appNames.length]?.join('') ?? 'App'} for ${audience}`,
-                ),
-                summary: `A product built for ${audience}, from first sketch to store release.`,
-                highlights: [{ text: this.pick(copy.outcomes) }],
-                order: index,
-                featured: index % 2 === 0,
-              },
-            ]
-          : [],
+        overrides: [
+          ...(profiles.includes('freelance')
+            ? [
+                {
+                  profile: 'freelance' as const,
+                  title: this.label(
+                    `${copy.appNames[index % copy.appNames.length]?.join('') ?? 'App'} for ${audience}`,
+                  ),
+                  summary: `A product built for ${audience}, from first sketch to store release.`,
+                  highlights: [{ text: this.pick(copy.outcomes) }],
+                  order: index,
+                  featured: index % 2 === 0,
+                },
+              ]
+            : []),
+          ...(profiles.includes('product')
+            ? [
+                {
+                  profile: 'product' as const,
+                  summary: `Why ${audience} kept dropping off, and what changed once we found out.`,
+                  highlights: [{ text: this.pick(copy.outcomes) }],
+                  order: index,
+                },
+              ]
+            : []),
+        ],
+        ...(profiles.includes('product') ? { canvas: canvas(copy.caseStudyCanvas) } : {}),
         ...(profiles.includes('fullstack')
           ? {
               architecture: architecture(
@@ -311,6 +342,23 @@ export class SeedData {
         _seed: true,
       })
     })
+    // Teardowns and proposals for the Product profile, each about a fictional app.
+    for (const item of copy.productPosts) {
+      const title = this.label(item.title)
+      posts.push({
+        title,
+        slug: this.slug(title, posts.length),
+        site: 'personal',
+        type: item.type,
+        body: this.brandParagraphs(3, posts.length),
+        profiles: ['product'],
+        subject: item.subject,
+        canvas: canvas(item.canvas),
+        publishedAt: this.faker.date.past({ years: 1 }).toISOString(),
+        _status: 'published',
+        _seed: true,
+      })
+    }
     const draft = this.label('Draft: notes on a rebrand')
     posts.push({
       title: draft,

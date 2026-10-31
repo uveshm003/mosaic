@@ -88,8 +88,12 @@ describe('profiles', () => {
   })
 
   it('lists only profiles that are enabled and built', () => {
-    // Product is enabled but has no pages yet, so nothing may link to it.
-    expect(content.enabledProfiles().map(({ key }) => key)).toEqual(['flutter', 'freelance'])
+    // Full-stack is built but disabled in this fixture, so nothing may link to it.
+    expect(content.enabledProfiles().map(({ key }) => key)).toEqual([
+      'flutter',
+      'product',
+      'freelance',
+    ])
     expect(content.isEnabled('root')).toBe(true)
   })
 })
@@ -121,5 +125,38 @@ describe('visibleTestimonials', () => {
     ]
     expect(content.visibleTestimonials(list).map((t) => t.id)).toEqual([1, 2, 3])
     expect(content.visibleTestimonials(list, [7]).map((t) => t.id)).toEqual([1, 3])
+  })
+})
+
+describe('product helpers', () => {
+  it('labels teardowns and proposals, never case studies', () => {
+    expect(content.productLabel({ kind: 'teardown', subject: 'FreshCart' })).toBe(
+      'Independent analysis. Not affiliated with FreshCart.',
+    )
+    expect(content.productLabel({ kind: 'proposal', subject: null })).toMatch(/companies discussed/)
+    expect(content.productLabel({ kind: 'case-study', subject: 'X' })).toBeNull()
+  })
+
+  it('maps a canvas, keeps only absolute images, and drops an empty one', () => {
+    const canvas = content.canvasOf({
+      journey: [{ stage: 'Sign up', pain: 'Too many steps' }],
+      decisions: [{ question: 'Q?', options: [{ text: 'A' }, { text: 'B' }], chosen: 'B' }],
+      comparison: {
+        before: [{ text: 'old' }],
+        after: [{ text: 'new' }],
+        beforeImage: { id: 1, url: '/api/media/file/a.png' },
+        afterImage: { id: 2, url: 'https://cdn.example.com/b.png' },
+      },
+    } as Parameters<typeof content.canvasOf>[0])
+    expect(canvas?.journey[0]).toEqual({
+      stage: 'Sign up',
+      userDoes: null,
+      pain: 'Too many steps',
+      fix: null,
+    })
+    expect(canvas?.decisions[0]?.options).toEqual(['A', 'B'])
+    expect(canvas?.comparison?.beforeImage).toBeNull()
+    expect(canvas?.comparison?.afterImage).toBe('https://cdn.example.com/b.png')
+    expect(content.canvasOf({ journey: [], decisions: [], comparison: {} })).toBeNull()
   })
 })

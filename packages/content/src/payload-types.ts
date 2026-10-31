@@ -214,6 +214,61 @@ export interface Project {
       }[]
     | null;
   media?: (number | Media)[] | null;
+  /**
+   * Shown on the Product profile. Leave a part empty to hide it.
+   */
+  canvas?: {
+    /**
+     * The user’s journey, one stage per row.
+     */
+    journey?:
+      | {
+          stage: string;
+          /**
+           * What the user does here.
+           */
+          userDoes?: string | null;
+          pain?: string | null;
+          fix?: string | null;
+          id?: string | null;
+        }[]
+      | null;
+    decisions?:
+      | {
+          question: string;
+          options?:
+            | {
+                text: string;
+                id?: string | null;
+              }[]
+            | null;
+          /**
+           * Must match one option.
+           */
+          chosen?: string | null;
+          why?: string | null;
+          id?: string | null;
+        }[]
+      | null;
+    comparison?: {
+      beforeTitle?: string | null;
+      afterTitle?: string | null;
+      before?:
+        | {
+            text: string;
+            id?: string | null;
+          }[]
+        | null;
+      after?:
+        | {
+            text: string;
+            id?: string | null;
+          }[]
+        | null;
+      beforeImage?: (number | null) | Media;
+      afterImage?: (number | null) | Media;
+    };
+  };
   architecture?: {
     nodes?:
       | {
@@ -410,6 +465,61 @@ export interface Post {
    */
   subject?: string | null;
   series?: string | null;
+  /**
+   * Shown on the Product profile. Leave a part empty to hide it.
+   */
+  canvas?: {
+    /**
+     * The user’s journey, one stage per row.
+     */
+    journey?:
+      | {
+          stage: string;
+          /**
+           * What the user does here.
+           */
+          userDoes?: string | null;
+          pain?: string | null;
+          fix?: string | null;
+          id?: string | null;
+        }[]
+      | null;
+    decisions?:
+      | {
+          question: string;
+          options?:
+            | {
+                text: string;
+                id?: string | null;
+              }[]
+            | null;
+          /**
+           * Must match one option.
+           */
+          chosen?: string | null;
+          why?: string | null;
+          id?: string | null;
+        }[]
+      | null;
+    comparison?: {
+      beforeTitle?: string | null;
+      afterTitle?: string | null;
+      before?:
+        | {
+            text: string;
+            id?: string | null;
+          }[]
+        | null;
+      after?:
+        | {
+            text: string;
+            id?: string | null;
+          }[]
+        | null;
+      beforeImage?: (number | null) | Media;
+      afterImage?: (number | null) | Media;
+    };
+  };
   publishedAt?: string | null;
   /**
    * Seeded sample data.
@@ -766,6 +876,53 @@ export interface ProjectsSelect<T extends boolean = true> {
         id?: T;
       };
   media?: T;
+  canvas?:
+    | T
+    | {
+        journey?:
+          | T
+          | {
+              stage?: T;
+              userDoes?: T;
+              pain?: T;
+              fix?: T;
+              id?: T;
+            };
+        decisions?:
+          | T
+          | {
+              question?: T;
+              options?:
+                | T
+                | {
+                    text?: T;
+                    id?: T;
+                  };
+              chosen?: T;
+              why?: T;
+              id?: T;
+            };
+        comparison?:
+          | T
+          | {
+              beforeTitle?: T;
+              afterTitle?: T;
+              before?:
+                | T
+                | {
+                    text?: T;
+                    id?: T;
+                  };
+              after?:
+                | T
+                | {
+                    text?: T;
+                    id?: T;
+                  };
+              beforeImage?: T;
+              afterImage?: T;
+            };
+      };
   architecture?:
     | T
     | {
@@ -843,6 +1000,53 @@ export interface PostsSelect<T extends boolean = true> {
       };
   subject?: T;
   series?: T;
+  canvas?:
+    | T
+    | {
+        journey?:
+          | T
+          | {
+              stage?: T;
+              userDoes?: T;
+              pain?: T;
+              fix?: T;
+              id?: T;
+            };
+        decisions?:
+          | T
+          | {
+              question?: T;
+              options?:
+                | T
+                | {
+                    text?: T;
+                    id?: T;
+                  };
+              chosen?: T;
+              why?: T;
+              id?: T;
+            };
+        comparison?:
+          | T
+          | {
+              beforeTitle?: T;
+              afterTitle?: T;
+              before?:
+                | T
+                | {
+                    text?: T;
+                    id?: T;
+                  };
+              after?:
+                | T
+                | {
+                    text?: T;
+                    id?: T;
+                  };
+              beforeImage?: T;
+              afterImage?: T;
+            };
+      };
   publishedAt?: T;
   _seed?: T;
   updatedAt?: T;

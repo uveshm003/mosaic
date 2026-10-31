@@ -502,3 +502,206 @@ export const mosaic = {
     ],
   } satisfies ArchitectureCopy,
 }
+
+export interface CanvasCopy {
+  journey: [stage: string, userDoes: string, pain: string, fix: string][]
+  decisions: [question: string, options: string[], chosen: string, why: string][]
+  comparison: { beforeTitle: string; afterTitle: string; before: string[]; after: string[] }
+}
+
+/** The Product canvas for a case study: an offline field app. */
+export const caseStudyCanvas: CanvasCopy = {
+  journey: [
+    [
+      'Arrive on site',
+      'Opens the app in a basement with no signal',
+      'The old app spun forever',
+      'Everything needed is already on the phone',
+    ],
+    [
+      'Inspect',
+      'Works through the checklist',
+      'Paper notes copied up later',
+      'Checklist with photos, saved as you go',
+    ],
+    [
+      'Sign off',
+      'Gets the client to sign',
+      'Signatures lost between forms',
+      'Signature attached to the inspection',
+    ],
+    [
+      'Back in range',
+      'Drives to the next site',
+      'Forgot to press upload',
+      'Sync runs by itself in the background',
+    ],
+  ],
+  decisions: [
+    [
+      'Offline first, or online with a cache?',
+      ['Online with a cache', 'Offline first with a sync queue'],
+      'Offline first with a sync queue',
+      'Most inspections happened where signal was worst. A cache would have failed exactly when it mattered.',
+    ],
+    [
+      'Ship to every platform at once?',
+      ['Android first', 'Android and iOS together', 'Every platform from one codebase'],
+      'Android and iOS together',
+      'Crews used both. Desktop could wait until the office asked for it.',
+    ],
+  ],
+  comparison: {
+    beforeTitle: 'Before: paper and a slow app',
+    afterTitle: 'After: one offline app',
+    before: [
+      'Notes on paper, typed up later',
+      'Photos in the camera roll',
+      'Upload when someone remembers',
+    ],
+    after: [
+      'Checklist saved as you go',
+      'Photos attached to each item',
+      'Sync on its own when back in range',
+    ],
+  },
+}
+
+// Teardowns and proposals about fictional apps, for the Product profile.
+export const productPosts: {
+  type: 'teardown' | 'improvement-proposal'
+  title: string
+  subject: string
+  canvas: CanvasCopy
+}[] = [
+  {
+    type: 'teardown',
+    title: 'Where FreshCart loses people at checkout',
+    subject: 'FreshCart',
+    canvas: {
+      journey: [
+        ['Browse', 'Adds a week of groceries', 'None, this part works', 'Keep it'],
+        ['Cart', 'Reviews 23 items', 'Substitutions hidden in a menu', 'Show substitutions inline'],
+        [
+          'Address',
+          'Picks a delivery slot',
+          'Slots load after the address form',
+          'Ask for the slot first',
+        ],
+        ['Pay', 'Pays by card', 'Card form resets on error', 'Keep what was typed'],
+      ],
+      decisions: [
+        [
+          'Where should the delivery slot go?',
+          ['After the address', 'Before the address'],
+          'Before the address',
+          'The slot is what people are deciding on; the address is usually saved already.',
+        ],
+      ],
+      comparison: {
+        beforeTitle: 'Today: four screens',
+        afterTitle: 'Proposed: two screens',
+        before: ['Cart', 'Address form', 'Delivery slot', 'Payment'],
+        after: ['Cart with slot picker', 'Payment with saved address'],
+      },
+    },
+  },
+  {
+    type: 'teardown',
+    title: 'How Trailhead turns a map into a habit',
+    subject: 'Trailhead',
+    canvas: {
+      journey: [
+        [
+          'First open',
+          'Sees trails nearby',
+          'Asked for location before any value',
+          'Show a sample area first',
+        ],
+        ['First walk', 'Follows a short trail', 'None', 'Already delightful'],
+        ['After', 'Gets a summary', 'Summary hard to share', 'One-tap share card'],
+        ['Next week', 'Gets a nudge', 'Nudge is generic', 'Suggest a trail like the last one'],
+      ],
+      decisions: [],
+      comparison: {
+        beforeTitle: 'Today’s nudge',
+        afterTitle: 'A nudge worth opening',
+        before: ['“Time for a walk!”'],
+        after: ['“A 3 km loop like Saturday’s, 10 minutes away”'],
+      },
+    },
+  },
+  {
+    type: 'improvement-proposal',
+    title: 'A calmer first week for Ledgerly',
+    subject: 'Ledgerly',
+    canvas: {
+      journey: [
+        [
+          'Sign up',
+          'Creates an account',
+          'Seven setup steps up front',
+          'Two steps, the rest later',
+        ],
+        [
+          'Day 1',
+          'Connects a bank',
+          'Jargon in the consent screen',
+          'Plain words and what we can see',
+        ],
+        [
+          'Day 3',
+          'Categorises spending',
+          'Every transaction asked about',
+          'Only ask about the unclear ones',
+        ],
+        ['Day 7', 'Sees a first report', 'Report needs a month of data', 'A first-week snapshot'],
+      ],
+      decisions: [
+        [
+          'What should a new user do first?',
+          ['Set a budget', 'Connect a bank', 'Look around with sample data'],
+          'Look around with sample data',
+          'People decide whether to trust a money app before they hand it their bank login.',
+        ],
+      ],
+      comparison: {
+        beforeTitle: 'Today: setup first',
+        afterTitle: 'Proposed: value first',
+        before: ['Seven setup screens', 'Bank login on screen two', 'First insight after a month'],
+        after: ['Sample data to explore', 'Bank login when ready', 'A first-week snapshot'],
+      },
+    },
+  },
+  {
+    type: 'improvement-proposal',
+    title: 'Fewer, better notifications for Huddle',
+    subject: 'Huddle',
+    canvas: {
+      journey: [
+        ['Morning', 'Checks the phone', '14 notifications from one group', 'One digest per group'],
+        [
+          'Work',
+          'Mutes the app',
+          'Misses the one that mattered',
+          'Mentions break through the digest',
+        ],
+        ['Evening', 'Catches up', 'Has to scroll everything', 'Start at the first unread mention'],
+      ],
+      decisions: [
+        [
+          'Digest by default, or opt in?',
+          ['Opt in', 'Default for busy groups only', 'Default for everyone'],
+          'Default for busy groups only',
+          'Quiet groups never had the problem; changing them would only surprise people.',
+        ],
+      ],
+      comparison: {
+        beforeTitle: 'Today',
+        afterTitle: 'Proposed',
+        before: ['Every message notifies', 'Mute is all or nothing'],
+        after: ['Busy groups send a digest', 'Mentions always get through'],
+      },
+    },
+  },
+]

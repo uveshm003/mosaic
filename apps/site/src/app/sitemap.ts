@@ -1,5 +1,5 @@
 import type { MetadataRoute } from 'next'
-import { isEnabled, projectsFor } from '../lib/content'
+import { isEnabled, productKindSlug, productWork, projectsFor } from '../lib/content'
 import { SITE_URL } from '../lib/site'
 
 export const dynamic = 'force-static'
@@ -15,6 +15,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
   }
   if (isEnabled('fullstack')) {
     urls.push('/fullstack', ...projectsFor('fullstack').map(({ slug }) => `/fullstack/${slug}`))
+  }
+  if (isEnabled('product')) {
+    urls.push(
+      '/product',
+      ...productWork().map((w) => `/product/${productKindSlug[w.kind]}/${w.slug}`),
+    )
   }
   return urls.map((path) => ({ url: `${SITE_URL}${path}` }))
 }

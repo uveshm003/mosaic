@@ -8,6 +8,7 @@
   --color-fg: var(--fg);
   --color-muted: var(--muted);
   --color-accent: var(--accent);
+  --color-accent-2: var(--accent-2);
   --color-accent-fg: var(--accent-fg);
   --color-line: var(--line);
   --color-surface: var(--surface);
@@ -21,6 +22,7 @@
   --fg: #111111;
   --muted: #666666;
   --accent: #2b5cff;
+  --accent-2: #ff6a3d;
   --accent-fg: #ffffff;
   --line: #e5e5e5;
   --surface: #f6f6f6;

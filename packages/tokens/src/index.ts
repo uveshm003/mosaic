@@ -5,5 +5,6 @@ export const themeClass = {
   flutter: 'theme-flutter',
   freelance: 'theme-freelance',
   fullstack: 'theme-fullstack',
+  product: 'theme-product',
   brand: 'theme-brand',
 } as const
