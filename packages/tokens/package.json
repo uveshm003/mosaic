@@ -5,7 +5,8 @@
   "exports": {
     ".": "./src/index.ts",
     "./root.css": "./css/root.css",
-    "./flutter.css": "./css/flutter.css"
+    "./flutter.css": "./css/flutter.css",
+    "./brand.css": "./css/brand.css"
   },
   "scripts": {
     "lint": "eslint .",

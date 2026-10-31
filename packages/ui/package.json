@@ -13,8 +13,13 @@
   "devDependencies": {
     "@mosaic/config": "workspace:*",
     "@types/node": "catalog:",
+    "@types/react": "catalog:",
     "eslint": "catalog:",
+    "react": "catalog:",
     "typescript": "catalog:",
     "vitest": "catalog:"
+  },
+  "peerDependencies": {
+    "react": "catalog:"
   }
 }

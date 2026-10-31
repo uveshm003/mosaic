@@ -57,6 +57,16 @@ export const Posts: CollectionConfig = {
         { name: 'url', type: 'text', required: true },
       ],
     },
+    {
+      // Names the company in the independent-analysis label the brand site adds.
+      name: 'subject',
+      type: 'text',
+      admin: {
+        description: 'The company or brand discussed, for the "Not affiliated with…" label.',
+        condition: (data: { type?: string }) =>
+          ['brand-breakdown', 'teardown', 'improvement-proposal'].includes(data.type ?? ''),
+      },
+    },
     { name: 'series', type: 'text' },
     { name: 'publishedAt', type: 'date', admin: { position: 'sidebar' } },
   ],

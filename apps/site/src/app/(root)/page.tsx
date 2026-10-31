@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { CursorGlow } from '../../components/CursorGlow'
 import { HubTerminal } from '../../components/HubTerminal'
-import { RichText } from '../../components/RichText'
+import { RichText } from '@mosaic/ui'
 import { enabledProfiles, isEnabled, person, profile, profileHref } from '../../lib/content'
 import { SITE_URL } from '../../lib/site'
 

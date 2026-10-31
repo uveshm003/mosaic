@@ -1,14 +1,47 @@
+@import 'tailwindcss';
+/* Shared components in packages/ui use utilities too. */
+@source '../../../../packages/ui/src';
+
+/* The brand theme (packages/tokens/css/brand.css) sets these; utilities read them. */
+@theme inline {
+  --color-bg: var(--bg);
+  --color-fg: var(--fg);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --color-accent-fg: var(--accent-fg);
+  --color-line: var(--line);
+  --color-surface: var(--surface);
+  --font-display: var(--font-display-family);
+  --font-body: var(--font-body-family);
+  --font-serif: var(--font-serif-family);
+}
+
 :root {
   color-scheme: light dark;
-  font-family: system-ui, sans-serif;
 }
 
 body {
   margin: 0;
 }
 
-main {
-  max-width: 40rem;
-  margin: 0 auto;
-  padding: 4rem 1rem;
+@media (prefers-reduced-motion: no-preference) {
+  /* Scroll-driven reveal where supported; content is visible everywhere else. */
+  @supports (animation-timeline: view()) {
+    .reveal {
+      animation: reveal linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 40%;
+    }
+  }
+}
+
+@keyframes reveal {
+  from {
+    opacity: 0;
+    transform: translateY(2rem);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
 }

@@ -59,3 +59,12 @@ Answers from each checkpoint in `docs/SPEC.md`, recorded before work continues. 
 ## Flutter demos
 
 2026-10-31. Proposed: an animation playground, a simulated device dashboard, a Riverpod state visualiser and a Flame mini-game. Uvesh asked for all of them. They live in `demos/flutter`, share one engine copy and the site's theme, load no third-party resources, and load on the Flutter page only when the visitor presses Run.
+
+## Design interview: Brand
+
+2026-10-31. Phase 2's open items wait (about-me file, confidentiality, Lighthouse CI, OG images); Uvesh asked to move on to the brand.
+
+- Feel: bold agency. Light and dark, following the visitor's setting. Motion: a mix (calm reading pages, scroll reveals, one showpiece on the home page).
+- Voice: Uvesh left it to me, as long as it blends two or more. Sharp and opinionated, with wit; analytical where a breakdown needs it.
+- Three directions were built on seed data: Billboard (wide black grotesk, colour bands), Poster wall (serif italics, every post a poster) and Studio 3D (a turnable 3D mark over a Swiss index). Uvesh picked the Poster wall.
+- Name: the spec's working name, Menpur Studio, until the brand-name checkpoint. The site stays noindex until then.

@@ -1,4 +1,6 @@
 @import 'tailwindcss';
+/* Shared components in packages/ui use utilities too. */
+@source '../../../../packages/ui/src';
 
 /* Each direction (and later each profile) sets these on its wrapper; utilities read them. */
 @theme inline {

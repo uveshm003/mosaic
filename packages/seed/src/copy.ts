@@ -166,3 +166,34 @@ export const testimonialQuotes = [
   'Found and fixed performance problems we had lived with for a year.',
   'Thinks about the product, not just the ticket in front of them.',
 ]
+
+// Brand-site posts. Every brand named here is fictional.
+export const brandPosts: [type: string, title: string, series: string | null, subject?: string][] =
+  [
+    ['essay', 'Most rebrands are a font change with a press release', null],
+    ['essay', 'Positioning is a decision, not a sentence', null],
+    ['essay', 'Why every direct-to-consumer brand sounds the same', 'Sameness'],
+    ['essay', 'The case for boring brand names', 'Sameness'],
+    ['brand-breakdown', 'How Kettle & Co. sells a ritual, not tea', 'Breakdowns', 'Kettle & Co.'],
+    ['brand-breakdown', 'The quiet rebrand of Northline Bank', 'Breakdowns', 'Northline Bank'],
+    ['brand-breakdown', 'Monsoon Juice and the power of a season', 'Breakdowns', 'Monsoon Juice'],
+    ['brand-breakdown', 'Why Tandem Bikes owns the colour yellow', null, 'Tandem Bikes'],
+    ['campaign-concept', 'A city that never stops, for a metro card', null],
+    ['campaign-concept', '“Late again”: a campaign for an alarm app', null],
+    ['campaign-concept', 'The slow-coffee billboard series', null],
+    ['book-notes', 'On positioning', null],
+    ['book-notes', 'On taste, and how to argue about it', null],
+    ['research-note', 'How finance apps name their first button', null],
+    ['research-note', 'The colours of chai brands, shelf by shelf', null],
+    ['video', 'Tearing down a 30-second ad', null],
+    ['video', 'Three logos, three rooms', null],
+  ]
+
+export const brandParagraphs = [
+  'Strip the logo off and most brands in a category become interchangeable. The work is finding the one thing that would still be recognisable without it.',
+  'A brand is a set of promises kept in public. The identity is just how you remember which promises those were.',
+  'The brief asked for something bold. What it meant was something nobody in the meeting would have to defend later.',
+  'Good campaigns start with a tension the audience already feels. The ad only has to name it.',
+  'Consistency is underrated because it is boring to present. It is also the only thing that compounds.',
+  'The best rebrands change what a company does first and what it looks like second.',
+]

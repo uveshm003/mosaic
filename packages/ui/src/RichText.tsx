@@ -127,7 +127,6 @@ function Block({ fields }: { fields: BlockFields }) {
         <figure className="my-6">
           {url ? (
             // Static export: no runtime optimizer; Payload's generated sizes become srcset (spec: Rendering).
-            // eslint-disable-next-line @next/next/no-img-element
             <img src={url} alt={image?.alt ?? ''} className="w-full" loading="lazy" />
           ) : (
             <div role="img" aria-label={image?.alt ?? ''} className="aspect-video bg-surface" />
