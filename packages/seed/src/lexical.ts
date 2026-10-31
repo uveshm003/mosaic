@@ -19,7 +19,16 @@ export function block(id: string, blockType: string, fields: Record<string, unkn
   }
 }
 
-type Node = ReturnType<typeof paragraph> | ReturnType<typeof block>
+export function heading(text: string, tag: 'h2' | 'h3' = 'h2') {
+  return {
+    ...base,
+    type: 'heading',
+    tag,
+    children: [{ type: 'text', text, format: 0, style: '', mode: 'normal', detail: 0, version: 1 }],
+  }
+}
+
+type Node = ReturnType<typeof paragraph> | ReturnType<typeof block> | ReturnType<typeof heading>
 
 /** Minimal Lexical document: strings become paragraphs, other nodes go in as they are. */
 export function richText(content: (string | Node)[]) {

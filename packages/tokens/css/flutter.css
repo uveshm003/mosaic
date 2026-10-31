@@ -1,0 +1,91 @@
+/* Flutter experience: playful, dark developer portfolio. Restyled by its own art direction next. */
+.theme-flutter {
+  --bg: #0a0c12;
+  --fg: #e8eaf0;
+  --muted: #8b93a4;
+  --accent: #5eead4;
+  --accent-2: #ff8a65;
+  --accent-fg: #0a0c12;
+  --line: rgb(255 255 255 / 0.08);
+  --surface: rgb(255 255 255 / 0.035);
+  color-scheme: dark;
+}
+
+.theme-flutter .glow {
+  background:
+    radial-gradient(
+      60% 40% at 15% 0%,
+      color-mix(in oklab, var(--accent) 14%, transparent),
+      transparent 70%
+    ),
+    radial-gradient(
+      50% 35% at 100% 30%,
+      color-mix(in oklab, var(--accent-2) 10%, transparent),
+      transparent 70%
+    );
+}
+
+.theme-flutter .card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 1.25rem;
+}
+
+/* Letters of the name rise in one after another. */
+.theme-flutter .rise span span {
+  display: inline-block;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .theme-flutter .rise span span {
+    animation: flutter-rise 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+    animation-delay: calc(var(--i) * 35ms);
+  }
+
+  .theme-flutter .wiggle:hover {
+    animation: flutter-wiggle 0.4s ease-in-out;
+  }
+
+  @supports (animation-timeline: view()) {
+    .theme-flutter .reveal {
+      animation: flutter-reveal linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 35%;
+    }
+  }
+}
+
+@keyframes flutter-rise {
+  from {
+    opacity: 0;
+    transform: translateY(0.45em) rotate(4deg);
+  }
+}
+
+@keyframes flutter-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(1.5rem);
+  }
+}
+
+@keyframes flutter-wiggle {
+  25% {
+    transform: rotate(-4deg) scale(1.06);
+  }
+  75% {
+    transform: rotate(3deg) scale(1.06);
+  }
+}
+
+.theme-flutter .caret::after {
+  content: '▍';
+  color: var(--accent);
+  animation: flutter-blink 1.1s steps(1) infinite;
+}
+
+@keyframes flutter-blink {
+  50% {
+    opacity: 0;
+  }
+}

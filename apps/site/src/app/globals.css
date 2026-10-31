@@ -1,14 +1,42 @@
+@import 'tailwindcss';
+
+/* Each direction (and later each profile) sets these on its wrapper; utilities read them. */
+@theme inline {
+  --color-bg: var(--bg);
+  --color-fg: var(--fg);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --color-accent-fg: var(--accent-fg);
+  --color-line: var(--line);
+  --color-surface: var(--surface);
+  --font-display: var(--font-display-family);
+  --font-body: var(--font-body-family);
+  --font-mono: var(--font-mono-family);
+}
+
 :root {
+  --bg: #ffffff;
+  --fg: #111111;
+  --muted: #666666;
+  --accent: #2b5cff;
+  --accent-fg: #ffffff;
+  --line: #e5e5e5;
+  --surface: #f6f6f6;
   color-scheme: light dark;
-  font-family: system-ui, sans-serif;
 }
 
 body {
   margin: 0;
+  font-family: system-ui, sans-serif;
 }
 
-main {
-  max-width: 40rem;
-  margin: 0 auto;
-  padding: 4rem 1rem;
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

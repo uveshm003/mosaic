@@ -7,7 +7,8 @@ import type {
   GlobalSlug,
   RequiredDataFromCollectionSlug,
 } from 'payload'
-import { block, richText } from './lexical'
+import * as copy from './copy'
+import { block, heading, richText } from './lexical'
 
 export type SeedVariant = 'dev' | 'demo'
 
@@ -40,9 +41,13 @@ export class SeedData {
     return this.variant === 'dev' ? `Sample: ${text}` : text
   }
 
-  private title(words = 3): string {
-    const text = this.faker.commerce.productName().split(' ').slice(0, words).join(' ')
-    return this.label(text)
+  private appName(index: number): string {
+    const [first, second] = copy.appNames[index % copy.appNames.length] ?? ['App', '']
+    return this.label(`${first}${second}`)
+  }
+
+  private pick<T>(items: readonly T[]): T {
+    return this.faker.helpers.arrayElement(items)
   }
 
   private slug(text: string, index: number): string {
@@ -56,16 +61,25 @@ export class SeedData {
   }
 
   private paragraphs(count: number) {
-    return richText(Array.from({ length: count }, () => this.faker.lorem.paragraph()))
+    return richText(Array.from({ length: count }, () => this.pick(copy.postParagraphs)))
+  }
+
+  /** A case study in three short sections. */
+  private caseStudy(audience: string, job: string) {
+    return richText([
+      heading('The problem'),
+      `${audience[0]?.toUpperCase() ?? ''}${audience.slice(1)} needed a way to ${job}. The existing tools were slow, did not work offline, and looked different on every device.`,
+      heading('The approach'),
+      this.pick(copy.approaches),
+      this.pick(copy.approaches),
+      heading('The outcome'),
+      this.pick(copy.outcomes),
+    ])
   }
 
   tech(): Data<'tech'>[] {
-    const kinds = ['language', 'framework', 'tool', 'platform'] as const
-    return Array.from({ length: 12 }, (_, index) => ({
-      name: this.label(`${this.faker.hacker.noun()} ${String(index + 1)}`),
-      kind: kinds[index % kinds.length] ?? 'tool',
-      _seed: true,
-    }))
+    // Real technology names: tags, not claims, and only ever in dev and demo databases.
+    return copy.tech.map(([name, kind]) => ({ name, kind, _seed: true }))
   }
 
   projects(techIds: number[], mediaIds: number[]): Data<'projects'>[] {
@@ -73,17 +87,23 @@ export class SeedData {
     const platforms = ['android', 'ios', 'web', 'macos', 'windows', 'linux'] as const
     return Array.from({ length: 10 }, (_, index) => {
       const longTitle = index === 0
-      const title = longTitle ? this.label(this.faker.lorem.words(24)) : this.title()
+      const title = longTitle
+        ? this.label(
+            'An offline-first field inspection platform for utility crews working across remote sites with patchy coverage',
+          )
+        : this.appName(index)
+      const audience = copy.audiences[index % copy.audiences.length] ?? 'teams'
+      const job = copy.jobs[index % copy.jobs.length] ?? 'work faster'
       const restricted = index >= 8
       const profiles = listingProfileKeys.filter((_, p) => (index + p) % 2 === 0)
       return {
         title,
         slug: this.slug(title, index),
         // Index 3 covers empty sections.
-        summary: index === 3 ? null : this.faker.lorem.sentences(2),
-        body: index === 3 ? null : this.paragraphs(3),
-        role: this.faker.person.jobTitle(),
-        team: `${String(this.faker.number.int({ min: 1, max: 6 }))} people`,
+        summary: index === 3 ? null : `Helps ${audience} ${job}.`,
+        body: index === 3 ? null : this.caseStudy(audience, job),
+        role: this.pick(copy.roles),
+        team: `Team of ${String(this.faker.number.int({ min: 2, max: 6 }))}`,
         period: {
           start: this.faker.date.past({ years: 4 }).toISOString(),
           end: index % 3 === 0 ? null : this.faker.date.recent({ days: 200 }).toISOString(),
@@ -106,7 +126,9 @@ export class SeedData {
         employer: index % 4 === 0 ? this.faker.company.name() : null,
         metrics:
           index % 3 === 1
-            ? [{ label: this.label('Metric'), value: `${String(this.faker.number.int(90))}%` }]
+            ? copy.metricLabels
+                .slice(0, 3)
+                .map(([label, value]) => ({ label: this.label(label), value }))
             : [],
         // Index 1 covers missing media.
         media: index === 1 ? [] : this.faker.helpers.arrayElements(mediaIds, { min: 1, max: 2 }),
@@ -115,9 +137,11 @@ export class SeedData {
           ? [
               {
                 profile: 'freelance' as const,
-                title: this.label('Freelance wording'),
-                summary: this.faker.lorem.sentence(),
-                highlights: [{ text: this.faker.lorem.sentence() }],
+                title: this.label(
+                  `${copy.appNames[index % copy.appNames.length]?.join('') ?? 'App'} for ${audience}`,
+                ),
+                summary: `A product built for ${audience}, from first sketch to store release.`,
+                highlights: [{ text: this.pick(copy.outcomes) }],
                 order: index,
                 featured: index % 2 === 0,
               },
@@ -133,7 +157,7 @@ export class SeedData {
   private everyBlock(mediaIds: number[]) {
     const id = () => this.faker.database.mongodbObjectId()
     return richText([
-      this.faker.lorem.paragraph(),
+      this.pick(copy.postParagraphs),
       block(id(), 'code', {
         language: 'dart',
         code: "void main() => print('Sample');",
@@ -153,7 +177,7 @@ export class SeedData {
         poster: mediaIds[0] ?? null,
       }),
       block(id(), 'image', { image: mediaIds[1] ?? mediaIds[0], caption: this.label('Caption') }),
-      block(id(), 'callout', { tone: 'tip', text: this.faker.lorem.sentence() }),
+      block(id(), 'callout', { tone: 'tip', text: this.pick(copy.outcomes) }),
       block(id(), 'metrics', { items: [{ label: this.label('Metric'), value: '42%' }] }),
       block(id(), 'storeLinks', {
         links: [{ store: 'play-store', url: this.faker.internet.url() }],
@@ -163,7 +187,7 @@ export class SeedData {
 
   posts(mediaIds: number[]): Data<'posts'>[] {
     const posts: Data<'posts'>[] = postTypes.map((type, index) => {
-      const title = this.title(4)
+      const title = this.label(copy.postTitles[index % copy.postTitles.length] ?? 'Notes')
       return {
         title,
         slug: this.slug(title, index),
@@ -171,17 +195,22 @@ export class SeedData {
         type,
         body: index === 0 ? this.everyBlock(mediaIds) : this.paragraphs(4),
         profiles: brandPostTypes.has(type) ? [] : [listingProfileKeys[index % 4] ?? 'flutter'],
-        tags: this.faker.helpers.uniqueArray(() => this.faker.word.noun(), 3),
+        tags: this.faker.helpers.arrayElements(
+          ['flutter', 'dart', 'kotlin', 'performance', 'design', 'sync', 'native'],
+          3,
+        ),
         cover: index % 3 === 0 ? null : (mediaIds[index % mediaIds.length] ?? null),
         youtubeUrl: type === 'video' ? 'https://www.youtube.com/watch?v=aqz-KE-bpKQ' : null,
-        references: [{ title: this.faker.lorem.words(3), url: this.faker.internet.url() }],
+        references: [{ title: 'Flutter documentation', url: 'https://docs.flutter.dev' }],
         series: index < 3 ? this.label('Series') : null,
         publishedAt: this.faker.date.past({ years: 1 }).toISOString(),
         _status: 'published',
         _seed: true,
       }
     })
-    const longTitle = this.label(this.faker.lorem.words(28))
+    const longTitle = this.label(
+      'Everything I wish I had known before shipping a Flutter app to Android, iOS, the web and three desktop platforms at once',
+    )
     posts.push({
       title: longTitle,
       slug: this.slug(longTitle, posts.length),
@@ -194,7 +223,7 @@ export class SeedData {
       _status: 'published',
       _seed: true,
     })
-    const draft = this.title()
+    const draft = this.label('Draft: notes on a rebrand')
     posts.push({
       title: draft,
       slug: this.slug(draft, posts.length),
@@ -208,13 +237,17 @@ export class SeedData {
   }
 
   services(): Data<'services'>[] {
-    return Array.from({ length: 5 }, (_, index) => ({
-      title: this.title(2),
-      summary: this.faker.lorem.sentences(2),
-      deliverables: Array.from({ length: 3 }, () => ({ text: this.faker.lorem.words(4) })),
+    return copy.services.map(([title, summary], index) => ({
+      title: this.label(title),
+      summary,
+      deliverables: [
+        'Discovery call and written plan',
+        'Weekly builds you can try',
+        'Handover with docs',
+      ].map((text) => ({ text })),
       typicalTimeline: `${String(this.faker.number.int({ min: 2, max: 12 }))} weeks`,
       order: index,
-      _status: 'published',
+      _status: 'published' as const,
       _seed: true,
     }))
   }
@@ -224,7 +257,7 @@ export class SeedData {
       // The last one waits for consent, so it stays a draft.
       const consent = index < 3
       return {
-        quote: this.faker.lorem.sentences(2),
+        quote: copy.testimonialQuotes[index % copy.testimonialQuotes.length] ?? '',
         name: this.label(this.faker.person.fullName()),
         role: this.faker.person.jobTitle(),
         company: this.faker.company.name(),
@@ -242,8 +275,8 @@ export class SeedData {
       profile: profileKeys[index % profileKeys.length] ?? 'freelance',
       name: this.label(this.faker.person.fullName()),
       email: this.faker.internet.email({ provider: 'example.com' }),
-      projectType: this.faker.commerce.department(),
-      message: this.faker.lorem.paragraph(),
+      projectType: this.pick(['Mobile app', 'Web app', 'MVP', 'Maintenance']),
+      message: copy.inquiryMessages[index % copy.inquiryMessages.length] ?? '',
       timeline: index % 2 === 0 ? `${String(index + 1)} months` : null,
       status: statuses[index % statuses.length] ?? 'new',
       _seed: true,
@@ -252,15 +285,19 @@ export class SeedData {
 
   experience(): Data<'experience'>[] {
     return Array.from({ length: 3 }, (_, index) => ({
-      title: this.label(this.faker.person.jobTitle()),
-      employer: this.faker.company.name(),
-      employerDetail: index === 0 ? this.faker.company.catchPhrase() : null,
+      title: this.label(
+        ['Senior Flutter Engineer', 'Flutter Developer', 'Android Developer'][index] ?? 'Engineer',
+      ),
+      employer: copy.companies[index] ?? 'Company',
+      employerDetail: index === 0 ? 'Mobile platform team' : null,
       location: this.faker.location.city(),
       period: {
         start: this.faker.date.past({ years: 6 }).toISOString(),
         end: index === 0 ? null : this.faker.date.past({ years: 1 }).toISOString(),
       },
-      highlights: Array.from({ length: 3 }, () => ({ text: this.faker.lorem.sentence() })),
+      highlights: copy.experienceHighlights
+        .slice(index * 2, index * 2 + 3)
+        .map((text) => ({ text })),
       variants: ['broad', index === 0 ? 'flutter' : 'android'],
       order: index,
       _seed: true,
@@ -287,10 +324,9 @@ export class SeedData {
   }
 
   skills(): Data<'skills'>[] {
-    const categories = ['Languages', 'Frameworks', 'Tools']
-    return Array.from({ length: 12 }, (_, index) => ({
-      name: this.label(this.faker.hacker.noun()),
-      category: categories[index % categories.length] ?? 'Tools',
+    return copy.skills.map(([name, category], index) => ({
+      name,
+      category,
       variants: ['broad'],
       order: index,
       _seed: true,
@@ -300,10 +336,14 @@ export class SeedData {
   person(): GlobalData<'person'> {
     return {
       name: this.label(this.faker.person.fullName()),
-      headlines: [{ text: this.faker.person.jobTitle() }],
+      headlines: [{ text: 'Flutter & mobile engineer' }, { text: 'Open to relocation' }],
       location: this.faker.location.city(),
-      contactLinks: [{ label: 'GitHub', url: this.faker.internet.url() }],
-      about: this.paragraphs(3),
+      contactLinks: [
+        { label: 'GitHub', url: 'https://github.com/example' },
+        { label: 'LinkedIn', url: 'https://www.linkedin.com/in/example' },
+        { label: 'Email', url: 'mailto:hello@example.com' },
+      ],
+      about: richText([...copy.about]),
       _status: 'published',
       _seed: true,
     }
@@ -313,9 +353,9 @@ export class SeedData {
     const profile = (key: string) => ({
       enabled: true,
       title: this.label(key),
-      tagline: this.faker.company.catchPhrase(),
+      tagline: copy.profileTaglines[key] ?? null,
       themeKey: key,
-      seo: { title: this.label(key), description: this.faker.lorem.sentence() },
+      seo: { title: this.label(key), description: copy.profileTaglines[key] ?? null },
       primaryAction: { label: 'Get in touch', url: '#contact' },
     })
     return {
@@ -332,7 +372,7 @@ export class SeedData {
     return {
       name: this.label(this.faker.company.name()),
       domain: null,
-      voiceNotes: this.faker.lorem.sentences(2),
+      voiceNotes: 'Curious, direct, a little playful.',
       _seed: true,
     }
   }
