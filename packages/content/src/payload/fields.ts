@@ -1,3 +1,4 @@
+import { resumeVariants } from '../resume'
 import type { ArrayField, CheckboxField, Field, SelectField, TextField } from 'payload'
 import { listingProfileKeys, profileKeys } from '../profiles'
 import { slugError } from './rules'
@@ -27,13 +28,7 @@ export const profileField = (name: string, required = true): SelectField => ({
   options: [...profileKeys],
 })
 
-export const resumeVariants = [
-  'product-company',
-  'android',
-  'flutter',
-  'broad',
-  'fullstack',
-] as const
+export { resumeVariants }
 
 export const resumeVariantsField: SelectField = {
   name: 'variants',
@@ -68,6 +63,19 @@ export const highlightsField: ArrayField = {
   name: 'highlights',
   type: 'array',
   fields: [{ name: 'text', type: 'text', required: true }],
+}
+
+/** Resume bullets: each can be limited to some variants, so wording differs per variant. */
+export const resumeHighlightsField: ArrayField = {
+  name: 'highlights',
+  type: 'array',
+  fields: [
+    { name: 'text', type: 'text', required: true },
+    {
+      ...resumeVariantsField,
+      admin: { description: 'Leave empty to use this bullet in every variant.' },
+    },
+  ],
 }
 
 // Marks seeded sample data so purge can find it and production builds can refuse it.

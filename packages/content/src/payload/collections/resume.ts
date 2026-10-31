@@ -1,6 +1,6 @@
 import type { CollectionConfig } from 'payload'
 import { adminOnly } from '../access'
-import { highlightsField, periodField, resumeVariantsField } from '../fields'
+import { periodField, resumeHighlightsField, resumeVariantsField } from '../fields'
 
 export const Experience: CollectionConfig = {
   slug: 'experience',
@@ -17,7 +17,7 @@ export const Experience: CollectionConfig = {
     { name: 'employerDetail', type: 'text', admin: { description: 'Line beneath the employer.' } },
     { name: 'location', type: 'text' },
     periodField,
-    highlightsField,
+    resumeHighlightsField,
     resumeVariantsField,
     { name: 'order', type: 'number', admin: { position: 'sidebar' } },
   ],
@@ -33,7 +33,7 @@ export const Education: CollectionConfig = {
     { name: 'field', type: 'text' },
     { name: 'location', type: 'text' },
     periodField,
-    highlightsField,
+    resumeHighlightsField,
     resumeVariantsField,
     { name: 'order', type: 'number', admin: { position: 'sidebar' } },
   ],

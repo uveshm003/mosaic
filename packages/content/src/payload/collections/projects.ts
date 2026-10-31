@@ -6,6 +6,7 @@ import {
   listingProfilesField,
   periodField,
   productCanvasField,
+  resumeVariantsField,
   slugField,
 } from '../fields'
 import { architectureError, duplicateProfileError, projectPublishError } from '../rules'
@@ -117,6 +118,36 @@ export const Projects: CollectionConfig = {
     },
     { name: 'media', type: 'upload', relationTo: 'media', hasMany: true },
     productCanvasField,
+    {
+      // How the project reads on each resume variant.
+      name: 'resume',
+      type: 'array',
+      admin: { description: 'One row per wording; the project appears on the variants ticked.' },
+      fields: [
+        resumeVariantsField,
+        {
+          type: 'row',
+          fields: [
+            {
+              name: 'title',
+              type: 'text',
+              admin: { description: 'Defaults to the project title.' },
+            },
+            { name: 'order', type: 'number' },
+          ],
+        },
+        {
+          name: 'tagline',
+          type: 'text',
+          admin: { description: 'After the name, e.g. "Flutter, Dart".' },
+        },
+        {
+          name: 'bullets',
+          type: 'array',
+          fields: [{ name: 'text', type: 'text', required: true }],
+        },
+      ],
+    },
     {
       // The system diagram and request trace on full-stack case studies.
       name: 'architecture',

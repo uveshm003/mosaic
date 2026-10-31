@@ -1,6 +1,7 @@
 import type { Field, GlobalConfig } from 'payload'
 import { profileKeys } from '../../profiles'
 import { isAdmin, isSignedIn } from '../access'
+import { resumeVariants } from '../fields'
 
 const access = { read: isSignedIn, update: isAdmin }
 
@@ -20,6 +21,32 @@ export const Person: GlobalConfig = {
     { name: 'location', type: 'text' },
     { name: 'contactLinks', type: 'array', fields: link },
     { name: 'about', type: 'richText' },
+    {
+      // Only the resume export reads these; the sites never show them.
+      name: 'resume',
+      type: 'group',
+      fields: [
+        {
+          name: 'name',
+          type: 'text',
+          admin: { description: 'The name at the top of the resume.' },
+        },
+        { name: 'phone', type: 'text' },
+        {
+          name: 'languages',
+          type: 'text',
+          admin: { description: 'The closing "Languages:" line.' },
+        },
+        {
+          name: 'headlines',
+          type: 'array',
+          fields: [
+            { name: 'variant', type: 'select', required: true, options: [...resumeVariants] },
+            { name: 'text', type: 'text', required: true },
+          ],
+        },
+      ],
+    },
   ],
 }
 

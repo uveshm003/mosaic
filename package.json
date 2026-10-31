@@ -20,7 +20,8 @@
     "content:export": "pnpm --filter @mosaic/cms content:export",
     "preview": "pnpm --filter @mosaic/cms preview:export && pnpm --filter @mosaic/site dev",
     "demos:build": "node demos/flutter/build.mjs",
-    "demos:check": "node demos/flutter/build.mjs check"
+    "demos:check": "node demos/flutter/build.mjs check",
+    "resume:export": "pnpm --filter @mosaic/resume export"
   },
   "devDependencies": {
     "@mosaic/config": "workspace:*",
