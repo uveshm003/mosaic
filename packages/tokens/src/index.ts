@@ -3,4 +3,5 @@
 export const themeClass = {
   root: 'theme-root',
   flutter: 'theme-flutter',
+  brand: 'theme-brand',
 } as const

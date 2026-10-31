@@ -235,7 +235,7 @@ export class SeedData {
       _seed: true,
     })
     // The brand site, with every type and a couple of series.
-    copy.brandPosts.forEach(([type, text, series], index) => {
+    copy.brandPosts.forEach(([type, text, series, subject], index) => {
       const title = this.label(text)
       posts.push({
         title,
@@ -255,6 +255,7 @@ export class SeedData {
             ? [{ title: this.label('Source'), url: this.faker.internet.url() }]
             : [],
         series: series ? this.label(series) : null,
+        subject: subject ?? null,
         publishedAt: this.faker.date.past({ years: 1 }).toISOString(),
         _status: 'published',
         _seed: true,

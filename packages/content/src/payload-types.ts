@@ -362,6 +362,10 @@ export interface Post {
         id?: string | null;
       }[]
     | null;
+  /**
+   * The company or brand discussed, for the "Not affiliated with…" label.
+   */
+  subject?: string | null;
   series?: string | null;
   publishedAt?: string | null;
   /**
@@ -760,6 +764,7 @@ export interface PostsSelect<T extends boolean = true> {
         url?: T;
         id?: T;
       };
+  subject?: T;
   series?: T;
   publishedAt?: T;
   _seed?: T;

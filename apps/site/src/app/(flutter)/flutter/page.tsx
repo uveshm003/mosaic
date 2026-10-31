@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import { RichText } from '../../../components/RichText'
+import { RichText } from '@mosaic/ui'
 import { ContactForm } from '../../../components/flutter/ContactForm'
 import { CursorGlow } from '../../../components/CursorGlow'
 import { DeviceMock } from '../../../components/flutter/DeviceMock'

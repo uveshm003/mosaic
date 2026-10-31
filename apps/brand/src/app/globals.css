@@ -1,6 +1,8 @@
 @import 'tailwindcss';
+/* Shared components in packages/ui use utilities too. */
+@source '../../../../packages/ui/src';
 
-/* Each direction sets these on its wrapper, for light and dark; utilities read them. */
+/* The brand theme (packages/tokens/css/brand.css) sets these; utilities read them. */
 @theme inline {
   --color-bg: var(--bg);
   --color-fg: var(--fg);
@@ -22,15 +24,6 @@ body {
   margin: 0;
 }
 
-@keyframes marquee {
-  from {
-    transform: translateX(0);
-  }
-  to {
-    transform: translateX(-50%);
-  }
-}
-
 @media (prefers-reduced-motion: no-preference) {
   /* Scroll-driven reveal where supported; content is visible everywhere else. */
   @supports (animation-timeline: view()) {
@@ -50,65 +43,5 @@ body {
   to {
     opacity: 1;
     transform: none;
-  }
-}
-
-/* Direction A: Billboard */
-.dir-billboard {
-  --bg: #f3f0e8;
-  --fg: #0e0e0e;
-  --muted: #5f5b53;
-  --accent: #ff3b1f;
-  --accent-fg: #ffffff;
-  --line: #0e0e0e1f;
-  --surface: #e9e4d8;
-}
-@media (prefers-color-scheme: dark) {
-  .dir-billboard {
-    --bg: #0d0d0c;
-    --fg: #f3f0e8;
-    --muted: #a39e93;
-    --line: #f3f0e81f;
-    --surface: #1a1918;
-  }
-}
-
-/* Direction B: Poster wall */
-.dir-posters {
-  --bg: #f6f4ef;
-  --fg: #141414;
-  --muted: #66625a;
-  --accent: #2f43ff;
-  --accent-fg: #ffffff;
-  --line: #14141418;
-  --surface: #ffffff;
-}
-@media (prefers-color-scheme: dark) {
-  .dir-posters {
-    --bg: #101010;
-    --fg: #f4f1ea;
-    --muted: #a7a297;
-    --line: #f4f1ea1c;
-    --surface: #1a1a1a;
-  }
-}
-
-/* Direction C: Studio 3D */
-.dir-studio {
-  --bg: #eeeeea;
-  --fg: #111111;
-  --muted: #6a6a64;
-  --accent: #ff4d00;
-  --accent-fg: #ffffff;
-  --line: #11111120;
-  --surface: #e2e2dc;
-}
-@media (prefers-color-scheme: dark) {
-  .dir-studio {
-    --bg: #09090a;
-    --fg: #ededea;
-    --muted: #8d8d88;
-    --line: #ededea1f;
-    --surface: #151517;
   }
 }

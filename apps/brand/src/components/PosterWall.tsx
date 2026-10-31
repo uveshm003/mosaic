@@ -1,9 +1,12 @@
 'use client'
 
+import Link from 'next/link'
 import { useState, type PointerEvent } from 'react'
 
 export interface Poster {
   id: number
+  href: string
+  draft: boolean
   title: string
   type: string
   typeLabel: string
@@ -42,31 +45,36 @@ export function PosterWall({
 
   return (
     <>
-      <div className="mb-8 flex flex-wrap gap-2" role="group" aria-label="Filter by kind">
-        {[{ key: null, label: 'Everything' }, ...types].map((t) => (
-          <button
-            key={t.key ?? 'all'}
-            type="button"
-            aria-pressed={filter === t.key}
-            onClick={() => setFilter(t.key)}
-            className={`rounded-full border-2 border-fg px-4 py-1.5 text-sm font-semibold transition ${filter === t.key ? 'bg-fg text-bg' : 'hover:bg-fg/10'}`}
-          >
-            {t.label}
-          </button>
-        ))}
-      </div>
+      {types.length > 1 && (
+        <div className="mb-8 flex flex-wrap gap-2" role="group" aria-label="Filter by kind">
+          {[{ key: null, label: 'Everything' }, ...types].map((t) => (
+            <button
+              key={t.key ?? 'all'}
+              type="button"
+              aria-pressed={filter === t.key}
+              onClick={() => setFilter(t.key)}
+              className={`rounded-full border-2 border-fg px-4 py-1.5 text-sm font-semibold transition ${filter === t.key ? 'bg-fg text-bg' : 'hover:bg-fg/10'}`}
+            >
+              {t.label}
+            </button>
+          ))}
+        </div>
+      )}
       <ul className="grid auto-rows-[16rem] grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-4">
         {shown.map((p, i) => (
           <li key={p.id} className={filter ? '' : (spans[i % spans.length] ?? '')}>
-            <a
-              href="#"
+            <Link
+              href={p.href}
               onPointerMove={tilt}
               onPointerLeave={untilt}
               className="relative flex h-full flex-col justify-between overflow-hidden rounded-[1.25rem] p-6 transition-transform duration-300 ease-out will-change-transform focus-visible:outline-4 focus-visible:outline-offset-2 focus-visible:outline-fg"
               style={{ background: p.bg, color: p.fg }}
             >
               <span className="flex items-start justify-between gap-3 text-xs font-semibold tracking-wide uppercase">
-                <span>{p.typeLabel}</span>
+                <span>
+                  {p.typeLabel}
+                  {p.draft && ' · Draft'}
+                </span>
                 <span className="opacity-70">{p.date}</span>
               </span>
               <span className="block">
@@ -87,7 +95,7 @@ export function PosterWall({
                   </span>
                 )}
               </span>
-            </a>
+            </Link>
           </li>
         ))}
       </ul>
