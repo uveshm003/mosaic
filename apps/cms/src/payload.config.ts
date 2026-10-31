@@ -16,4 +16,7 @@ export default createPayloadConfig({
   push: allowsSchemaPush(env),
   migrationDir: path.resolve(dirname, 'migrations'),
   afterDashboard: ['/components/PublishPanel#PublishPanel'],
+  header: ['/components/DemoBanner#DemoBanner'],
+  beforeLogin: ['/components/DemoBanner#DemoBanner'],
+  demo: env.APP_ENV === 'demo',
 })

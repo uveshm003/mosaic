@@ -1,0 +1,31 @@
+name: Demo reset
+
+# Restores the public demo admin every night: migrations, fresh demo seed data and
+# the read-only reviewer login. Secrets live on the `demo` environment.
+on:
+  schedule:
+    - cron: '17 2 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: demo-reset
+
+jobs:
+  reset:
+    runs-on: ubuntu-latest
+    environment: demo
+    env:
+      APP_ENV: demo
+      DATABASE_URL: ${{ secrets.DEMO_DATABASE_URL }}
+      PAYLOAD_SECRET: ${{ secrets.DEMO_PAYLOAD_SECRET }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/setup@v3
+        with:
+          cache: true
+          require-lockfile: true
+      - run: pnpm --filter @mosaic/cms exec payload migrate
+      - run: pnpm --filter @mosaic/cms exec payload run scripts/demo-reset.ts
