@@ -15,6 +15,20 @@ export const flutterDemos: FlutterDemo[] = [
       'Curves, implicit animations, Hero transitions and a staggered list, each with the Dart that drives it.',
     shows: ['AnimationController', 'Hero', 'PageRouteBuilder', 'CustomPainter'],
   },
+  {
+    slug: 'dashboard',
+    title: 'Device dashboard',
+    blurb:
+      'A simulated fleet of field sensors: live charts, threshold alerts, and an offline queue that syncs when the connection returns.',
+    shows: ['ChangeNotifier', 'CustomPainter', 'Adaptive layout', 'Offline-first'],
+  },
+  {
+    slug: 'state',
+    title: 'State visualiser',
+    blurb:
+      'A small shop on Riverpod beside a live graph of its providers. See what recomputes, and what select saves.',
+    shows: ['Riverpod 3', 'ProviderObserver', 'select', 'Derived state'],
+  },
 ]
 
 export const demoSrc = (slug: string) => `/flutter/demos/${slug}/index.html`
