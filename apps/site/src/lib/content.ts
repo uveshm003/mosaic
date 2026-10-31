@@ -315,7 +315,7 @@ export const demoAdminUrl = () => getSnapshot()?.globals.profiles.fullstack?.dem
 export function techCatalog(
   projects: ProjectView[],
 ): { kind: Tech['kind']; tech: { name: string; count: number }[] }[] {
-  const kinds = new Map(snapshot().collections.tech.map((t) => [t.name, t.kind]))
+  const kinds = new Map((getSnapshot()?.collections.tech ?? []).map((t) => [t.name, t.kind]))
   const counts = new Map<string, number>()
   for (const p of projects) for (const t of p.tech) counts.set(t, (counts.get(t) ?? 0) + 1)
   const groups = new Map<Tech['kind'], { name: string; count: number }[]>()
