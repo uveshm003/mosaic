@@ -99,3 +99,27 @@ describe('postsFor', () => {
     expect(content.postsFor('flutter').map((post) => post.title)).toEqual(['Newer', 'Older'])
   })
 })
+
+describe('visibleTestimonials', () => {
+  const base = { id: 1, quote: 'Q', name: 'N', updatedAt: '', createdAt: '' }
+
+  it('hides the section when nothing is published with consent', () => {
+    expect(
+      content.visibleTestimonials([
+        { ...base, consentConfirmed: false, _status: 'published' },
+        { ...base, consentConfirmed: true, _status: 'draft' },
+      ]),
+    ).toEqual([])
+  })
+
+  it('keeps consented, published quotes, and filters by project when asked', () => {
+    const ok = { ...base, consentConfirmed: true, _status: 'published' as const }
+    const list = [
+      { ...ok, id: 1, project: 7 },
+      { ...ok, id: 2, project: 9 },
+      { ...ok, id: 3, project: null },
+    ]
+    expect(content.visibleTestimonials(list).map((t) => t.id)).toEqual([1, 2, 3])
+    expect(content.visibleTestimonials(list, [7]).map((t) => t.id)).toEqual([1, 3])
+  })
+})

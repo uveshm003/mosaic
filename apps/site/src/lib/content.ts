@@ -1,6 +1,14 @@
 import type { ListingProfileKey, ProfileKey } from '@mosaic/content'
 import type { Snapshot } from '@mosaic/content/snapshot'
-import type { Experience, Post, Project, Skill, Tech } from '@mosaic/content/payload-types'
+import type {
+  Experience,
+  Post,
+  Project,
+  Service,
+  Skill,
+  Tech,
+  Testimonial,
+} from '@mosaic/content/payload-types'
 import { getSnapshot } from './snapshot'
 
 function snapshot(): Snapshot {
@@ -196,3 +204,42 @@ export function latestPosts(count = 3): Post[] {
 
 /** A stable hue per project, used by the drawn device mockups until real screenshots exist. */
 export const projectHue = (id: number) => (id * 47 + 160) % 360
+
+export function services(): Service[] {
+  return [...snapshot().collections.services]
+    .filter((s) => s._status !== 'draft')
+    .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
+}
+
+export interface EngagementStep {
+  title: string
+  when: string | null
+  summary: string | null
+  youGet: string[]
+}
+
+/** How a freelance engagement works, step by step. */
+export function engagement(): EngagementStep[] {
+  return (getSnapshot()?.globals.profiles.freelance?.engagement ?? []).map((step) => ({
+    title: step.title,
+    when: step.when ?? null,
+    summary: step.summary ?? null,
+    youGet: (step.youGet ?? []).map((row) => row.text),
+  }))
+}
+
+/**
+ * Testimonials that may be shown: published, with consent, optionally for one profile's
+ * projects. An empty list hides the section (spec: Phase 4).
+ */
+export function visibleTestimonials(list: Testimonial[], projectIds?: number[]): Testimonial[] {
+  return list.filter((t) => {
+    if (t._status === 'draft' || !t.consentConfirmed) return false
+    if (!projectIds) return true
+    const project = typeof t.project === 'object' ? t.project?.id : t.project
+    return project == null || projectIds.includes(project)
+  })
+}
+
+export const testimonials = (projectIds?: number[]) =>
+  visibleTestimonials(snapshot().collections.testimonials, projectIds)

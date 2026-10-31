@@ -90,13 +90,106 @@ export const postParagraphs = [
   'If I did it again, I would set up the CI matrix for every platform on day one instead of week six.',
 ]
 
-export const services = [
-  ['Mobile apps', 'Flutter apps for Android and iOS, from first prototype to store release.'],
-  ['Web apps', 'Dashboards and internal tools that your team will actually enjoy using.'],
-  ['Backends & APIs', 'APIs, databases and integrations that keep your app fast and reliable.'],
-  ['MVPs', 'A focused first version to test the idea with real users in weeks, not months.'],
-  ['Maintenance', 'Upgrades, bug fixes and performance work for apps that are already live.'],
-] as const
+export const services: [
+  title: string,
+  summary: string,
+  deliverables: string[],
+  timeline: string,
+][] = [
+  [
+    'Mobile apps',
+    'Flutter apps for Android and iOS, from first prototype to store release.',
+    [
+      'Designs turned into a working app',
+      'Store listings and release',
+      'Crash reporting and analytics set up',
+    ],
+    '6–12 weeks',
+  ],
+  [
+    'Web apps & dashboards',
+    'Admin panels, dashboards and internal tools your team will actually enjoy using.',
+    ['Role-based access', 'Charts and exports that match how you report', 'Deployed and monitored'],
+    '4–10 weeks',
+  ],
+  [
+    'Backends & APIs',
+    'APIs, databases and integrations that keep your app fast and reliable.',
+    ['Documented API', 'Database schema and migrations', 'Payment, email and auth integrations'],
+    '3–8 weeks',
+  ],
+  [
+    'MVPs',
+    'A focused first version to test the idea with real users in weeks, not months.',
+    ['One core flow done properly', 'Feedback built in', 'A plan for version two'],
+    '4–6 weeks',
+  ],
+  [
+    'Maintenance',
+    'Upgrades, bug fixes and performance work for apps that are already live.',
+    ['Dependency and OS upgrades', 'Bug triage with clear priorities', 'Monthly health report'],
+    'Ongoing',
+  ],
+  [
+    'Vibe-code cleanup',
+    'Your prototype was built fast with AI tools. I make it safe to ship: structure, tests and security.',
+    [
+      'Code review with a ranked fix list',
+      'Tests around what matters',
+      'Secrets, auth and data access checked',
+    ],
+    '1–4 weeks',
+  ],
+  [
+    'Forward-deployed engineer',
+    'An engineer inside your team, close to your users, turning what they ask for into shipped features.',
+    ['Joins your standups and tools', 'Ships alongside your team', 'Leaves things documented'],
+    'Monthly',
+  ],
+  [
+    'AI-assisted engineering',
+    'Faster delivery with AI tooling, with a human who reads, tests and owns every line.',
+    [
+      'AI in the workflow, not in charge of it',
+      'Reviewed, tested code',
+      'Your team shown how to do the same',
+    ],
+    'Any project',
+  ],
+]
+
+export const engagement: [title: string, when: string, summary: string, youGet: string[]][] = [
+  [
+    'Talk',
+    'Week 0',
+    'A call about what you are building, who it is for and what success looks like.',
+    ['A short written summary of what we agreed'],
+  ],
+  [
+    'Plan',
+    'Week 1',
+    'Scope, milestones and risks on one page, so there are no surprises later.',
+    ['A plan you can share with your team', 'A clickable prototype for bigger ideas'],
+  ],
+  [
+    'Build',
+    'Weeks 2–8',
+    'Short cycles with a working build at the end of each one, on your own phone or browser.',
+    ['A demo every week', 'A shared board with what is done and what is next'],
+  ],
+  [
+    'Launch',
+    'Release week',
+    'Store submission or deployment, monitoring switched on, and a calm launch day.',
+    ['Your app live', 'Dashboards for crashes and usage'],
+  ],
+  [
+    'Hand over',
+    'After launch',
+    'Docs, a walkthrough of the code and, if you want it, ongoing care.',
+    ['Documentation and access to everything', 'An optional maintenance plan'],
+  ],
+]
 
 export const companies = ['Northwind Labs', 'Brightline Studio', 'Kestrel Systems']
 

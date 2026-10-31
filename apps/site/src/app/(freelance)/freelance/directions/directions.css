@@ -1,0 +1,61 @@
+/* Review-only themes for the Freelance design directions. */
+.fl-warm {
+  --bg: #fbf6ee;
+  --fg: #1f1a15;
+  --muted: #6e655b;
+  --accent: #d9542f;
+  --accent-2: #5f8f6e;
+  --accent-fg: #ffffff;
+  --line: #1f1a1514;
+  --surface: #ffffff;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  .fl-warm {
+    --bg: #17130f;
+    --fg: #f6eee3;
+    --muted: #b1a597;
+    --accent: #f07a52;
+    --accent-2: #8fbf9c;
+    --line: #f6eee31a;
+    --surface: #221c17;
+    color-scheme: dark;
+  }
+}
+.fl-warm .grid-lines {
+  background-image: repeating-linear-gradient(
+    90deg,
+    transparent 0 calc(100% / 12 - 1px),
+    var(--line) calc(100% / 12 - 1px) calc(100% / 12)
+  );
+}
+
+.fl-blueprint {
+  --bg: #f3f6f9;
+  --fg: #13213b;
+  --muted: #5b6b85;
+  --accent: #f2b31b;
+  --accent-2: #ef6f55;
+  --accent-fg: #13213b;
+  --line: #13213b1a;
+  --surface: #ffffff;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  .fl-blueprint {
+    --bg: #0d1628;
+    --fg: #e8eef8;
+    --muted: #93a3bf;
+    --accent: #ffc94a;
+    --accent-2: #ff8a70;
+    --line: #e8eef81a;
+    --surface: #132037;
+    color-scheme: dark;
+  }
+}
+.fl-blueprint .paper {
+  background-image:
+    linear-gradient(var(--line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--line) 1px, transparent 1px);
+  background-size: 32px 32px;
+}

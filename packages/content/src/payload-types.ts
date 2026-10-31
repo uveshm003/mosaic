@@ -1147,6 +1147,29 @@ export interface Profile {
       label?: string | null;
       url?: string | null;
     };
+    /**
+     * The steps of an engagement, in order.
+     */
+    engagement?:
+      | {
+          title: string;
+          /**
+           * For example "Week 1".
+           */
+          when?: string | null;
+          summary?: string | null;
+          /**
+           * What the client has at the end of this step.
+           */
+          youGet?:
+            | {
+                text: string;
+                id?: string | null;
+              }[]
+            | null;
+          id?: string | null;
+        }[]
+      | null;
   };
   fullstack?: {
     /**
@@ -1322,6 +1345,20 @@ export interface ProfilesSelect<T extends boolean = true> {
           | {
               label?: T;
               url?: T;
+            };
+        engagement?:
+          | T
+          | {
+              title?: T;
+              when?: T;
+              summary?: T;
+              youGet?:
+                | T
+                | {
+                    text?: T;
+                    id?: T;
+                  };
+              id?: T;
             };
       };
   fullstack?:

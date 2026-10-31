@@ -23,6 +23,23 @@ export const Person: GlobalConfig = {
   ],
 }
 
+const engagementField: Field = {
+  name: 'engagement',
+  type: 'array',
+  admin: { description: 'The steps of an engagement, in order.' },
+  fields: [
+    { name: 'title', type: 'text', required: true },
+    { name: 'when', type: 'text', admin: { description: 'For example "Week 1".' } },
+    { name: 'summary', type: 'textarea' },
+    {
+      name: 'youGet',
+      type: 'array',
+      admin: { description: 'What the client has at the end of this step.' },
+      fields: [{ name: 'text', type: 'text', required: true }],
+    },
+  ],
+}
+
 export const Profiles: GlobalConfig = {
   slug: 'profiles',
   access,
@@ -55,6 +72,8 @@ export const Profiles: GlobalConfig = {
           { name: 'url', type: 'text' },
         ],
       },
+      // How an engagement works, shown as the Freelance profile's process timeline.
+      ...(key === 'freelance' ? [engagementField] : []),
     ],
   })),
 }
