@@ -193,6 +193,26 @@ export class SeedData {
             : []),
         ],
         ...(profiles.includes('product') ? { canvas: canvas(copy.caseStudyCanvas) } : {}),
+        ...(index > 0 && index < 4
+          ? {
+              resume: [
+                {
+                  variants: ['android', 'flutter', 'broad', 'fullstack'] as const,
+                  order: index,
+                  tagline: 'Flutter, Dart, Riverpod',
+                  bullets: [{ text: `Built the app for ${audience} end to end.` }],
+                },
+                {
+                  variants: ['product-company'] as const,
+                  order: index,
+                  tagline: 'consumer app',
+                  bullets: [
+                    { text: `Shaped the product for ${audience} from first sketch to release.` },
+                  ],
+                },
+              ].map((row) => ({ ...row, variants: [...row.variants] })),
+            }
+          : {}),
         ...(profiles.includes('fullstack')
           ? {
               architecture: architecture(
@@ -428,10 +448,18 @@ export class SeedData {
         start: this.faker.date.past({ years: 6 }).toISOString(),
         end: index === 0 ? null : this.faker.date.past({ years: 1 }).toISOString(),
       },
-      highlights: copy.experienceHighlights
-        .slice(index * 2, index * 2 + 3)
-        .map((text) => ({ text })),
-      variants: ['broad', index === 0 ? 'flutter' : 'android'],
+      // The first bullet reads differently on the product resume, to cover per-variant wording.
+      highlights: [
+        {
+          text: 'Owned scope and release decisions for the team’s main product.',
+          variants: ['product-company'],
+        },
+        ...copy.experienceHighlights.slice(index * 2, index * 2 + 3).map((text, i) => ({
+          text,
+          variants: i === 0 ? (['android', 'flutter', 'broad', 'fullstack'] as const).slice() : [],
+        })),
+      ],
+      variants: [],
       order: index,
       _seed: true,
     }))
@@ -477,6 +505,25 @@ export class SeedData {
         { label: 'Email', url: 'mailto:hello@example.com' },
       ],
       about: richText([...copy.about]),
+      resume: {
+        name: this.label(this.faker.person.fullName()),
+        // Not a real number: reserved for drama and fiction.
+        phone: '+44 7700 900000',
+        languages: 'English, Hindi, Spanish (learning)',
+        headlines: [
+          {
+            variant: 'product-company',
+            text: 'Product Engineer · 3 YoE · Ownership / Monetization',
+          },
+          { variant: 'android', text: 'Android Engineer · 3 YoE · Kotlin / Native / Hardware' },
+          { variant: 'flutter', text: 'Flutter Engineer · 3 YoE · Cross-Platform / BLE' },
+          { variant: 'broad', text: 'Software Engineer · 3 YoE · Mobile / Web / Backend' },
+          {
+            variant: 'fullstack',
+            text: 'Full-stack Engineer · 3 YoE · Flutter / NestJS / Postgres',
+          },
+        ],
+      },
       _status: 'published',
       _seed: true,
     }

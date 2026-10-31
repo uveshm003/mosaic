@@ -95,3 +95,12 @@ Answers from each checkpoint in `docs/SPEC.md`, recorded before work continues. 
 - Weight: case studies, teardowns and proposals side by side, equally. Dasher, SyncIT and Odigo still need their confidentiality and credit-wording checkpoints before they appear in production.
 - Feel: editorial memo pages with an interactive canvas underneath. Light and dark follow the system. Signature interactions: all three (journey map, decision log, before/after slider), each used where a piece of work has the data for it.
 - Teardowns and proposals always carry "Independent analysis. Not affiliated with <company>."
+
+## Resume files
+
+2026-10-31.
+
+- The existing resumes are Uvesh's Markdown files for Product, Mobile, Broad and Fullstack (outside the repo). Android and Flutter have no Markdown of their own; they follow the Mobile structure and differ by what is flagged for each. ProductCompany follows Product.
+- `pnpm resume:export` reproduces the structure exactly: parsing each of the four files into the content model and rendering it back gives identical bytes. The check ran locally; none of the resume content is in the repo.
+- The ReportLab PDF step stays outside the repo for now; the export writes Markdown only.
+- Employer line: the current files say "Sensit Technologies" with "(Halma PLC)" in the detail. The spec's format is "Halma India PLC" with "Software Engineer (Sensit Technologies)" beneath it, so production content should use that, and the export prints whatever is entered.

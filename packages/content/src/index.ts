@@ -7,3 +7,4 @@ export {
   type ProfileKey,
 } from './profiles'
 export { demoReviewer } from './demo'
+export { resumeVariantNames, resumeVariants, type ResumeVariant } from './resume'

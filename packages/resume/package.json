@@ -8,13 +8,18 @@
   "scripts": {
     "lint": "eslint .",
     "typecheck": "tsc",
-    "test": "vitest run --passWithNoTests"
+    "test": "vitest run --passWithNoTests",
+    "export": "tsx src/cli.ts"
   },
   "devDependencies": {
     "@mosaic/config": "workspace:*",
     "@types/node": "catalog:",
     "eslint": "catalog:",
+    "tsx": "catalog:",
     "typescript": "catalog:",
     "vitest": "catalog:"
+  },
+  "dependencies": {
+    "@mosaic/content": "workspace:*"
   }
 }

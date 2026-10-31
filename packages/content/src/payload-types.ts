@@ -269,6 +269,33 @@ export interface Project {
       afterImage?: (number | null) | Media;
     };
   };
+  /**
+   * One row per wording; the project appears on the variants ticked.
+   */
+  resume?:
+    | {
+        /**
+         * Resume variants that include this entry.
+         */
+        variants?: ('product-company' | 'android' | 'flutter' | 'broad' | 'fullstack')[] | null;
+        /**
+         * Defaults to the project title.
+         */
+        title?: string | null;
+        order?: number | null;
+        /**
+         * After the name, e.g. "Flutter, Dart".
+         */
+        tagline?: string | null;
+        bullets?:
+          | {
+              text: string;
+              id?: string | null;
+            }[]
+          | null;
+        id?: string | null;
+      }[]
+    | null;
   architecture?: {
     nodes?:
       | {
@@ -623,6 +650,10 @@ export interface Experience {
   highlights?:
     | {
         text: string;
+        /**
+         * Leave empty to use this bullet in every variant.
+         */
+        variants?: ('product-company' | 'android' | 'flutter' | 'broad' | 'fullstack')[] | null;
         id?: string | null;
       }[]
     | null;
@@ -658,6 +689,10 @@ export interface Education {
   highlights?:
     | {
         text: string;
+        /**
+         * Leave empty to use this bullet in every variant.
+         */
+        variants?: ('product-company' | 'android' | 'flutter' | 'broad' | 'fullstack')[] | null;
         id?: string | null;
       }[]
     | null;
@@ -923,6 +958,21 @@ export interface ProjectsSelect<T extends boolean = true> {
               afterImage?: T;
             };
       };
+  resume?:
+    | T
+    | {
+        variants?: T;
+        title?: T;
+        order?: T;
+        tagline?: T;
+        bullets?:
+          | T
+          | {
+              text?: T;
+              id?: T;
+            };
+        id?: T;
+      };
   architecture?:
     | T
     | {
@@ -1125,6 +1175,7 @@ export interface ExperienceSelect<T extends boolean = true> {
     | T
     | {
         text?: T;
+        variants?: T;
         id?: T;
       };
   variants?: T;
@@ -1152,6 +1203,7 @@ export interface EducationSelect<T extends boolean = true> {
     | T
     | {
         text?: T;
+        variants?: T;
         id?: T;
       };
   variants?: T;
@@ -1348,6 +1400,24 @@ export interface Person {
     };
     [k: string]: unknown;
   } | null;
+  resume?: {
+    /**
+     * The name at the top of the resume.
+     */
+    name?: string | null;
+    phone?: string | null;
+    /**
+     * The closing "Languages:" line.
+     */
+    languages?: string | null;
+    headlines?:
+      | {
+          variant: 'product-company' | 'android' | 'flutter' | 'broad' | 'fullstack';
+          text: string;
+          id?: string | null;
+        }[]
+      | null;
+  };
   /**
    * Seeded sample data.
    */
@@ -1572,6 +1642,20 @@ export interface PersonSelect<T extends boolean = true> {
         id?: T;
       };
   about?: T;
+  resume?:
+    | T
+    | {
+        name?: T;
+        phone?: T;
+        languages?: T;
+        headlines?:
+          | T
+          | {
+              variant?: T;
+              text?: T;
+              id?: T;
+            };
+      };
   _seed?: T;
   _status?: T;
   updatedAt?: T;

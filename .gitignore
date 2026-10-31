@@ -49,3 +49,6 @@ next-env.d.ts
 
 # Flutter demo builds (pnpm demos:build)
 apps/site/public/flutter/demos/
+
+# Resume export output (pnpm resume:export)
+exports/
