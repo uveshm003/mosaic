@@ -11,6 +11,7 @@ import { Services } from './collections/services'
 import { Tech } from './collections/tech'
 import { Testimonials } from './collections/testimonials'
 import { Users } from './collections/users'
+import { demoReviewer } from './demo'
 import type { CollectionConfig, GlobalConfig } from 'payload'
 import { seedFlagField } from './fields'
 import { BrandSettings, Person, Profiles, SiteSettings } from './globals'
@@ -51,6 +52,12 @@ export interface MosaicPayloadOptions {
   migrationDir: string
   /** Admin components shown below the dashboard, as Payload component paths. */
   afterDashboard?: string[]
+  /** Admin components shown above every signed-in admin view. */
+  header?: string[]
+  /** Admin components shown above the login form. */
+  beforeLogin?: string[]
+  /** The public demo admin: no first-user promotion, and the reviewer login is prefilled. */
+  demo?: boolean
 }
 
 export function createPayloadConfig(options: MosaicPayloadOptions): Promise<SanitizedConfig> {
@@ -58,8 +65,14 @@ export function createPayloadConfig(options: MosaicPayloadOptions): Promise<Sani
     admin: {
       user: Users.slug,
       importMap: { baseDir: options.importMapBaseDir },
-      components: { afterDashboard: options.afterDashboard ?? [] },
+      components: {
+        afterDashboard: options.afterDashboard ?? [],
+        header: options.header ?? [],
+        beforeLogin: options.beforeLogin ?? [],
+      },
+      ...(options.demo ? { autoLogin: { ...demoReviewer, prefillOnly: true } } : {}),
     },
+    custom: { demo: options.demo ?? false },
     collections,
     globals,
     editor: richTextEditor,

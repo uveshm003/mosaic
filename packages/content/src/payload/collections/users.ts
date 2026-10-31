@@ -16,9 +16,12 @@ export const Users: CollectionConfig = {
   },
   hooks: {
     beforeChange: [
-      // The first account is Uvesh's, created through Payload's first-user screen.
+      // The first account is Uvesh's, created through Payload's first-user screen. The
+      // public demo never promotes it (anyone could reach that screen on an empty demo),
+      // and the demo reset sets its reviewer's role itself.
       async ({ data, operation, req }) => {
-        if (operation === 'create') {
+        const keepRole = req.context.keepRole === true || req.payload.config.custom.demo === true
+        if (operation === 'create' && !keepRole) {
           const { totalDocs } = await req.payload.count({ collection: 'users', req })
           if (totalDocs === 0) return { ...data, role: 'admin' }
         }
