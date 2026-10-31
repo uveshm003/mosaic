@@ -11,7 +11,7 @@ const fixture = {
         tagline: 'Flutter tagline',
         primaryAction: { label: 'GitHub', url: 'https://github.com' },
       },
-      product: { enabled: false },
+      product: { enabled: true },
       freelance: { enabled: true },
       fullstack: {},
     },
@@ -88,8 +88,8 @@ describe('profiles', () => {
   })
 
   it('lists only profiles that are enabled and built', () => {
-    // Freelance is enabled but has no pages yet, so nothing may link to it.
-    expect(content.enabledProfiles().map(({ key }) => key)).toEqual(['flutter'])
+    // Product is enabled but has no pages yet, so nothing may link to it.
+    expect(content.enabledProfiles().map(({ key }) => key)).toEqual(['flutter', 'freelance'])
     expect(content.isEnabled('root')).toBe(true)
   })
 })
@@ -97,5 +97,29 @@ describe('profiles', () => {
 describe('postsFor', () => {
   it('returns the profile’s posts, newest first', () => {
     expect(content.postsFor('flutter').map((post) => post.title)).toEqual(['Newer', 'Older'])
+  })
+})
+
+describe('visibleTestimonials', () => {
+  const base = { id: 1, quote: 'Q', name: 'N', updatedAt: '', createdAt: '' }
+
+  it('hides the section when nothing is published with consent', () => {
+    expect(
+      content.visibleTestimonials([
+        { ...base, consentConfirmed: false, _status: 'published' },
+        { ...base, consentConfirmed: true, _status: 'draft' },
+      ]),
+    ).toEqual([])
+  })
+
+  it('keeps consented, published quotes, and filters by project when asked', () => {
+    const ok = { ...base, consentConfirmed: true, _status: 'published' as const }
+    const list = [
+      { ...ok, id: 1, project: 7 },
+      { ...ok, id: 2, project: 9 },
+      { ...ok, id: 3, project: null },
+    ]
+    expect(content.visibleTestimonials(list).map((t) => t.id)).toEqual([1, 2, 3])
+    expect(content.visibleTestimonials(list, [7]).map((t) => t.id)).toEqual([1, 3])
   })
 })

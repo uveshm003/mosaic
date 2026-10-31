@@ -68,3 +68,12 @@ Answers from each checkpoint in `docs/SPEC.md`, recorded before work continues. 
 - Voice: Uvesh left it to me, as long as it blends two or more. Sharp and opinionated, with wit; analytical where a breakdown needs it.
 - Three directions were built on seed data: Billboard (wide black grotesk, colour bands), Poster wall (serif italics, every post a poster) and Studio 3D (a turnable 3D mark over a Swiss index). Uvesh picked the Poster wall.
 - Name: the spec's working name, Menpur Studio, until the brand-name checkpoint. The site stays noindex until then.
+
+## Design interview: Freelance
+
+2026-10-31.
+
+- Services: mobile apps, web apps and dashboards, backends and APIs, MVPs, maintenance, plus vibe-code cleanup, forward-deployed engineering and AI-assisted engineering. They are grouped as build, fix and embed.
+- Feel: friendly and warm combined with Swiss precision. Light and dark follow the system. Signature interaction: the process timeline.
+- Two directions were built (Warm grid, Blueprint). Uvesh liked the Blueprint best and asked for a combination of both, with more content. The result is the blueprint look with the warm grid's cream paper, terracotta second accent, softer corners and hand-drawn underline.
+- Everything about how Uvesh works (audience, process steps with "you get" and "your part", principles, FAQ) lives in the admin under Profiles → Freelance. Dev seed text stands in until Uvesh writes his own; the page shows only what is filled in.

@@ -23,6 +23,57 @@ export const Person: GlobalConfig = {
   ],
 }
 
+const engagementField: Field = {
+  name: 'engagement',
+  type: 'array',
+  admin: { description: 'The steps of an engagement, in order.' },
+  fields: [
+    { name: 'title', type: 'text', required: true },
+    { name: 'when', type: 'text', admin: { description: 'For example "Week 1".' } },
+    { name: 'summary', type: 'textarea' },
+    {
+      name: 'youGet',
+      type: 'array',
+      admin: { description: 'What the client has at the end of this step.' },
+      fields: [{ name: 'text', type: 'text', required: true }],
+    },
+    {
+      name: 'yourPart',
+      type: 'text',
+      admin: { description: 'What the client does in this step.' },
+    },
+  ],
+}
+
+// The rest of the Freelance profile's words: who it is for, how Uvesh works, and answers to
+// the usual questions. All of it is Uvesh's to write; the page shows only what is filled in.
+const freelanceFields: Field[] = [
+  {
+    name: 'audience',
+    type: 'array',
+    admin: { description: 'Who the work is for, as short chips.' },
+    fields: [{ name: 'text', type: 'text', required: true }],
+  },
+  engagementField,
+  {
+    name: 'principles',
+    type: 'array',
+    admin: { description: 'How you work, one promise per row.' },
+    fields: [
+      { name: 'title', type: 'text', required: true },
+      { name: 'text', type: 'textarea' },
+    ],
+  },
+  {
+    name: 'faq',
+    type: 'array',
+    fields: [
+      { name: 'question', type: 'text', required: true },
+      { name: 'answer', type: 'textarea', required: true },
+    ],
+  },
+]
+
 export const Profiles: GlobalConfig = {
   slug: 'profiles',
   access,
@@ -55,6 +106,7 @@ export const Profiles: GlobalConfig = {
           { name: 'url', type: 'text' },
         ],
       },
+      ...(key === 'freelance' ? freelanceFields : []),
     ],
   })),
 }

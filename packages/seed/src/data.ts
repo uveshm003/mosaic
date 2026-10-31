@@ -275,15 +275,12 @@ export class SeedData {
   }
 
   services(): Data<'services'>[] {
-    return copy.services.map(([title, summary], index) => ({
+    return copy.services.map(([title, summary, deliverables, timeline, group], index) => ({
       title: this.label(title),
       summary,
-      deliverables: [
-        'Discovery call and written plan',
-        'Weekly builds you can try',
-        'Handover with docs',
-      ].map((text) => ({ text })),
-      typicalTimeline: `${String(this.faker.number.int({ min: 2, max: 12 }))} weeks`,
+      deliverables: deliverables.map((text) => ({ text })),
+      typicalTimeline: timeline,
+      group,
       order: index,
       _status: 'published' as const,
       _seed: true,
@@ -400,7 +397,19 @@ export class SeedData {
       root: profile('root'),
       flutter: profile('flutter'),
       product: profile('product'),
-      freelance: profile('freelance'),
+      freelance: {
+        ...profile('freelance'),
+        audience: copy.freelanceAudience.map((text) => ({ text })),
+        engagement: copy.engagement.map(([title, when, summary, youGet, yourPart]) => ({
+          title,
+          when,
+          summary,
+          youGet: youGet.map((text) => ({ text })),
+          yourPart,
+        })),
+        principles: copy.freelancePrinciples.map(([title, text]) => ({ title, text })),
+        faq: copy.freelanceFaq.map(([question, answer]) => ({ question, answer })),
+      },
       fullstack: profile('fullstack'),
       _seed: true,
     }

@@ -1,6 +1,14 @@
 import type { ListingProfileKey, ProfileKey } from '@mosaic/content'
 import type { Snapshot } from '@mosaic/content/snapshot'
-import type { Experience, Post, Project, Skill, Tech } from '@mosaic/content/payload-types'
+import type {
+  Experience,
+  Post,
+  Project,
+  Service,
+  Skill,
+  Tech,
+  Testimonial,
+} from '@mosaic/content/payload-types'
 import { getSnapshot } from './snapshot'
 
 function snapshot(): Snapshot {
@@ -132,7 +140,7 @@ export const listingProfiles: { key: ListingProfileKey; label: string }[] = [
 export const isEnabled = (key: ProfileKey) => profile(key).enabled
 
 // Profiles whose pages exist in this app. A profile is linked only when it is built and enabled.
-const builtProfiles = new Set<ListingProfileKey>(['flutter'])
+const builtProfiles = new Set<ListingProfileKey>(['flutter', 'freelance'])
 
 export const enabledProfiles = () =>
   listingProfiles.filter(({ key }) => builtProfiles.has(key) && isEnabled(key))
@@ -196,3 +204,61 @@ export function latestPosts(count = 3): Post[] {
 
 /** A stable hue per project, used by the drawn device mockups until real screenshots exist. */
 export const projectHue = (id: number) => (id * 47 + 160) % 360
+
+export function services(): Service[] {
+  return [...snapshot().collections.services]
+    .filter((s) => s._status !== 'draft')
+    .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
+}
+
+export interface EngagementStep {
+  title: string
+  when: string | null
+  summary: string | null
+  youGet: string[]
+  yourPart: string | null
+}
+
+/** The Freelance profile's own words: audience, process, principles and FAQ. */
+export function freelanceProfile() {
+  const settings = getSnapshot()?.globals.profiles.freelance
+  return {
+    audience: (settings?.audience ?? []).map((row) => row.text),
+    engagement: (settings?.engagement ?? []).map((step): EngagementStep => ({
+      title: step.title,
+      when: step.when ?? null,
+      summary: step.summary ?? null,
+      youGet: (step.youGet ?? []).map((row) => row.text),
+      yourPart: step.yourPart ?? null,
+    })),
+    principles: (settings?.principles ?? []).map((row) => ({
+      title: row.title,
+      text: row.text ?? null,
+    })),
+    faq: (settings?.faq ?? []).map((row) => ({ question: row.question, answer: row.answer })),
+  }
+}
+
+export const serviceGroupLabel: Record<NonNullable<Service['group']>, string> = {
+  build: 'Build something new',
+  fix: 'Fix or improve what exists',
+  embed: 'Work inside your team',
+}
+
+export const serviceGroupOrder = Object.keys(serviceGroupLabel) as NonNullable<Service['group']>[]
+
+/**
+ * Testimonials that may be shown: published, with consent, optionally for one profile's
+ * projects. An empty list hides the section (spec: Phase 4).
+ */
+export function visibleTestimonials(list: Testimonial[], projectIds?: number[]): Testimonial[] {
+  return list.filter((t) => {
+    if (t._status === 'draft' || !t.consentConfirmed) return false
+    if (!projectIds) return true
+    const project = typeof t.project === 'object' ? t.project?.id : t.project
+    return project == null || projectIds.includes(project)
+  })
+}
+
+export const testimonials = (projectIds?: number[]) =>
+  visibleTestimonials(snapshot().collections.testimonials, projectIds)
