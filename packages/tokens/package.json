@@ -7,7 +7,8 @@
     "./root.css": "./css/root.css",
     "./flutter.css": "./css/flutter.css",
     "./brand.css": "./css/brand.css",
-    "./freelance.css": "./css/freelance.css"
+    "./freelance.css": "./css/freelance.css",
+    "./fullstack.css": "./css/fullstack.css"
   },
   "scripts": {
     "lint": "eslint .",

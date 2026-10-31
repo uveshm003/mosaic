@@ -191,6 +191,10 @@ export interface Project {
     repo?: string | null;
     live?: string | null;
     video?: string | null;
+    /**
+     * Link the public demo admin, with the reviewer login, from this case study.
+     */
+    demoAdmin?: boolean | null;
   };
   demoStatus: 'live' | 'demo-build' | 'video' | 'repo-only' | 'private';
   /**
@@ -210,6 +214,45 @@ export interface Project {
       }[]
     | null;
   media?: (number | Media)[] | null;
+  architecture?: {
+    nodes?:
+      | {
+          /**
+           * Short id, e.g. "api".
+           */
+          key: string;
+          label: string;
+          /**
+           * Matches a Tech name to light up in the stack explorer.
+           */
+          tech?: string | null;
+          kind: 'client' | 'service' | 'data' | 'queue' | 'external';
+          column: number;
+          row: number;
+          id?: string | null;
+        }[]
+      | null;
+    edges?:
+      | {
+          from: string;
+          to: string;
+          label?: string | null;
+          id?: string | null;
+        }[]
+      | null;
+    /**
+     * One request through the system, hop by hop.
+     */
+    trace?:
+      | {
+          from: string;
+          to: string;
+          label: string;
+          code?: string | null;
+          id?: string | null;
+        }[]
+      | null;
+  };
   /**
    * Profiles this appears on.
    */
@@ -709,6 +752,7 @@ export interface ProjectsSelect<T extends boolean = true> {
         repo?: T;
         live?: T;
         video?: T;
+        demoAdmin?: T;
       };
   demoStatus?: T;
   confidentiality?: T;
@@ -722,6 +766,38 @@ export interface ProjectsSelect<T extends boolean = true> {
         id?: T;
       };
   media?: T;
+  architecture?:
+    | T
+    | {
+        nodes?:
+          | T
+          | {
+              key?: T;
+              label?: T;
+              tech?: T;
+              kind?: T;
+              column?: T;
+              row?: T;
+              id?: T;
+            };
+        edges?:
+          | T
+          | {
+              from?: T;
+              to?: T;
+              label?: T;
+              id?: T;
+            };
+        trace?:
+          | T
+          | {
+              from?: T;
+              to?: T;
+              label?: T;
+              code?: T;
+              id?: T;
+            };
+      };
   profiles?: T;
   overrides?:
     | T
@@ -1219,6 +1295,10 @@ export interface Profile {
       label?: string | null;
       url?: string | null;
     };
+    /**
+     * The public demo admin. Its card shows once this is set.
+     */
+    demoAdminUrl?: string | null;
   };
   /**
    * Seeded sample data.
@@ -1433,6 +1513,7 @@ export interface ProfilesSelect<T extends boolean = true> {
               label?: T;
               url?: T;
             };
+        demoAdminUrl?: T;
       };
   _seed?: T;
   updatedAt?: T;

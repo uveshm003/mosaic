@@ -6,3 +6,4 @@ export {
   type ListingProfileKey,
   type ProfileKey,
 } from './profiles'
+export { demoReviewer } from './demo'

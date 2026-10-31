@@ -1,0 +1,34 @@
+/* Full-stack: an app shell with developer-tool panes. Cobalt for interaction, amber for the
+   request tracer, green for what is live. */
+.theme-fullstack {
+  --bg: #f4f5f7;
+  --fg: #0f1729;
+  --muted: #5f6b7d;
+  --accent: #3355ff;
+  --accent-2: #e8930c;
+  --accent-fg: #ffffff;
+  --ok: #0f9f6e;
+  --line: #dde2e9;
+  --surface: #ffffff;
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  .theme-fullstack {
+    --bg: #0a0c10;
+    --fg: #e5e8ee;
+    --muted: #8a94a6;
+    --accent: #6f8bff;
+    --accent-2: #ffb23f;
+    --accent-fg: #0a0c10;
+    --ok: #34d399;
+    --line: #1e232c;
+    --surface: #11141a;
+    color-scheme: dark;
+  }
+}
+
+.theme-fullstack .dots {
+  background-image: radial-gradient(var(--line) 1px, transparent 1px);
+  background-size: 18px 18px;
+}

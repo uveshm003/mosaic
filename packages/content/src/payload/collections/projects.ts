@@ -2,7 +2,7 @@ import { APIError, type CollectionConfig } from 'payload'
 import { listingProfileKeys } from '../../profiles'
 import { adminOnly } from '../access'
 import { highlightsField, listingProfilesField, periodField, slugField } from '../fields'
-import { duplicateProfileError, projectPublishError } from '../rules'
+import { architectureError, duplicateProfileError, projectPublishError } from '../rules'
 
 export const demoStatuses = ['live', 'demo-build', 'video', 'repo-only', 'private'] as const
 
@@ -17,7 +17,7 @@ export const Projects: CollectionConfig = {
   hooks: {
     beforeChange: [
       ({ data }) => {
-        const error = projectPublishError(data)
+        const error = projectPublishError(data) ?? architectureError(data.architecture)
         if (error) throw new APIError(error, 400, null, true)
         return data
       },
@@ -63,6 +63,15 @@ export const Projects: CollectionConfig = {
         { name: 'repo', type: 'text' },
         { name: 'live', type: 'text' },
         { name: 'video', type: 'text' },
+        {
+          name: 'demoAdmin',
+          type: 'checkbox',
+          defaultValue: false,
+          admin: {
+            description:
+              'Link the public demo admin, with the reviewer login, from this case study.',
+          },
+        },
       ],
     },
     {
@@ -101,6 +110,80 @@ export const Projects: CollectionConfig = {
       ],
     },
     { name: 'media', type: 'upload', relationTo: 'media', hasMany: true },
+    {
+      // The system diagram and request trace on full-stack case studies.
+      name: 'architecture',
+      type: 'group',
+      fields: [
+        {
+          name: 'nodes',
+          type: 'array',
+          fields: [
+            {
+              type: 'row',
+              fields: [
+                {
+                  name: 'key',
+                  type: 'text',
+                  required: true,
+                  admin: { description: 'Short id, e.g. "api".' },
+                },
+                { name: 'label', type: 'text', required: true },
+                {
+                  name: 'tech',
+                  type: 'text',
+                  admin: { description: 'Matches a Tech name to light up in the stack explorer.' },
+                },
+              ],
+            },
+            {
+              type: 'row',
+              fields: [
+                {
+                  name: 'kind',
+                  type: 'select',
+                  required: true,
+                  defaultValue: 'service',
+                  options: ['client', 'service', 'data', 'queue', 'external'],
+                },
+                { name: 'column', type: 'number', required: true, defaultValue: 0, min: 0, max: 5 },
+                { name: 'row', type: 'number', required: true, defaultValue: 0, min: 0, max: 5 },
+              ],
+            },
+          ],
+        },
+        {
+          name: 'edges',
+          type: 'array',
+          fields: [
+            {
+              type: 'row',
+              fields: [
+                { name: 'from', type: 'text', required: true },
+                { name: 'to', type: 'text', required: true },
+                { name: 'label', type: 'text' },
+              ],
+            },
+          ],
+        },
+        {
+          name: 'trace',
+          type: 'array',
+          admin: { description: 'One request through the system, hop by hop.' },
+          fields: [
+            {
+              type: 'row',
+              fields: [
+                { name: 'from', type: 'text', required: true },
+                { name: 'to', type: 'text', required: true },
+                { name: 'label', type: 'text', required: true },
+              ],
+            },
+            { name: 'code', type: 'code', admin: { language: 'typescript' } },
+          ],
+        },
+      ],
+    },
     listingProfilesField,
     {
       name: 'overrides',

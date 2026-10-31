@@ -1,3 +1,4 @@
+import { z } from 'zod'
 // Pure publishing and validation rules, kept free of Payload imports so they unit-test cheaply.
 
 const slugPattern = /^[a-z0-9]+(?:-[a-z0-9]+)*$/
@@ -51,6 +52,38 @@ export function testimonialPublishError(doc: {
 }): string | null {
   if (doc._status === 'published' && doc.consentConfirmed !== true) {
     return 'Confirm consent before publishing a testimonial.'
+  }
+  return null
+}
+
+const end = z.string().nullish()
+const architectureSchema = z
+  .object({
+    nodes: z.array(z.object({ key: end })).nullish(),
+    edges: z.array(z.object({ from: end, to: end })).nullish(),
+    trace: z.array(z.object({ from: end, to: end })).nullish(),
+  })
+  .nullish()
+
+/** A diagram's edges and trace may only point at nodes it defines, each key once. */
+export function architectureError(input: unknown): string | null {
+  const parsed = architectureSchema.safeParse(input)
+  if (!parsed.success) return 'The diagram isn’t in the expected shape.'
+  const architecture = parsed.data
+  const keys = (architecture?.nodes ?? []).map((n) => n.key ?? '')
+  const duplicate = keys.find((k, i) => keys.indexOf(k) !== i)
+  if (duplicate !== undefined) return `Diagram node "${duplicate}" is used twice.`
+  const known = new Set(keys)
+  for (const [list, name] of [
+    [architecture?.edges ?? [], 'connection'],
+    [architecture?.trace ?? [], 'trace step'],
+  ] as const) {
+    for (const row of list) {
+      for (const end of [row.from, row.to]) {
+        if (!end || !known.has(end))
+          return `A ${name} points at "${end ?? ''}", which isn’t a node.`
+      }
+    }
   }
   return null
 }

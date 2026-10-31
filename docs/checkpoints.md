@@ -77,3 +77,12 @@ Answers from each checkpoint in `docs/SPEC.md`, recorded before work continues. 
 - Feel: friendly and warm combined with Swiss precision. Light and dark follow the system. Signature interaction: the process timeline.
 - Two directions were built (Warm grid, Blueprint). Uvesh liked the Blueprint best and asked for a combination of both, with more content. The result is the blueprint look with the warm grid's cream paper, terracotta second accent, softer corners and hand-drawn underline.
 - Everything about how Uvesh works (audience, process steps with "you get" and "your part", principles, FAQ) lives in the admin under Profiles → Freelance. Dev seed text stands in until Uvesh writes his own; the page shows only what is filled in.
+
+## Design interview: Full-stack
+
+2026-10-31.
+
+- Feel: a mix of all three offered (product dashboard, system diagrams, developer tool). Light and dark follow the system. Signature interactions: all three (request tracer, ⌘K command palette, stack explorer).
+- With every answer being "all", one combined design was built instead of separate directions, and reviewed through its pull request.
+- Diagrams are structured data on each project (nodes, connections and a request trace), editable in the admin and checked so every connection points at a real node.
+- The platform's own case study is drafted from facts in this repository (`docs/case-studies/mosaic.md`) for Uvesh to approve before it reaches production. The demo admin card appears once the demo admin is deployed.

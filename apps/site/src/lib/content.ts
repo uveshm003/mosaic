@@ -59,6 +59,49 @@ export interface ProjectView {
   video: string | null
   metrics: { label: string; value: string }[]
   body: unknown
+  demoAdmin: boolean
+  architecture: Architecture | null
+}
+
+export type NodeKind = 'client' | 'service' | 'data' | 'queue' | 'external'
+
+export interface Architecture {
+  nodes: {
+    key: string
+    label: string
+    kind: NodeKind
+    tech: string | null
+    column: number
+    row: number
+  }[]
+  edges: { from: string; to: string; label: string | null }[]
+  trace: { from: string; to: string; label: string; code: string | null }[]
+}
+
+function architectureOf(project: Project): Architecture | null {
+  const nodes = project.architecture?.nodes ?? []
+  if (nodes.length === 0) return null
+  return {
+    nodes: nodes.map((n) => ({
+      key: n.key,
+      label: n.label,
+      kind: n.kind,
+      tech: n.tech ?? null,
+      column: n.column,
+      row: n.row,
+    })),
+    edges: (project.architecture?.edges ?? []).map((e) => ({
+      from: e.from,
+      to: e.to,
+      label: e.label ?? null,
+    })),
+    trace: (project.architecture?.trace ?? []).map((t) => ({
+      from: t.from,
+      to: t.to,
+      label: t.label,
+      code: t.code ?? null,
+    })),
+  }
 }
 
 // Per-profile wording from `overrides` wins over the base fields (spec: Data model).
@@ -85,6 +128,8 @@ function view(project: Project, profile: ListingProfileKey): ProjectView {
     video: project.links?.video ?? null,
     metrics: (project.metrics ?? []).map(({ label, value }) => ({ label, value })),
     body: project.body ?? null,
+    demoAdmin: project.links?.demoAdmin ?? false,
+    architecture: architectureOf(project),
   }
 }
 
@@ -140,7 +185,7 @@ export const listingProfiles: { key: ListingProfileKey; label: string }[] = [
 export const isEnabled = (key: ProfileKey) => profile(key).enabled
 
 // Profiles whose pages exist in this app. A profile is linked only when it is built and enabled.
-const builtProfiles = new Set<ListingProfileKey>(['flutter', 'freelance'])
+const builtProfiles = new Set<ListingProfileKey>(['flutter', 'freelance', 'fullstack'])
 
 export const enabledProfiles = () =>
   listingProfiles.filter(({ key }) => builtProfiles.has(key) && isEnabled(key))
@@ -262,3 +307,21 @@ export function visibleTestimonials(list: Testimonial[], projectIds?: number[]):
 
 export const testimonials = (projectIds?: number[]) =>
   visibleTestimonials(snapshot().collections.testimonials, projectIds)
+
+/** The public demo admin, once deployed; its card stays hidden until then. */
+export const demoAdminUrl = () => getSnapshot()?.globals.profiles.fullstack?.demoAdminUrl ?? null
+
+/** Every technology on a set of projects, with how many use it, grouped by kind. */
+export function techCatalog(
+  projects: ProjectView[],
+): { kind: Tech['kind']; tech: { name: string; count: number }[] }[] {
+  const kinds = new Map(snapshot().collections.tech.map((t) => [t.name, t.kind]))
+  const counts = new Map<string, number>()
+  for (const p of projects) for (const t of p.tech) counts.set(t, (counts.get(t) ?? 0) + 1)
+  const groups = new Map<Tech['kind'], { name: string; count: number }[]>()
+  for (const [name, count] of [...counts].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))) {
+    const kind = kinds.get(name) ?? 'tool'
+    groups.set(kind, [...(groups.get(kind) ?? []), { name, count }])
+  }
+  return [...groups].map(([kind, tech]) => ({ kind, tech }))
+}

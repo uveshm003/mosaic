@@ -95,8 +95,9 @@ export async function seed(payload: Payload, variant: SeedVariant): Promise<Coun
       file: await image(index),
     }),
   )
-  const projectIds = await createAll(data.projects(techIds, mediaIds), (doc) =>
-    payload.create({ collection: 'projects', data: doc, draft: doc._status === 'draft' }),
+  const projectIds = await createAll(
+    [...data.projects(techIds, mediaIds), data.mosaicProject(techIds)],
+    (doc) => payload.create({ collection: 'projects', data: doc, draft: doc._status === 'draft' }),
   )
   const postIds = await createAll(data.posts(mediaIds), (doc) =>
     payload.create({ collection: 'posts', data: doc, draft: doc._status === 'draft' }),

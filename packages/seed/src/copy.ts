@@ -250,6 +250,12 @@ export const tech: [string, 'language' | 'framework' | 'tool' | 'platform'][] = 
   ['PostgreSQL', 'tool'],
   ['Bluetooth LE', 'platform'],
   ['GitHub Actions', 'tool'],
+  ['Angular', 'framework'],
+  ['Next.js', 'framework'],
+  ['Payload', 'framework'],
+  ['Cloudflare Workers', 'platform'],
+  ['Redis', 'tool'],
+  ['TypeScript', 'language'],
 ]
 
 export const about = [
@@ -347,3 +353,152 @@ export const freelanceFaq: [question: string, answer: string][] = [
     'You get docs and a walkthrough. Ongoing care is optional, never a condition.',
   ],
 ]
+
+type Node = [
+  key: string,
+  label: string,
+  kind: 'client' | 'service' | 'data' | 'queue' | 'external',
+  tech: string | null,
+  column: number,
+  row: number,
+]
+type Hop = [from: string, to: string, label: string, code: string]
+
+export interface ArchitectureCopy {
+  nodes: Node[]
+  edges: [from: string, to: string, label: string][]
+  trace: Hop[]
+}
+
+/** Sample diagrams for full-stack projects. */
+export const architectures: ArchitectureCopy[] = [
+  {
+    nodes: [
+      ['app', 'Field app', 'client', 'Flutter', 0, 1],
+      ['api', 'API', 'service', 'NestJS', 1, 1],
+      ['db', 'Database', 'data', 'PostgreSQL', 2, 0],
+      ['queue', 'Sync queue', 'queue', 'Redis', 2, 2],
+      ['worker', 'Sync worker', 'service', 'TypeScript', 3, 2],
+    ],
+    edges: [
+      ['app', 'api', 'HTTPS'],
+      ['api', 'db', 'SQL'],
+      ['api', 'queue', 'jobs'],
+      ['queue', 'worker', 'consume'],
+      ['worker', 'db', 'writes'],
+    ],
+    trace: [
+      ['app', 'api', 'POST /inspections', "await api.post('/inspections', draft)"],
+      ['api', 'db', 'Save the inspection', 'await inspections.insert({ ...dto, siteId })'],
+      ['api', 'queue', 'Queue the photo sync', "await queue.add('sync-photos', { inspectionId })"],
+      ['api', 'app', '201 Created', 'return { id, status: "saved" }'],
+    ],
+  },
+  {
+    nodes: [
+      ['web', 'Dashboard', 'client', 'Angular', 0, 1],
+      ['api', 'API', 'service', 'NestJS', 1, 1],
+      ['cache', 'Cache', 'data', 'Redis', 2, 0],
+      ['db', 'Database', 'data', 'PostgreSQL', 2, 2],
+      ['mail', 'Email provider', 'external', null, 3, 1],
+    ],
+    edges: [
+      ['web', 'api', 'HTTPS'],
+      ['api', 'cache', 'read-through'],
+      ['api', 'db', 'SQL'],
+      ['api', 'mail', 'reports'],
+    ],
+    trace: [
+      [
+        'web',
+        'api',
+        'GET /reports?range=30d',
+        "this.http.get('/reports', { params: { range: '30d' } })",
+      ],
+      ['api', 'cache', 'Check the cache', 'const hit = await cache.get(`reports:${range}`)'],
+      [
+        'api',
+        'db',
+        'Aggregate on a miss',
+        'SELECT site_id, count(*) FROM readings WHERE taken_at > $1 GROUP BY 1',
+      ],
+      ['api', 'web', '200 with the report', 'return { rows, generatedAt }'],
+    ],
+  },
+]
+
+// This platform, as its own case study. Facts only from this repository; Uvesh approves
+// the wording before it reaches production (docs/case-studies/mosaic.md).
+export const mosaic = {
+  title: 'Mosaic: this portfolio platform',
+  summary:
+    'One monorepo for a personal site with several profiles, a brand site, a headless admin, a public demo admin and a contact service.',
+  repo: 'https://github.com/uveshm003/mosaic',
+  tech: ['Next.js', 'Payload', 'PostgreSQL', 'Cloudflare Workers', 'TypeScript', 'GitHub Actions'],
+  body: [
+    ['h2', 'The problem'],
+    [
+      'p',
+      'Five portfolio profiles and a brand site, each with its own look, but one place to write content and no server to run or pay for.',
+    ],
+    ['h2', 'The approach'],
+    [
+      'p',
+      'Payload is the only writer. A build step exports published content into a typed snapshot, and both Next.js sites are static exports built from it, so nothing calls the admin at runtime.',
+    ],
+    [
+      'p',
+      'Environments are separated by code, not care: seeded documents carry a flag, the seed refuses the production database, and a production build fails if the snapshot contains seed data.',
+    ],
+    [
+      'p',
+      'The contact form posts to a Cloudflare Worker that checks Turnstile and a honeypot, validates with Zod, inserts into Postgres as a role that can only insert inquiries, and sends one email.',
+    ],
+    ['h2', 'The outcome'],
+    [
+      'p',
+      'Publishing is a button in the local admin that starts a GitHub Actions deploy to GitHub Pages. A public demo admin, reset every night, lets anyone look around as a read-only reviewer.',
+    ],
+  ] as const,
+  architecture: {
+    nodes: [
+      ['admin', 'Local admin', 'client', 'Payload', 0, 0],
+      ['db', 'Neon Postgres', 'data', 'PostgreSQL', 1, 1],
+      ['ci', 'Export & build', 'service', 'GitHub Actions', 2, 0],
+      ['pages', 'GitHub Pages', 'external', 'Next.js', 3, 0],
+      ['visitor', 'Visitor', 'client', null, 3, 1],
+      ['worker', 'Contact Worker', 'service', 'Cloudflare Workers', 2, 2],
+      ['email', 'Resend', 'external', null, 3, 2],
+    ],
+    edges: [
+      ['admin', 'db', 'writes'],
+      ['admin', 'ci', 'Publish'],
+      ['ci', 'db', 'reads published'],
+      ['ci', 'pages', 'deploys'],
+      ['visitor', 'worker', 'contact form'],
+      ['worker', 'db', 'INSERT'],
+      ['worker', 'email', 'notify'],
+    ],
+    trace: [
+      [
+        'visitor',
+        'worker',
+        'Submit the contact form',
+        "fetch(endpoint, { method: 'POST', body: JSON.stringify({ ...form, turnstileToken }) })",
+      ],
+      [
+        'worker',
+        'db',
+        'Store the inquiry',
+        'INSERT INTO inquiries (profile, name, email, project_type, message, timeline)\nVALUES ($1, $2, $3, $4, $5, $6) RETURNING id',
+      ],
+      [
+        'worker',
+        'email',
+        'Send one notification',
+        "fetcher('https://api.resend.com/emails', { method: 'POST', headers, body })",
+      ],
+      ['worker', 'visitor', '200, message received', 'return json({ ok: true })'],
+    ],
+  } satisfies ArchitectureCopy,
+}

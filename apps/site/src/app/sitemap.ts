@@ -13,5 +13,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
   if (isEnabled('freelance')) {
     urls.push('/freelance', ...projectsFor('freelance').map(({ slug }) => `/freelance/${slug}`))
   }
+  if (isEnabled('fullstack')) {
+    urls.push('/fullstack', ...projectsFor('fullstack').map(({ slug }) => `/fullstack/${slug}`))
+  }
   return urls.map((path) => ({ url: `${SITE_URL}${path}` }))
 }

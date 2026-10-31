@@ -10,6 +10,21 @@ import type {
 import * as copy from './copy'
 import { block, heading, richText } from './lexical'
 
+function architecture(a: copy.ArchitectureCopy) {
+  return {
+    nodes: a.nodes.map(([key, label, kind, tech, column, row]) => ({
+      key,
+      label,
+      kind,
+      tech,
+      column,
+      row,
+    })),
+    edges: a.edges.map(([from, to, label]) => ({ from, to, label })),
+    trace: a.trace.map(([from, to, label, code]) => ({ from, to, label, code })),
+  }
+}
+
 export type SeedVariant = 'dev' | 'demo'
 
 type Data<T extends CollectionSlug> = RequiredDataFromCollectionSlug<T>
@@ -147,10 +162,45 @@ export class SeedData {
               },
             ]
           : [],
+        ...(profiles.includes('fullstack')
+          ? {
+              architecture: architecture(
+                copy.architectures[index % copy.architectures.length] ?? copy.mosaic.architecture,
+              ),
+            }
+          : {}),
         _status: restricted ? 'draft' : 'published',
         _seed: true,
       }
     })
+  }
+
+  /** This platform as a full-stack case study (the draft in docs/case-studies/mosaic.md). */
+  mosaicProject(techIds: number[]): Data<'projects'> {
+    const title = this.label(copy.mosaic.title)
+    return {
+      title,
+      slug: 'sample-mosaic',
+      summary: copy.mosaic.summary,
+      body: richText(
+        copy.mosaic.body.map(([kind, text]) => (kind === 'h2' ? heading(text) : text)),
+      ),
+      role: 'Sole developer',
+      period: { start: '2026-10-28T00:00:00.000Z', end: null },
+      platforms: ['web'],
+      tech: copy.mosaic.tech.flatMap((name) => {
+        const id = techIds[copy.tech.findIndex(([n]) => n === name)]
+        return id === undefined ? [] : [id]
+      }),
+      links: { store: [], repo: copy.mosaic.repo, live: null, video: null, demoAdmin: true },
+      demoStatus: 'live',
+      confidentiality: 'public',
+      kind: 'personal',
+      profiles: ['fullstack'],
+      architecture: architecture(copy.mosaic.architecture),
+      _status: 'published',
+      _seed: true,
+    }
   }
 
   /** One of every rich-text block, so the sites have each kind to render. */
@@ -397,6 +447,7 @@ export class SeedData {
       root: profile('root'),
       flutter: profile('flutter'),
       product: profile('product'),
+      fullstack: { ...profile('fullstack'), demoAdminUrl: 'https://example.com/admin' },
       freelance: {
         ...profile('freelance'),
         audience: copy.freelanceAudience.map((text) => ({ text })),
@@ -410,7 +461,6 @@ export class SeedData {
         principles: copy.freelancePrinciples.map(([title, text]) => ({ title, text })),
         faq: copy.freelanceFaq.map(([question, answer]) => ({ question, answer })),
       },
-      fullstack: profile('fullstack'),
       _seed: true,
     }
   }
