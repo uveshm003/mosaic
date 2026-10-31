@@ -11,7 +11,7 @@ const fixture = {
         tagline: 'Flutter tagline',
         primaryAction: { label: 'GitHub', url: 'https://github.com' },
       },
-      product: { enabled: false },
+      product: { enabled: true },
       freelance: { enabled: true },
       fullstack: {},
     },
@@ -88,8 +88,8 @@ describe('profiles', () => {
   })
 
   it('lists only profiles that are enabled and built', () => {
-    // Freelance is enabled but has no pages yet, so nothing may link to it.
-    expect(content.enabledProfiles().map(({ key }) => key)).toEqual(['flutter'])
+    // Product is enabled but has no pages yet, so nothing may link to it.
+    expect(content.enabledProfiles().map(({ key }) => key)).toEqual(['flutter', 'freelance'])
     expect(content.isEnabled('root')).toBe(true)
   })
 })

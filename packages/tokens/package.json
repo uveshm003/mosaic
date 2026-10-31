@@ -6,7 +6,8 @@
     ".": "./src/index.ts",
     "./root.css": "./css/root.css",
     "./flutter.css": "./css/flutter.css",
-    "./brand.css": "./css/brand.css"
+    "./brand.css": "./css/brand.css",
+    "./freelance.css": "./css/freelance.css"
   },
   "scripts": {
     "lint": "eslint .",

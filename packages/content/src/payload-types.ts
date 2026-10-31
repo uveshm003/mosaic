@@ -391,6 +391,7 @@ export interface Service {
       }[]
     | null;
   typicalTimeline?: string | null;
+  group?: ('build' | 'fix' | 'embed') | null;
   order?: number | null;
   /**
    * Seeded sample data.
@@ -786,6 +787,7 @@ export interface ServicesSelect<T extends boolean = true> {
         id?: T;
       };
   typicalTimeline?: T;
+  group?: T;
   order?: T;
   _seed?: T;
   updatedAt?: T;
@@ -1148,6 +1150,15 @@ export interface Profile {
       url?: string | null;
     };
     /**
+     * Who the work is for, as short chips.
+     */
+    audience?:
+      | {
+          text: string;
+          id?: string | null;
+        }[]
+      | null;
+    /**
      * The steps of an engagement, in order.
      */
     engagement?:
@@ -1167,6 +1178,27 @@ export interface Profile {
                 id?: string | null;
               }[]
             | null;
+          /**
+           * What the client does in this step.
+           */
+          yourPart?: string | null;
+          id?: string | null;
+        }[]
+      | null;
+    /**
+     * How you work, one promise per row.
+     */
+    principles?:
+      | {
+          title: string;
+          text?: string | null;
+          id?: string | null;
+        }[]
+      | null;
+    faq?:
+      | {
+          question: string;
+          answer: string;
           id?: string | null;
         }[]
       | null;
@@ -1346,6 +1378,12 @@ export interface ProfilesSelect<T extends boolean = true> {
               label?: T;
               url?: T;
             };
+        audience?:
+          | T
+          | {
+              text?: T;
+              id?: T;
+            };
         engagement?:
           | T
           | {
@@ -1358,6 +1396,21 @@ export interface ProfilesSelect<T extends boolean = true> {
                     text?: T;
                     id?: T;
                   };
+              yourPart?: T;
+              id?: T;
+            };
+        principles?:
+          | T
+          | {
+              title?: T;
+              text?: T;
+              id?: T;
+            };
+        faq?:
+          | T
+          | {
+              question?: T;
+              answer?: T;
               id?: T;
             };
       };

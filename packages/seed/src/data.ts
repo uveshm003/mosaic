@@ -275,11 +275,12 @@ export class SeedData {
   }
 
   services(): Data<'services'>[] {
-    return copy.services.map(([title, summary, deliverables, timeline], index) => ({
+    return copy.services.map(([title, summary, deliverables, timeline, group], index) => ({
       title: this.label(title),
       summary,
       deliverables: deliverables.map((text) => ({ text })),
       typicalTimeline: timeline,
+      group,
       order: index,
       _status: 'published' as const,
       _seed: true,
@@ -398,12 +399,16 @@ export class SeedData {
       product: profile('product'),
       freelance: {
         ...profile('freelance'),
-        engagement: copy.engagement.map(([title, when, summary, youGet]) => ({
+        audience: copy.freelanceAudience.map((text) => ({ text })),
+        engagement: copy.engagement.map(([title, when, summary, youGet, yourPart]) => ({
           title,
           when,
           summary,
           youGet: youGet.map((text) => ({ text })),
+          yourPart,
         })),
+        principles: copy.freelancePrinciples.map(([title, text]) => ({ title, text })),
+        faq: copy.freelanceFaq.map(([question, answer]) => ({ question, answer })),
       },
       fullstack: profile('fullstack'),
       _seed: true,

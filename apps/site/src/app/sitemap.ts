@@ -10,5 +10,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
   if (isEnabled('flutter')) {
     urls.push('/flutter', ...projectsFor('flutter').map(({ slug }) => `/flutter/${slug}`))
   }
+  if (isEnabled('freelance')) {
+    urls.push('/freelance', ...projectsFor('freelance').map(({ slug }) => `/freelance/${slug}`))
+  }
   return urls.map((path) => ({ url: `${SITE_URL}${path}` }))
 }

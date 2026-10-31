@@ -56,16 +56,29 @@ export function ScrollTimeline({ steps }: { steps: EngagementStep[] }) {
               </p>
               <h3 className="mt-1 text-3xl font-semibold tracking-tight">{s.title}</h3>
               <p className="mt-2 text-muted">{s.summary}</p>
-              <ul className={`mt-4 flex flex-wrap gap-2 ${right ? '' : 'sm:justify-end'}`}>
-                {s.youGet.map((g) => (
-                  <li
-                    key={g}
-                    className="rounded-md border border-line bg-surface px-3 py-1 text-sm"
-                  >
-                    {g}
-                  </li>
-                ))}
-              </ul>
+              {s.youGet.length > 0 && (
+                <>
+                  <p className="mt-4 font-mono text-[11px] text-muted uppercase">You get</p>
+                  <ul className={`mt-1.5 flex flex-wrap gap-2 ${right ? '' : 'sm:justify-end'}`}>
+                    {s.youGet.map((g) => (
+                      <li
+                        key={g}
+                        className="rounded-lg border border-line bg-surface px-3 py-1 text-sm"
+                      >
+                        {g}
+                      </li>
+                    ))}
+                  </ul>
+                </>
+              )}
+              {s.yourPart && (
+                <p className="mt-3 text-sm">
+                  <span className="font-mono text-[11px] text-accent-2 uppercase">
+                    Your part ·{' '}
+                  </span>
+                  {s.yourPart}
+                </p>
+              )}
             </div>
           </li>
         )

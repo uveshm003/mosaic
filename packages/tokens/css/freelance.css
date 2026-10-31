@@ -1,0 +1,39 @@
+/* Freelance: a friendly blueprint. Cream drafting paper by day, navy blueprint by night;
+   sunflower for actions, terracotta for warmth. */
+.theme-freelance {
+  --bg: #faf6ee;
+  --fg: #14213d;
+  --muted: #5d6578;
+  --accent: #f2b31b;
+  --accent-2: #d9542f;
+  --accent-fg: #14213d;
+  --line: #14213d1c;
+  --surface: #ffffff;
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  .theme-freelance {
+    --bg: #0d1628;
+    --fg: #e8eef8;
+    --muted: #93a3bf;
+    --accent: #ffc94a;
+    --accent-2: #ff8a66;
+    --accent-fg: #13213b;
+    --line: #e8eef81c;
+    --surface: #132037;
+    color-scheme: dark;
+  }
+}
+
+.theme-freelance .paper {
+  background-image:
+    linear-gradient(var(--line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--line) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+/* The hard offset shadow of a drawing pinned to a board. */
+.theme-freelance .pinned {
+  box-shadow: 6px 6px 0 var(--fg);
+}

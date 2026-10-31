@@ -3099,6 +3099,14 @@
           "primaryKey": false,
           "notNull": false
         },
+        "group": {
+          "name": "group",
+          "type": "enum_services_group",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'build'"
+        },
         "order": {
           "name": "order",
           "type": "numeric",
@@ -3325,6 +3333,14 @@
           "type": "varchar",
           "primaryKey": false,
           "notNull": false
+        },
+        "version_group": {
+          "name": "version_group",
+          "type": "enum__services_v_version_group",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'build'"
         },
         "version_order": {
           "name": "version_order",
@@ -7091,6 +7107,88 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
+    "public.profiles_freelance_audience": {
+      "name": "profiles_freelance_audience",
+      "schema": "",
+      "columns": {
+        "_order": {
+          "name": "_order",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "_parent_id": {
+          "name": "_parent_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "id": {
+          "name": "id",
+          "type": "varchar",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "text": {
+          "name": "text",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {
+        "profiles_freelance_audience_order_idx": {
+          "name": "profiles_freelance_audience_order_idx",
+          "columns": [
+            {
+              "expression": "_order",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "profiles_freelance_audience_parent_id_idx": {
+          "name": "profiles_freelance_audience_parent_id_idx",
+          "columns": [
+            {
+              "expression": "_parent_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "profiles_freelance_audience_parent_id_fk": {
+          "name": "profiles_freelance_audience_parent_id_fk",
+          "tableFrom": "profiles_freelance_audience",
+          "tableTo": "profiles",
+          "columnsFrom": [
+            "_parent_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
     "public.profiles_freelance_engagement_you_get": {
       "name": "profiles_freelance_engagement_you_get",
       "schema": "",
@@ -7212,6 +7310,12 @@
           "type": "varchar",
           "primaryKey": false,
           "notNull": false
+        },
+        "your_part": {
+          "name": "your_part",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
         }
       },
       "indexes": {
@@ -7250,6 +7354,182 @@
         "profiles_freelance_engagement_parent_id_fk": {
           "name": "profiles_freelance_engagement_parent_id_fk",
           "tableFrom": "profiles_freelance_engagement",
+          "tableTo": "profiles",
+          "columnsFrom": [
+            "_parent_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.profiles_freelance_principles": {
+      "name": "profiles_freelance_principles",
+      "schema": "",
+      "columns": {
+        "_order": {
+          "name": "_order",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "_parent_id": {
+          "name": "_parent_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "id": {
+          "name": "id",
+          "type": "varchar",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "title": {
+          "name": "title",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "text": {
+          "name": "text",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {
+        "profiles_freelance_principles_order_idx": {
+          "name": "profiles_freelance_principles_order_idx",
+          "columns": [
+            {
+              "expression": "_order",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "profiles_freelance_principles_parent_id_idx": {
+          "name": "profiles_freelance_principles_parent_id_idx",
+          "columns": [
+            {
+              "expression": "_parent_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "profiles_freelance_principles_parent_id_fk": {
+          "name": "profiles_freelance_principles_parent_id_fk",
+          "tableFrom": "profiles_freelance_principles",
+          "tableTo": "profiles",
+          "columnsFrom": [
+            "_parent_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.profiles_freelance_faq": {
+      "name": "profiles_freelance_faq",
+      "schema": "",
+      "columns": {
+        "_order": {
+          "name": "_order",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "_parent_id": {
+          "name": "_parent_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "id": {
+          "name": "id",
+          "type": "varchar",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "question": {
+          "name": "question",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "answer": {
+          "name": "answer",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {
+        "profiles_freelance_faq_order_idx": {
+          "name": "profiles_freelance_faq_order_idx",
+          "columns": [
+            {
+              "expression": "_order",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "profiles_freelance_faq_parent_id_idx": {
+          "name": "profiles_freelance_faq_parent_id_idx",
+          "columns": [
+            {
+              "expression": "_parent_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "profiles_freelance_faq_parent_id_fk": {
+          "name": "profiles_freelance_faq_parent_id_fk",
+          "tableFrom": "profiles_freelance_faq",
           "tableTo": "profiles",
           "columnsFrom": [
             "_parent_id"
@@ -8035,12 +8315,30 @@
         "published"
       ]
     },
+    "public.enum_services_group": {
+      "name": "enum_services_group",
+      "schema": "public",
+      "values": [
+        "build",
+        "fix",
+        "embed"
+      ]
+    },
     "public.enum_services_status": {
       "name": "enum_services_status",
       "schema": "public",
       "values": [
         "draft",
         "published"
+      ]
+    },
+    "public.enum__services_v_version_group": {
+      "name": "enum__services_v_version_group",
+      "schema": "public",
+      "values": [
+        "build",
+        "fix",
+        "embed"
       ]
     },
     "public.enum__services_v_version_status": {
@@ -8165,6 +8463,6 @@
     "tables": {},
     "columns": {}
   },
-  "id": "d0e30319-9e54-451a-9804-6afc7c1eee6d",
+  "id": "ef6db74a-52ea-4184-bce3-ec3cc215947f",
   "prevId": "00000000-0000-0000-0000-000000000000"
 }

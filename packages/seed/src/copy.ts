@@ -95,6 +95,7 @@ export const services: [
   summary: string,
   deliverables: string[],
   timeline: string,
+  group: 'build' | 'fix' | 'embed',
 ][] = [
   [
     'Mobile apps',
@@ -105,30 +106,35 @@ export const services: [
       'Crash reporting and analytics set up',
     ],
     '6–12 weeks',
+    'build',
   ],
   [
     'Web apps & dashboards',
     'Admin panels, dashboards and internal tools your team will actually enjoy using.',
     ['Role-based access', 'Charts and exports that match how you report', 'Deployed and monitored'],
     '4–10 weeks',
+    'build',
   ],
   [
     'Backends & APIs',
     'APIs, databases and integrations that keep your app fast and reliable.',
     ['Documented API', 'Database schema and migrations', 'Payment, email and auth integrations'],
     '3–8 weeks',
+    'build',
   ],
   [
     'MVPs',
     'A focused first version to test the idea with real users in weeks, not months.',
     ['One core flow done properly', 'Feedback built in', 'A plan for version two'],
     '4–6 weeks',
+    'build',
   ],
   [
     'Maintenance',
     'Upgrades, bug fixes and performance work for apps that are already live.',
     ['Dependency and OS upgrades', 'Bug triage with clear priorities', 'Monthly health report'],
     'Ongoing',
+    'fix',
   ],
   [
     'Vibe-code cleanup',
@@ -139,12 +145,14 @@ export const services: [
       'Secrets, auth and data access checked',
     ],
     '1–4 weeks',
+    'fix',
   ],
   [
     'Forward-deployed engineer',
     'An engineer inside your team, close to your users, turning what they ask for into shipped features.',
     ['Joins your standups and tools', 'Ships alongside your team', 'Leaves things documented'],
     'Monthly',
+    'embed',
   ],
   [
     'AI-assisted engineering',
@@ -155,39 +163,51 @@ export const services: [
       'Your team shown how to do the same',
     ],
     'Any project',
+    'embed',
   ],
 ]
 
-export const engagement: [title: string, when: string, summary: string, youGet: string[]][] = [
+export const engagement: [
+  title: string,
+  when: string,
+  summary: string,
+  youGet: string[],
+  yourPart: string,
+][] = [
   [
     'Talk',
     'Week 0',
     'A call about what you are building, who it is for and what success looks like.',
     ['A short written summary of what we agreed'],
+    'Bring the idea, however rough. Sketches and screenshots help.',
   ],
   [
     'Plan',
     'Week 1',
     'Scope, milestones and risks on one page, so there are no surprises later.',
     ['A plan you can share with your team', 'A clickable prototype for bigger ideas'],
+    'Say yes, no or not yet to each part of the plan.',
   ],
   [
     'Build',
     'Weeks 2–8',
     'Short cycles with a working build at the end of each one, on your own phone or browser.',
     ['A demo every week', 'A shared board with what is done and what is next'],
+    'Try each build and tell me what feels wrong.',
   ],
   [
     'Launch',
     'Release week',
     'Store submission or deployment, monitoring switched on, and a calm launch day.',
     ['Your app live', 'Dashboards for crashes and usage'],
+    'Tell your users, and watch the first numbers come in.',
   ],
   [
     'Hand over',
     'After launch',
     'Docs, a walkthrough of the code and, if you want it, ongoing care.',
     ['Documentation and access to everything', 'An optional maintenance plan'],
+    'Decide whether you want me around for what comes next.',
   ],
 ]
 
@@ -289,4 +309,41 @@ export const brandParagraphs = [
   'Good campaigns start with a tension the audience already feels. The ad only has to name it.',
   'Consistency is underrated because it is boring to present. It is also the only thing that compounds.',
   'The best rebrands change what a company does first and what it looks like second.',
+]
+
+export const freelanceAudience = [
+  'Founders with an idea and no tech team',
+  'Startups that need one more engineer',
+  'Small businesses replacing spreadsheets',
+  'Teams with an AI-built prototype',
+]
+
+export const freelancePrinciples: [title: string, text: string][] = [
+  [
+    'You talk to the person building it',
+    'No account managers or hand-offs between you and the code.',
+  ],
+  ['You can see progress every week', 'A working build you can open, not a status report.'],
+  ['You own everything', 'Code, accounts and designs live in your name from day one.'],
+  ['Plain words, no jargon', 'Trade-offs explained so you can make the call.'],
+]
+
+export const freelanceFaq: [question: string, answer: string][] = [
+  ['Who owns the code?', 'You do. Repositories and accounts are set up in your name.'],
+  [
+    'Can you work with my existing team?',
+    'Yes. I can join your tools and rituals, or work alongside an agency.',
+  ],
+  [
+    'Do you only do Flutter?',
+    'No. Mobile is where I started, but web apps, backends and APIs are part of most projects.',
+  ],
+  [
+    'What if my app was built with AI tools?',
+    'That is fine. I review it, fix what is risky and keep what works.',
+  ],
+  [
+    'What happens after launch?',
+    'You get docs and a walkthrough. Ongoing care is optional, never a condition.',
+  ],
 ]

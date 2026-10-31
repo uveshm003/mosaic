@@ -140,7 +140,7 @@ export const listingProfiles: { key: ListingProfileKey; label: string }[] = [
 export const isEnabled = (key: ProfileKey) => profile(key).enabled
 
 // Profiles whose pages exist in this app. A profile is linked only when it is built and enabled.
-const builtProfiles = new Set<ListingProfileKey>(['flutter'])
+const builtProfiles = new Set<ListingProfileKey>(['flutter', 'freelance'])
 
 export const enabledProfiles = () =>
   listingProfiles.filter(({ key }) => builtProfiles.has(key) && isEnabled(key))
@@ -216,17 +216,36 @@ export interface EngagementStep {
   when: string | null
   summary: string | null
   youGet: string[]
+  yourPart: string | null
 }
 
-/** How a freelance engagement works, step by step. */
-export function engagement(): EngagementStep[] {
-  return (getSnapshot()?.globals.profiles.freelance?.engagement ?? []).map((step) => ({
-    title: step.title,
-    when: step.when ?? null,
-    summary: step.summary ?? null,
-    youGet: (step.youGet ?? []).map((row) => row.text),
-  }))
+/** The Freelance profile's own words: audience, process, principles and FAQ. */
+export function freelanceProfile() {
+  const settings = getSnapshot()?.globals.profiles.freelance
+  return {
+    audience: (settings?.audience ?? []).map((row) => row.text),
+    engagement: (settings?.engagement ?? []).map((step): EngagementStep => ({
+      title: step.title,
+      when: step.when ?? null,
+      summary: step.summary ?? null,
+      youGet: (step.youGet ?? []).map((row) => row.text),
+      yourPart: step.yourPart ?? null,
+    })),
+    principles: (settings?.principles ?? []).map((row) => ({
+      title: row.title,
+      text: row.text ?? null,
+    })),
+    faq: (settings?.faq ?? []).map((row) => ({ question: row.question, answer: row.answer })),
+  }
 }
+
+export const serviceGroupLabel: Record<NonNullable<Service['group']>, string> = {
+  build: 'Build something new',
+  fix: 'Fix or improve what exists',
+  embed: 'Work inside your team',
+}
+
+export const serviceGroupOrder = Object.keys(serviceGroupLabel) as NonNullable<Service['group']>[]
 
 /**
  * Testimonials that may be shown: published, with consent, optionally for one profile's

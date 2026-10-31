@@ -26,7 +26,7 @@ export function FreelanceForm({
   if (status.kind === 'sent') {
     return (
       <p role="status" className={`${rounded} border border-line bg-surface p-6 text-lg`}>
-        Thanks! I’ll read it properly and reply by email, usually within two working days.
+        Thanks! It’s on its way. I’ll read it properly and reply by email.
       </p>
     )
   }
