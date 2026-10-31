@@ -68,7 +68,7 @@ export function JourneyMap({ journey }: { journey: ProductCanvas['journey'] }) {
               key={label}
               className={`rounded-md p-4 shadow-[0_8px_18px_-10px_rgb(0_0_0/0.35)] ${tone ?? ''}`}
             >
-              <p className="font-mono text-[11px] uppercase opacity-75">{label}</p>
+              <p className="font-mono text-[11px] uppercase">{label}</p>
               <p className="mt-1 text-lg leading-snug font-medium">{text}</p>
             </div>
           ) : null,

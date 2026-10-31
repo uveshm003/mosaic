@@ -45,7 +45,7 @@ export function YouTubeFacade({
           <span className="grid size-20 place-items-center rounded-full bg-[#ff3b1f] text-3xl text-white transition group-hover:scale-110">
             ▶
           </span>
-          <span className="absolute bottom-3 left-4 text-xs opacity-70">Plays from YouTube</span>
+          <span className="absolute bottom-3 left-4 text-xs">Plays from YouTube</span>
         </button>
       )}
     </div>

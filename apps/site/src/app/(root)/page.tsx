@@ -1,9 +1,18 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import type { ReactNode } from 'react'
 import { CursorGlow } from '../../components/CursorGlow'
 import { HubTerminal } from '../../components/HubTerminal'
 import { RichText } from '@mosaic/ui'
-import { enabledProfiles, isEnabled, person, profile, profileHref } from '../../lib/content'
+import {
+  brandHref,
+  brandIsLive,
+  enabledProfiles,
+  isEnabled,
+  person,
+  profile,
+  profileHref,
+} from '../../lib/content'
 import { SITE_URL } from '../../lib/site'
 
 export function generateMetadata(): Metadata {
@@ -29,6 +38,10 @@ const portfolioMeta = [
   { key: 'fullstack', label: 'Full-stack', contents: 'Systems, architecture, demo admin' },
   { key: 'brand', label: 'Brand', contents: 'Essays, breakdowns, concepts' },
 ] as const
+
+function Anchor({ href, ...rest }: { href: string; className: string; children: ReactNode }) {
+  return href.startsWith(brandHref) ? <a href={href} {...rest} /> : <Link href={href} {...rest} />
+}
 
 function SectionTitle({ id, index, children }: { id: string; index: number; children: string }) {
   return (
@@ -78,7 +91,14 @@ export default function Home() {
       key === 'brand'
         ? 'Marketing, growth, branding and advertising'
         : (profile(key).tagline ?? contents),
-    href: key !== 'brand' && live.has(key) ? profileHref[key] : null,
+    href:
+      key === 'brand'
+        ? brandIsLive()
+          ? brandHref
+          : null
+        : live.has(key)
+          ? profileHref[key]
+          : null,
   }))
 
   const jsonLd = {
@@ -210,7 +230,8 @@ export default function Home() {
                 return (
                   <li key={p.key} className={big ? 'sm:col-span-2 lg:row-span-2' : ''}>
                     {p.href ? (
-                      <Link
+                      // The brand is its own app, so it gets a plain link, not client routing.
+                      <Anchor
                         href={p.href}
                         className={`${cls} hover:-translate-y-1 hover:border-accent/60 focus-visible:outline-2 focus-visible:outline-accent`}
                       >
@@ -221,7 +242,7 @@ export default function Home() {
                           />
                         )}
                         {inner}
-                      </Link>
+                      </Anchor>
                     ) : (
                       <div className={`${cls} opacity-70`}>{inner}</div>
                     )}

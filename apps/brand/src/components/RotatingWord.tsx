@@ -16,7 +16,7 @@ export function RotatingWord({ words }: { words: string[] }) {
         <span
           key={w}
           aria-hidden={n !== i}
-          className={`col-start-1 row-start-1 transition-all duration-500 ease-out ${n === i ? 'translate-y-0 opacity-100' : n < i ? '-translate-y-6 opacity-0' : 'translate-y-6 opacity-0'}`}
+          className={`col-start-1 row-start-1 transition-[opacity,transform] duration-500 ease-out ${n === i ? 'visible translate-y-0 opacity-100' : n < i ? 'invisible -translate-y-6 opacity-0' : 'invisible translate-y-6 opacity-0'}`}
         >
           {w}
         </span>
