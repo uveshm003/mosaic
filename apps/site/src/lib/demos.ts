@@ -29,6 +29,13 @@ export const flutterDemos: FlutterDemo[] = [
       'A small shop on Riverpod beside a live graph of its providers. See what recomputes, and what select saves.',
     shows: ['Riverpod 3', 'ProviderObserver', 'select', 'Derived state'],
   },
+  {
+    slug: 'game',
+    title: 'Hot reload',
+    blurb:
+      'A small Flame arcade game: squash the bugs before they reach your build, with Flutter menus over the game canvas.',
+    shows: ['Flame', 'Components', 'Particles', 'Overlays'],
+  },
 ]
 
 export const demoSrc = (slug: string) => `/flutter/demos/${slug}/index.html`

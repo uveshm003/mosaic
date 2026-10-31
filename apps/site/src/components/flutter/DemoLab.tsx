@@ -13,8 +13,8 @@ export function DemoLab({ demos }: { demos: FlutterDemo[] }) {
   if (!demo) return null
 
   return (
-    <div className="grid gap-6 lg:grid-cols-[17rem_1fr]">
-      <ul className="grid content-start gap-3" aria-label="Demos">
+    <div className="grid gap-5">
+      <ul className="grid gap-3 sm:grid-cols-2" aria-label="Demos">
         {demos.map((d) => {
           const active = d.slug === demo.slug
           return (
@@ -23,7 +23,7 @@ export function DemoLab({ demos }: { demos: FlutterDemo[] }) {
                 type="button"
                 aria-pressed={active}
                 onClick={() => setSelected(d.slug)}
-                className={`card w-full px-5 py-4 text-left transition focus-visible:outline-2 focus-visible:outline-accent ${active ? 'border-accent/60' : 'hover:border-accent/40'}`}
+                className={`card h-full w-full px-5 py-4 text-left transition focus-visible:outline-2 focus-visible:outline-accent ${active ? 'border-accent/60' : 'hover:border-accent/40'}`}
               >
                 <span className="block font-display text-lg font-semibold">{d.title}</span>
                 <span className="mt-1 block text-sm text-muted">{d.blurb}</span>
@@ -34,7 +34,7 @@ export function DemoLab({ demos }: { demos: FlutterDemo[] }) {
       </ul>
 
       <figure className="min-w-0">
-        <div className="card relative aspect-[4/3] overflow-hidden max-sm:aspect-[3/4]">
+        <div className="card relative h-[min(36rem,80svh)] overflow-hidden">
           {running === demo.slug ? (
             <iframe
               src={demoSrc(demo.slug)}
@@ -47,7 +47,7 @@ export function DemoLab({ demos }: { demos: FlutterDemo[] }) {
                 src={demoPoster(demo.slug)}
                 alt=""
                 fill
-                sizes="(min-width: 1024px) 50vw, 100vw"
+                sizes="(min-width: 1024px) 60vw, 100vw"
                 className="object-cover object-top opacity-60"
               />
               <div className="absolute inset-0 grid place-items-center bg-gradient-to-t from-bg via-bg/40 to-transparent">
