@@ -117,6 +117,13 @@ export default function Freelance() {
   const siteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY
   let sheet = 1
   const next = () => ++sheet
+  // Sections hide while their content is empty, and so do their links.
+  const present: Record<(typeof sections)[number][0], boolean> = {
+    services: allServices.length > 0,
+    process: words.engagement.length > 0,
+    work: projects.length > 0,
+    faq: words.faq.length > 0,
+  }
 
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -151,13 +158,15 @@ export default function Freelance() {
           </span>
           <nav aria-label="Sections" className="flex items-center gap-5 text-sm">
             <ul className="flex gap-5 max-md:hidden">
-              {sections.map(([id, label]) => (
-                <li key={id}>
-                  <a href={`#${id}`} className="hover:text-accent-2">
-                    {label}
-                  </a>
-                </li>
-              ))}
+              {sections
+                .filter(([id]) => present[id])
+                .map(([id, label]) => (
+                  <li key={id}>
+                    <a href={`#${id}`} className="hover:text-accent-2">
+                      {label}
+                    </a>
+                  </li>
+                ))}
             </ul>
             <a
               href="#contact"
@@ -217,9 +226,11 @@ export default function Freelance() {
                 >
                   Start the conversation
                 </a>
-                <a href="#process" className="rounded-xl border-2 border-fg px-6 py-3 font-bold">
-                  See how it works
-                </a>
+                {present.process && (
+                  <a href="#process" className="rounded-xl border-2 border-fg px-6 py-3 font-bold">
+                    See how it works
+                  </a>
+                )}
               </div>
             </div>
             <dl className="pinned grid grid-cols-2 gap-px overflow-hidden rounded-2xl border-2 border-fg bg-line">
@@ -228,12 +239,18 @@ export default function Freelance() {
                 ['Steps to launch', String(words.engagement.length)],
                 ['Projects shown', String(projects.length)],
                 ['Platforms shipped', String(platforms.size)],
-              ].map(([k, v]) => (
-                <div key={k} className="bg-surface p-4">
-                  <dt className="font-mono text-[11px] text-muted uppercase">{k}</dt>
-                  <dd className="mt-1 text-3xl font-bold tabular-nums">{v}</dd>
-                </div>
-              ))}
+              ]
+                .filter(([, v]) => v !== '0')
+                .map(([k, v], i, shown) => (
+                  // An odd last tile spans the row, so no empty cell is left.
+                  <div
+                    key={k}
+                    className={`bg-surface p-4 ${i === shown.length - 1 && i % 2 === 0 ? 'col-span-2' : ''}`}
+                  >
+                    <dt className="font-mono text-[11px] text-muted uppercase">{k}</dt>
+                    <dd className="mt-1 text-3xl font-bold tabular-nums">{v}</dd>
+                  </div>
+                ))}
               <div className="col-span-2 bg-surface px-4 pb-4">
                 <Dimension label="talk → plan → build → launch" />
               </div>
@@ -242,53 +259,55 @@ export default function Freelance() {
         </section>
       </div>
 
-      <Sheet
-        id="services"
-        n={next()}
-        label="Services"
-        title="Pick the part you need, or all of it."
-        intro="Mobile, web and backend under one roof, so nothing gets lost between teams."
-      >
-        <div className="space-y-12">
-          {serviceGroupOrder.map((group) => {
-            const list = allServices.filter((s) => (s.group ?? 'build') === group)
-            if (list.length === 0) return null
-            return (
-              <div key={group}>
-                <h3 className="mb-4 flex items-center gap-3 font-mono text-sm uppercase">
-                  <span className="size-2.5 rounded-sm bg-accent-2" />
-                  {serviceGroupLabel[group]}
-                </h3>
-                <ul className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-                  {list.map((s) => {
-                    const i = allServices.indexOf(s)
-                    return (
-                      <li
-                        key={s.id}
-                        className="flex flex-col rounded-2xl border-2 border-fg bg-surface p-5 transition hover:-translate-y-1 hover:shadow-[5px_5px_0_var(--accent)]"
-                      >
-                        <div className="flex items-center justify-between font-mono text-[11px] text-muted">
-                          <span>SVC-{String(i + 1).padStart(2, '0')}</span>
-                          <span>{s.typicalTimeline}</span>
-                        </div>
-                        <h4 className="mt-4 text-xl font-bold">{strip(s.title)}</h4>
-                        <p className="mt-2 text-sm text-muted">{s.summary}</p>
-                        {(s.deliverables ?? []).length > 0 && (
-                          <ul className="mt-auto space-y-1 border-t border-dashed border-line pt-3 font-mono text-xs [&:not(:first-child)]:mt-4">
-                            {(s.deliverables ?? []).map((x) => (
-                              <li key={x.id ?? x.text}>+ {x.text}</li>
-                            ))}
-                          </ul>
-                        )}
-                      </li>
-                    )
-                  })}
-                </ul>
-              </div>
-            )
-          })}
-        </div>
-      </Sheet>
+      {present.services && (
+        <Sheet
+          id="services"
+          n={next()}
+          label="Services"
+          title="Pick the part you need, or all of it."
+          intro="Mobile, web and backend under one roof, so nothing gets lost between teams."
+        >
+          <div className="space-y-12">
+            {serviceGroupOrder.map((group) => {
+              const list = allServices.filter((s) => (s.group ?? 'build') === group)
+              if (list.length === 0) return null
+              return (
+                <div key={group}>
+                  <h3 className="mb-4 flex items-center gap-3 font-mono text-sm uppercase">
+                    <span className="size-2.5 rounded-sm bg-accent-2" />
+                    {serviceGroupLabel[group]}
+                  </h3>
+                  <ul className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+                    {list.map((s) => {
+                      const i = allServices.indexOf(s)
+                      return (
+                        <li
+                          key={s.id}
+                          className="flex flex-col rounded-2xl border-2 border-fg bg-surface p-5 transition hover:-translate-y-1 hover:shadow-[5px_5px_0_var(--accent)]"
+                        >
+                          <div className="flex items-center justify-between font-mono text-[11px] text-muted">
+                            <span>SVC-{String(i + 1).padStart(2, '0')}</span>
+                            <span>{s.typicalTimeline}</span>
+                          </div>
+                          <h4 className="mt-4 text-xl font-bold">{strip(s.title)}</h4>
+                          <p className="mt-2 text-sm text-muted">{s.summary}</p>
+                          {(s.deliverables ?? []).length > 0 && (
+                            <ul className="mt-auto space-y-1 border-t border-dashed border-line pt-3 font-mono text-xs [&:not(:first-child)]:mt-4">
+                              {(s.deliverables ?? []).map((x) => (
+                                <li key={x.id ?? x.text}>+ {x.text}</li>
+                              ))}
+                            </ul>
+                          )}
+                        </li>
+                      )
+                    })}
+                  </ul>
+                </div>
+              )
+            })}
+          </div>
+        </Sheet>
+      )}
 
       {words.principles.length > 0 && (
         <Sheet id="how-i-work" n={next()} label="Principles" title="What working with me is like.">

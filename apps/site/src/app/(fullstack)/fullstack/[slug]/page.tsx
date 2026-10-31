@@ -7,7 +7,7 @@ import { ArchitectureDiagram } from '../../../../components/fullstack/Architectu
 import {
   demoAdminUrl,
   demoStatusLabel,
-  formatMonth,
+  formatPeriod,
   isEnabled,
   platformLabel,
   projectFor,
@@ -55,7 +55,7 @@ export default async function FullstackCaseStudy({ params }: Props) {
   const facts = [
     ['role', project.role],
     ['team', project.team],
-    ['period', `${formatMonth(project.start)} – ${formatMonth(project.end)}`],
+    ['period', formatPeriod(project.start, project.end)],
     ['platforms', project.platforms.map((p) => platformLabel[p] ?? p).join(', ')],
     ['kind', project.kind],
   ].filter((row): row is [string, string] => Boolean(row[1]))

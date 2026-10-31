@@ -104,3 +104,11 @@ Answers from each checkpoint in `docs/SPEC.md`, recorded before work continues. 
 - `pnpm resume:export` reproduces the structure exactly: parsing each of the four files into the content model and rendering it back gives identical bytes. The check ran locally; none of the resume content is in the repo.
 - The ReportLab PDF step stays outside the repo for now; the export writes Markdown only.
 - Employer line: the current files say "Sensit Technologies" with "(Halma PLC)" in the detail. The spec's format is "Halma India PLC" with "Software Engineer (Sensit Technologies)" beneath it, so production content should use that, and the export prints whatever is entered.
+
+## Production content
+
+2026-11-01.
+
+- Uvesh asked for production content drafted from his resume files, for his review before anything is published. It was entered through the Local API from outside the repo: person, projects and services as drafts; experience, education, skills and tech (no drafts in those collections); profile wording with every profile still off.
+- SyncIT, Dasher and Odigo are restricted drafts and wait for their confidentiality checkpoints. No phone number is stored.
+- Launch checkpoint still open: each profile's `enabled` flag goes on only after Uvesh reviews the drafts in `pnpm cms:prod` and publishes them.

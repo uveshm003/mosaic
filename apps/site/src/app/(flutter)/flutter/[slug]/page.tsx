@@ -4,7 +4,7 @@ import { notFound } from 'next/navigation'
 import { RichText } from '@mosaic/ui'
 import {
   demoStatusLabel,
-  formatMonth,
+  formatPeriod,
   isEnabled,
   platformLabel,
   projectFor,
@@ -92,10 +92,12 @@ export default async function CaseStudy({ params }: Props) {
               <dd>{project.team}</dd>
             </>
           )}
-          <dt className="text-muted">PERIOD</dt>
-          <dd>
-            {formatMonth(project.start)} – {formatMonth(project.end)}
-          </dd>
+          {project.start && (
+            <>
+              <dt className="text-muted">PERIOD</dt>
+              <dd>{formatPeriod(project.start, project.end)}</dd>
+            </>
+          )}
           <dt className="text-muted">PLATFORMS</dt>
           <dd>{project.platforms.map((p) => platformLabel[p]).join(', ')}</dd>
           <dt className="text-muted">KIND</dt>

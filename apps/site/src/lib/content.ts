@@ -1,4 +1,4 @@
-import type { ListingProfileKey, ProfileKey } from '@mosaic/content'
+import type { ListingProfileKey, ProfileKey, ResumeVariant } from '@mosaic/content'
 import type { Snapshot } from '@mosaic/content/snapshot'
 import type {
   Experience,
@@ -232,6 +232,11 @@ export function formatMonth(iso: string | null): string {
   return new Date(iso).toLocaleDateString('en-GB', { month: 'short', year: 'numeric' })
 }
 
+/** "Jan 2025 – Now", or empty when the start isn't known, so the row can be left out. */
+export function formatPeriod(start: string | null, end: string | null): string {
+  return start ? `${formatMonth(start)} – ${formatMonth(end)}` : ''
+}
+
 export const listingProfiles: { key: ListingProfileKey; label: string }[] = [
   { key: 'flutter', label: 'Flutter' },
   { key: 'product', label: 'Product' },
@@ -282,17 +287,26 @@ export function currentProject() {
     .sort((a, b) => (b.start ?? '').localeCompare(a.start ?? ''))[0]
 }
 
-export function experience(): Experience[] {
-  return [...snapshot().collections.experience].sort((a, b) =>
-    (b.period?.start ?? '').localeCompare(a.period?.start ?? ''),
-  )
+// Resume entries and bullets carry the resume variants they belong to; an empty list means
+// every variant. A profile shows one variant, so the same point isn't repeated in each wording.
+const inVariant = (variants: readonly string[] | null | undefined, variant: ResumeVariant) =>
+  !variants?.length || variants.includes(variant)
+
+export function experience(variant: ResumeVariant): Experience[] {
+  return snapshot()
+    .collections.experience.filter((role) => inVariant(role.variants, variant))
+    .map((role) => ({
+      ...role,
+      highlights: (role.highlights ?? []).filter((h) => inVariant(h.variants, variant)),
+    }))
+    .sort((a, b) => (b.period?.start ?? '').localeCompare(a.period?.start ?? ''))
 }
 
-export function skillsByCategory(): { category: string; skills: Skill[] }[] {
+export function skillsByCategory(variant: ResumeVariant): { category: string; skills: Skill[] }[] {
   const groups = new Map<string, Skill[]>()
-  for (const skill of [...snapshot().collections.skills].sort(
-    (a, b) => (a.order ?? 0) - (b.order ?? 0),
-  )) {
+  for (const skill of snapshot()
+    .collections.skills.filter((s) => inVariant(s.variants, variant))
+    .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))) {
     groups.set(skill.category, [...(groups.get(skill.category) ?? []), skill])
   }
   return [...groups].map(([category, skills]) => ({ category, skills }))
