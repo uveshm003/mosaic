@@ -6,6 +6,8 @@ import { ContactForm } from '../../../components/flutter/ContactForm'
 import { CursorGlow } from '../../../components/CursorGlow'
 import { DeviceMock } from '../../../components/flutter/DeviceMock'
 import { ExperienceTabs } from '../../../components/flutter/ExperienceTabs'
+import { DemoLab } from '../../../components/flutter/DemoLab'
+import { flutterDemos } from '../../../lib/demos'
 import { Playground } from '../../../components/flutter/Playground'
 import { SideNav } from '../../../components/flutter/SideNav'
 import { SkillBoard } from '../../../components/flutter/SkillBoard'
@@ -39,6 +41,7 @@ const sections = [
   { id: 'experience', label: 'Experience' },
   { id: 'skills', label: 'Skills' },
   { id: 'playground', label: 'Playground' },
+  { id: 'demos', label: 'Demo lab' },
   { id: 'writing', label: 'Writing' },
   { id: 'contact', label: 'Contact' },
 ]
@@ -301,9 +304,20 @@ export default function FlutterHome() {
             <Playground />
           </section>
 
+          <section id="demos" aria-labelledby="demos-title" className="reveal scroll-mt-20">
+            <SectionTitle id="demos" index={6}>
+              Demo lab
+            </SectionTitle>
+            <p className="mb-6 max-w-xl text-muted">
+              Real Flutter apps compiled for the web, running right here. Each one loads only when
+              you press Run.
+            </p>
+            <DemoLab demos={flutterDemos} />
+          </section>
+
           {posts.length > 0 && (
             <section id="writing" aria-labelledby="writing-title" className="reveal scroll-mt-20">
-              <SectionTitle id="writing" index={6}>
+              <SectionTitle id="writing" index={7}>
                 Writing
               </SectionTitle>
               <ul className="divide-y divide-line">
@@ -325,7 +339,7 @@ export default function FlutterHome() {
           )}
 
           <section id="contact" aria-labelledby="contact-title" className="reveal scroll-mt-20">
-            <SectionTitle id="contact" index={7}>
+            <SectionTitle id="contact" index={8}>
               Contact
             </SectionTitle>
             <p className="mb-8 max-w-xl text-lg text-fg/85">

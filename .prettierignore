@@ -3,3 +3,6 @@ docs/SPEC.md
 packages/content/src/payload-types.ts
 apps/cms/src/app/(payload)/admin/importMap.js
 apps/cms/src/migrations/
+
+# Flutter fills in this template at build time.
+demos/flutter/*/web/flutter_bootstrap.js

@@ -46,3 +46,6 @@ test-results/
 next-env.d.ts
 *.tsbuildinfo
 .neon
+
+# Flutter demo builds (pnpm demos:build)
+apps/site/public/flutter/demos/
