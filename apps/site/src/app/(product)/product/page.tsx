@@ -87,26 +87,31 @@ export default function Product() {
           <p className="mt-6 max-w-2xl text-xl text-muted">{profile('product').tagline}</p>
         )}
         <ol className="mt-12 grid gap-4 sm:grid-cols-3">
-          {[
+          {(
             [
-              `${String(counts['case-study'])} case studies`,
-              'Products I worked on: the problem, the calls I made, and what changed.',
-            ],
-            [
-              `${String(counts.teardown)} teardowns`,
-              'Other companies’ apps, taken apart to see where they lose people.',
-            ],
-            [
-              `${String(counts.proposal)} proposals`,
-              'Changes I’d make to existing products, and why.',
-            ],
-          ].map(([title, text], i) => (
-            <li key={title} className="rounded-2xl border border-line bg-surface p-5">
-              <p className="font-mono text-xs text-accent">TL;DR {i + 1}</p>
-              <p className="mt-2 font-display text-2xl">{title}</p>
-              <p className="mt-1 text-sm text-muted">{text}</p>
-            </li>
-          ))}
+              [
+                counts['case-study'],
+                'case studies',
+                'Products I worked on: the problem, the calls I made, and what changed.',
+              ],
+              [
+                counts.teardown,
+                'teardowns',
+                'Other companies’ apps, taken apart to see where they lose people.',
+              ],
+              [counts.proposal, 'proposals', 'Changes I’d make to existing products, and why.'],
+            ] as const
+          )
+            // A kind with nothing published yet isn't announced.
+            .filter(([count]) => count > 0)
+            .map(([count, noun, text]) => [`${String(count)} ${noun}`, text])
+            .map(([title, text], i) => (
+              <li key={title} className="rounded-2xl border border-line bg-surface p-5">
+                <p className="font-mono text-xs text-accent">TL;DR {i + 1}</p>
+                <p className="mt-2 font-display text-2xl">{title}</p>
+                <p className="mt-1 text-sm text-muted">{text}</p>
+              </li>
+            ))}
         </ol>
       </section>
 

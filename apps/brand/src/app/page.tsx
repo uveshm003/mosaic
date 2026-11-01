@@ -39,12 +39,14 @@ export default function Home() {
               ['Posts', posts.length],
               ['Kinds', types.length],
               ['Series', series.length],
-            ].map(([label, value]) => (
-              <div key={label}>
-                <dt className="text-muted">{label}</dt>
-                <dd className="font-serif text-4xl italic">{value}</dd>
-              </div>
-            ))}
+            ]
+              .filter(([, value]) => value !== 0)
+              .map(([label, value]) => (
+                <div key={label}>
+                  <dt className="text-muted">{label}</dt>
+                  <dd className="font-serif text-4xl italic">{value}</dd>
+                </div>
+              ))}
           </dl>
         </div>
       </section>

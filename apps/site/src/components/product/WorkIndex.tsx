@@ -31,10 +31,16 @@ const stamp: Record<WorkCard['kind'], string> = {
 export function WorkIndex({ cards }: { cards: WorkCard[] }) {
   const [kind, setKind] = useState<WorkCard['kind'] | null>(null)
   const shown = kind ? cards.filter((c) => c.kind === kind) : cards
+  // Only kinds that have work get a filter; with a single kind there's nothing to filter.
+  const available = filters.filter(([key]) => !key || cards.some((c) => c.kind === key))
   return (
     <>
-      <div role="group" aria-label="Filter by kind" className="mb-6 flex flex-wrap gap-2">
-        {filters.map(([key, label]) => (
+      <div
+        role="group"
+        aria-label="Filter by kind"
+        className={`mb-6 flex flex-wrap gap-2 ${available.length > 2 ? '' : 'hidden'}`}
+      >
+        {available.map(([key, label]) => (
           <button
             key={label}
             type="button"
