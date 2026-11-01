@@ -463,7 +463,11 @@ export function productLabel(item: Pick<ProductItem, 'kind' | 'subject'>): strin
   return `Independent analysis. Not affiliated with ${name}${name.endsWith('.') ? '' : '.'}`
 }
 
-/** The brand site (a separate app under /brand) is linked once it has a published post. */
-export const brandHref = '/brand/'
+/**
+ * The brand site (a separate app under /brand) is linked once it has a published post. Live,
+ * both apps share one address; in development the brand runs its own server on port 3002.
+ */
+export const brandHref =
+  process.env.NODE_ENV === 'development' ? 'http://localhost:3002/brand/' : '/brand/'
 export const brandIsLive = () =>
   (getSnapshot()?.collections.posts ?? []).some((p) => p.site === 'brand' && p._status !== 'draft')
