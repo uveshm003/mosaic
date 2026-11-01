@@ -48,8 +48,16 @@ function render(nodes: Node[] | undefined, className?: string): ReactNode[] {
         return <Tag key={i}>{children}</Tag>
       }
       case 'list': {
-        const Tag = node.listType === 'number' ? 'ol' : 'ul'
-        return <Tag key={i}>{children}</Tag>
+        // Tailwind's reset removes list markers; a write-up needs them back.
+        return node.listType === 'number' ? (
+          <ol key={i} className="list-decimal space-y-1 pl-6">
+            {children}
+          </ol>
+        ) : (
+          <ul key={i} className="list-disc space-y-1 pl-6">
+            {children}
+          </ul>
+        )
       }
       case 'listitem':
         return <li key={i}>{children}</li>

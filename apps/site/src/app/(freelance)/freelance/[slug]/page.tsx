@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import {
   demoStatusLabel,
-  formatMonth,
+  formatPeriod,
   isEnabled,
   platformLabel,
   projectFor,
@@ -50,7 +50,7 @@ export default async function FreelanceCaseStudy({ params }: Props) {
   const facts = [
     ['Role', project.role],
     ['Team', project.team],
-    ['Period', `${formatMonth(project.start)} – ${formatMonth(project.end)}`],
+    ['Period', formatPeriod(project.start, project.end)],
     ['Platforms', project.platforms.map((p) => platformLabel[p] ?? p).join(', ')],
     ['Status', demoStatusLabel[project.demoStatus]],
   ].filter((row): row is [string, string] => Boolean(row[1]))

@@ -8,6 +8,7 @@ import { JourneyMap } from '../../../../../components/product/JourneyMap'
 import {
   demoStatusLabel,
   formatMonth,
+  formatPeriod,
   isEnabled,
   person,
   productKindLabel,
@@ -118,7 +119,7 @@ export default async function ProductPage({ params }: Props) {
               {[
                 ['Role', project.role],
                 ['Team', project.team],
-                ['Period', `${formatMonth(project.start)} – ${formatMonth(project.end)}`],
+                ['Period', formatPeriod(project.start, project.end)],
                 ['Status', demoStatusLabel[project.demoStatus]],
               ]
                 .filter((row): row is [string, string] => Boolean(row[1]))

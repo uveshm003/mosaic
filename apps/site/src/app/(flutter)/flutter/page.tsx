@@ -78,8 +78,8 @@ export default function FlutterHome() {
   const availability = me.headlines?.[1]?.text
   const work = projectsFor('flutter')
   const current = currentProject()
-  const roles = experience()
-  const skills = skillsByCategory()
+  const roles = experience('flutter')
+  const skills = skillsByCategory('flutter')
   const posts = latestPosts(3)
   const links = me.contactLinks ?? []
   const caseStudyHref = (p: { slug: string }) => `/flutter/${p.slug}`
@@ -138,7 +138,7 @@ export default function FlutterHome() {
               </p>
             )}
             <div className="mt-14">
-              <SideNav sections={sections} />
+              <SideNav sections={sections.filter((s) => s.id !== 'writing' || posts.length > 0)} />
             </div>
           </div>
           <ul className="mt-8 flex flex-wrap gap-x-5 gap-y-2 font-mono text-xs text-muted lg:mt-0">
@@ -213,7 +213,7 @@ export default function FlutterHome() {
                       />
                     </div>
                     <div className="mt-5 flex items-center justify-between gap-3 font-mono text-[11px] text-muted">
-                      <span>{formatMonth(project.start)}</span>
+                      <span>{project.start ? formatMonth(project.start) : ''}</span>
                       <span className="rounded-full border border-accent/40 px-2 py-0.5 text-accent">
                         {demoStatusLabel[project.demoStatus]}
                       </span>

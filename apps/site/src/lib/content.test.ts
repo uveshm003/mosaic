@@ -46,6 +46,28 @@ const fixture = {
       { id: 2, title: 'Newer', profiles: ['flutter'], publishedAt: '2026-06-01T00:00:00Z' },
       { id: 3, title: 'Brand', profiles: [] },
     ],
+    experience: [
+      {
+        id: 1,
+        title: 'Engineer',
+        employer: 'Older Co',
+        period: { start: '2024-01-01T00:00:00Z' },
+        highlights: [{ text: 'Everywhere' }, { text: 'Flutter wording', variants: ['flutter'] }],
+      },
+      {
+        id: 2,
+        title: 'Engineer',
+        employer: 'Newer Co',
+        period: { start: '2025-01-01T00:00:00Z' },
+        highlights: [{ text: 'Broad wording', variants: ['broad'] }],
+      },
+      { id: 3, title: 'Engineer', employer: 'Product only', variants: ['product-company'] },
+    ],
+    skills: [
+      { id: 1, name: 'Kotlin', category: 'Languages', order: 2, variants: ['flutter'] },
+      { id: 2, name: 'Dart', category: 'Languages', order: 1 },
+      { id: 3, name: 'Kotlin', category: 'Languages', order: 0, variants: ['broad'] },
+    ],
   },
 }
 
@@ -95,6 +117,23 @@ describe('profiles', () => {
       'freelance',
     ])
     expect(content.isEnabled('root')).toBe(true)
+  })
+})
+
+describe('resume entries', () => {
+  it('keeps one variant’s roles and bullets, newest first', () => {
+    expect(
+      content.experience('flutter').map((r) => [r.employer, r.highlights?.map((h) => h.text)]),
+    ).toEqual([
+      ['Newer Co', []],
+      ['Older Co', ['Everywhere', 'Flutter wording']],
+    ])
+  })
+
+  it('groups one variant’s skills in order', () => {
+    expect(content.skillsByCategory('flutter')).toMatchObject([
+      { category: 'Languages', skills: [{ name: 'Dart' }, { name: 'Kotlin', id: 1 }] },
+    ])
   })
 })
 
@@ -158,5 +197,12 @@ describe('product helpers', () => {
     expect(canvas?.comparison?.beforeImage).toBeNull()
     expect(canvas?.comparison?.afterImage).toBe('https://cdn.example.com/b.png')
     expect(content.canvasOf({ journey: [], decisions: [], comparison: {} })).toBeNull()
+  })
+})
+
+describe('formatPeriod', () => {
+  it('is empty without a start, so the row can be left out', () => {
+    expect(content.formatPeriod(null, null)).toBe('')
+    expect(content.formatPeriod('2025-01-01T00:00:00Z', null)).toBe('Jan 2025 – Now')
   })
 })
