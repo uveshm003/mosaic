@@ -31,7 +31,8 @@ export function toCard(item: ProductItem): WorkCard {
     href: productHref(item),
     title: strip(item.title),
     summary: item.summary,
-    date: formatMonth(item.date),
+    // Undated work shows no date rather than "Now".
+    date: item.date ? formatMonth(item.date) : '',
     label: productLabel(item),
     canvas: canvasParts(item),
   }
