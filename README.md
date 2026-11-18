@@ -20,7 +20,7 @@ Monorepo for Uvesh Menpurwala's portfolio platform: a personal site with several
 
 ## Commands
 
-Requires Node 24 (`.nvmrc`) and pnpm via Corepack (`corepack enable`).
+Requires Node 26 (`.nvmrc`) and pnpm 12 (`npm install -g pnpm`; it switches itself to the `packageManager` version).
 
 ```sh
 pnpm install
