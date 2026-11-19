@@ -20,7 +20,7 @@ test('every page can be tabbed through, with focus always visible', async ({ pag
         const style = getComputedStyle(el)
         const box = el.getBoundingClientRect()
         return {
-          label: `${el.tagName.toLowerCase()} ${el.getAttribute('href') ?? el.textContent?.trim().slice(0, 40) ?? ''}`,
+          label: `${el.tagName.toLowerCase()} ${el.getAttribute('href') ?? el.textContent.trim().slice(0, 40)}`,
           text: el.matches('input:not([type=checkbox],[type=radio],[type=submit]), textarea'),
           ring:
             (style.outlineStyle !== 'none' && parseFloat(style.outlineWidth) > 0) ||
