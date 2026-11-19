@@ -13,7 +13,7 @@ import { chromium } from '@playwright/test'
 const repo = join(dirname(fileURLToPath(import.meta.url)), '..')
 const site = join(repo, 'apps/site')
 const HOST = 'uveshm003.github.io'
-const NAME = 'Uvesh Menpurwala'
+const NAME = 'Uvesh Menpur'
 // The "M" from apps/site/src/app/icon.svg (64 × 64 viewBox).
 const MARK = 'M14 46V18h7l11 15 11-15h7v28h-7V30L32 44 21 30v16z'
 

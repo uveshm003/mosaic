@@ -81,7 +81,7 @@ export default async function PostPage({ params }: Props) {
     name: post.title,
     datePublished: post.publishedAt ?? undefined,
     uploadDate: post.type === 'video' ? (post.publishedAt ?? undefined) : undefined,
-    author: { '@type': 'Person', name: 'Uvesh Menpurwala' },
+    author: { '@type': 'Person', name: 'Uvesh Menpur' },
     url: `${BRAND_URL}${postPath(post)}`,
   }
 

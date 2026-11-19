@@ -14,13 +14,13 @@ import {
   profile,
   profileHref,
 } from '../../lib/content'
-import { SITE_URL } from '../../lib/site'
+import { SITE_NAME, SITE_URL } from '../../lib/site'
 
 export function generateMetadata(): Metadata {
   if (!isEnabled('root')) return {}
   const seo = profile('root')
   return pageMetadata({
-    title: seo.title ?? person().name ?? 'Uvesh Menpurwala',
+    title: seo.title ?? person().name ?? SITE_NAME,
     description: seo.tagline,
     path: '/',
     image: 'root',
@@ -31,7 +31,7 @@ export function generateMetadata(): Metadata {
 function Placeholder() {
   return (
     <main className="mx-auto max-w-2xl px-5 py-24">
-      <h1 className="font-display text-4xl">Uvesh Menpurwala</h1>
+      <h1 className="font-display text-4xl">{SITE_NAME}</h1>
       <p className="mt-4 text-muted">This site is being built.</p>
     </main>
   )
