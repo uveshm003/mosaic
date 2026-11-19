@@ -73,7 +73,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
             </li>
             <li>
               <a href={personalSiteUrl} className="hover:text-accent">
-                Uvesh Menpurwala ↗
+                Uvesh Menpur ↗
               </a>
             </li>
           </ul>

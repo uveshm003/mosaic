@@ -13,11 +13,11 @@ This document is the source of truth for the build.
 
 ## Overview
 
-We are building Uvesh Menpurwala's portfolio platform: one monorepo that produces a personal site with five experiences, a standalone brand site, a local admin, a public demo admin and a contact service. Uvesh is a Flutter engineer with about three years of experience, based in Ahmedabad, India, and open to relocation.
+We are building Uvesh Menpur's portfolio platform: one monorepo that produces a personal site with five experiences, a standalone brand site, a local admin, a public demo admin and a contact service. Uvesh is a Flutter engineer with about three years of experience, based in Ahmedabad, India, and open to relocation.
 
 | Output | What it is | Where it runs |
 | --- | --- | --- |
-| Personal site | Root "about me" page plus four profiles: Flutter, Product, Freelance, Full-stack | GitHub Pages at `uveshm003.github.io` (ADR 0002); name on the site is "Uvesh Menpurwala" |
+| Personal site | Root "about me" page plus four profiles: Flutter, Product, Freelance, Full-stack | GitHub Pages at `uveshm003.github.io` (ADR 0002); name on the site is "Uvesh Menpur" |
 | Brand site | Standalone brand for marketing, growth, branding and advertising | GitHub Pages under `uveshm003.github.io/brand` (ADR 0002); its own domain only if one is bought |
 | Admin | Payload CMS holding all content | Uvesh's laptop only |
 | Demo admin | Read-only copy of the admin running on seed data, for reviewers | Public, linked from the Full-stack profile |

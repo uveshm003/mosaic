@@ -115,3 +115,7 @@ Answers from each checkpoint in `docs/SPEC.md`, recorded before work continues. 
 - Launch checkpoint still open: each profile's `enabled` flag goes on only after Uvesh reviews the drafts in `pnpm cms:prod` and publishes them.
 - Launch (same day): Uvesh chose to go live before reviewing, since the site isn't being shared until everything is reviewed. Published: person, public projects, services; root, Flutter, Full-stack and Freelance on. "Claude Code" in resume wording became "AI-assisted" so nothing on GitHub names it.
 - Then Product and Brand too, on the same terms. SyncIT, Dasher and Odigo were set to public with resume-level facts only (no screenshots, code or internal details); their credit wording and confidentiality still need Uvesh's confirmation. Product also shows QuickServe and SpeakUp as case studies. Brand uses the working name Menpur Studio (still `noindex`) with three starter posts written for Uvesh to replace or approve.
+
+## Name
+
+2026-11-19. Uvesh chose "Uvesh Menpur" as the one name everywhere (this site, the GitHub profile and commits), replacing "Uvesh Menpurwala". The code, the share images and the spec use it. The name in the Person global is production content, so it changes in the admin.
