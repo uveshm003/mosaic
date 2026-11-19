@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { pageMetadata } from '../../../lib/seo'
 import Link from 'next/link'
 import type { ReactNode } from 'react'
 import { FreelanceForm } from '../../../components/freelance/FreelanceForm'
@@ -18,10 +19,12 @@ import {
 export function generateMetadata(): Metadata {
   if (!isEnabled('freelance')) return {}
   const seo = profile('freelance')
-  return {
+  return pageMetadata({
     title: seo.title ?? 'Freelance',
-    description: seo.tagline ?? undefined,
-  }
+    description: seo.tagline,
+    path: '/freelance',
+    image: 'freelance',
+  })
 }
 
 /** Dev seed titles carry "Sample:"; display type would repeat it on every card. */

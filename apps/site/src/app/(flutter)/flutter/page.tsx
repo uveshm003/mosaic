@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { pageMetadata } from '../../../lib/seo'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { RichText } from '@mosaic/ui'
@@ -32,7 +33,12 @@ import { SITE_URL } from '../../../lib/site'
 export function generateMetadata(): Metadata {
   if (!isEnabled('flutter')) return {}
   const seo = profile('flutter')
-  return { title: seo.title ?? 'Flutter', description: seo.tagline ?? undefined }
+  return pageMetadata({
+    title: seo.title ?? 'Flutter',
+    description: seo.tagline,
+    path: '/flutter',
+    image: 'flutter',
+  })
 }
 
 const sections = [
