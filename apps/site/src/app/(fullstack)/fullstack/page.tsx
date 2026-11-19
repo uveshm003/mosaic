@@ -1,5 +1,6 @@
 import { demoReviewer } from '@mosaic/content'
 import type { Metadata } from 'next'
+import { pageMetadata } from '../../../lib/seo'
 import Link from 'next/link'
 import type { ReactNode } from 'react'
 import { ArchitectureDiagram } from '../../../components/fullstack/ArchitectureDiagram'
@@ -20,10 +21,12 @@ import { strip } from '../../../lib/fullstack'
 export function generateMetadata(): Metadata {
   if (!isEnabled('fullstack')) return {}
   const seo = profile('fullstack')
-  return {
+  return pageMetadata({
     title: seo.title ? strip(seo.title) : 'Full-stack',
-    description: seo.tagline ?? undefined,
-  }
+    description: seo.tagline,
+    path: '/fullstack',
+    image: 'fullstack',
+  })
 }
 
 function Panel({

@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { pageMetadata } from '../../../lib/seo'
 import Link from 'next/link'
 import { BeforeAfter } from '../../../components/product/BeforeAfter'
 import { DecisionLog } from '../../../components/product/DecisionLog'
@@ -10,7 +11,12 @@ import { productHref, strip, toCard } from '../../../lib/product'
 export function generateMetadata(): Metadata {
   if (!isEnabled('product')) return {}
   const seo = profile('product')
-  return { title: seo.title ? strip(seo.title) : 'Product', description: seo.tagline ?? undefined }
+  return pageMetadata({
+    title: seo.title ? strip(seo.title) : 'Product',
+    description: seo.tagline,
+    path: '/product',
+    image: 'product',
+  })
 }
 
 function Heading({ n, id, children }: { n: string; id: string; children: string }) {

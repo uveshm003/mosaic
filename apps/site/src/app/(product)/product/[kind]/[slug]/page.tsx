@@ -1,5 +1,6 @@
 import { RichText } from '@mosaic/ui'
 import type { Metadata } from 'next'
+import { pageMetadata } from '../../../../../lib/seo'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { BeforeAfter } from '../../../../../components/product/BeforeAfter'
@@ -42,10 +43,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { kind, slug } = await params
   const item = find(kind, slug)
   if (!item) return {}
-  return {
+  return pageMetadata({
     title: `${strip(item.title)} · ${productKindLabel[item.kind]}`,
-    description: item.summary ?? productLabel(item) ?? undefined,
-  }
+    description: item.summary ?? productLabel(item),
+    path: `/product/${kind}/${slug}`,
+    image: 'product',
+  })
 }
 
 // One piece of product work as a memo: header, the canvas (journey, decisions,
