@@ -11,11 +11,11 @@ export default defineConfig({
   use: { baseURL: `http://localhost:${String(port)}`, reducedMotion: 'reduce' },
   projects: [
     { name: 'desktop', use: { ...devices['Desktop Chrome'] } },
-    // Colours, markup and scripts are the same on a phone, so these run on desktop only.
+    // Colours, markup and scripts are the same on a phone, and phones rarely have a keyboard.
     {
       name: 'phone',
       use: { ...devices['Pixel 7'] },
-      testIgnore: ['a11y.spec.ts', 'budget.spec.ts'],
+      testIgnore: ['a11y.spec.ts', 'budget.spec.ts', 'keyboard.spec.ts'],
     },
   ],
   webServer: {
