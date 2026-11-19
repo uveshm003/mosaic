@@ -1,8 +1,43 @@
 # Mosaic
 
-Monorepo for Uvesh Menpurwala's portfolio platform: a personal site with several profiles, a brand site, a Payload admin and a contact Worker. See [docs/SPEC.md](docs/SPEC.md).
+My portfolio platform, live at **[uveshm003.github.io](https://uveshm003.github.io)**. A home page leads to four portfolios (Flutter, Product, Freelance and Full-stack), each with its own design, plus a separate brand site. One monorepo builds all of them.
 
-## Layout
+| Home                                                                                             | Flutter                                                                                         |
+| ------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------- |
+| [![Home page](docs/screenshots/hub.jpg)](https://uveshm003.github.io/)                           | [![Flutter portfolio](docs/screenshots/flutter.jpg)](https://uveshm003.github.io/flutter)       |
+| **Product**                                                                                      | **Freelance**                                                                                   |
+| [![Product portfolio](docs/screenshots/product.jpg)](https://uveshm003.github.io/product)        | [![Freelance portfolio](docs/screenshots/freelance.jpg)](https://uveshm003.github.io/freelance) |
+| **Full-stack**                                                                                   | **Brand**                                                                                       |
+| [![Full-stack portfolio](docs/screenshots/fullstack.jpg)](https://uveshm003.github.io/fullstack) | [![Brand site](docs/screenshots/brand.jpg)](https://uveshm003.github.io/brand/)                 |
+
+## What's interesting here
+
+- **Five designs, one codebase.** Each portfolio is a Next.js route group with its own fonts, theme tokens, motion and component variants, on top of shared unstyled primitives (`packages/ui`, `packages/tokens`).
+- **Edited in a CMS, served as static files.** Content is written in a local Payload admin backed by Postgres. CI exports the published content to a JSON snapshot and builds both sites as static exports for GitHub Pages, so nothing runs on a server in production. A production build refuses a snapshot that contains seed data or drafts.
+- **Schema changes are guarded.** Development syncs the schema from code; production changes only through migrations. CI fails when the schema changes without a migration, or when the generated Payload files drift.
+- **A contact form with no app server.** A Cloudflare Worker checks the origin, validates with Zod, drops honeypot hits and verifies Turnstile, then inserts as an insert-only database role and sends one notification email with every value HTML-escaped.
+- **Tested end to end.** Every pull request builds both sites from seed data, assembles them like the deploy, then crawls and smoke-tests every portfolio with Playwright. The Flutter web demos in the Flutter portfolio's demo lab are analyzed, tested and built in CI too.
+
+```mermaid
+flowchart LR
+    Admin["Payload admin (local)"] --> DB[("Postgres")]
+    DB -- "export in CI" --> Snapshot["Content snapshot"]
+    Snapshot --> Site["apps/site<br/>Next.js static export"]
+    Snapshot --> Brand["apps/brand<br/>Next.js static export"]
+    Site --> Pages["GitHub Pages"]
+    Brand --> Pages
+    Pages -- "contact form" --> Worker["Cloudflare Worker"]
+    Worker --> DB
+    Worker --> Email["Notification email"]
+```
+
+The full design is in [docs/SPEC.md](docs/SPEC.md), with decisions in [docs/decisions](docs/decisions), progress in [docs/checkpoints.md](docs/checkpoints.md) and the platform's own [case study](docs/case-studies/mosaic.md).
+
+## Development
+
+The rest of this README covers working on the repository.
+
+### Layout
 
 | Path               | What                                                          |
 | ------------------ | ------------------------------------------------------------- |
@@ -18,7 +53,7 @@ Monorepo for Uvesh Menpurwala's portfolio platform: a personal site with several
 | `packages/resume`  | Resume export                                                 |
 | `packages/config`  | Shared TypeScript and ESLint config                           |
 
-## Commands
+### Commands
 
 Requires Node 26 (`.nvmrc`) and pnpm 12 (`npm install -g pnpm`; it switches itself to the `packageManager` version).
 
@@ -33,7 +68,7 @@ pnpm --filter @mosaic/site dev
 pnpm --filter @mosaic/brand dev
 ```
 
-### Admin (`apps/cms`)
+#### Admin (`apps/cms`)
 
 The admin only starts through these commands, each reading its own env file
 (`apps/cms/.env.dev`, `apps/cms/.env.prod`; values in the file win over the shell):
@@ -88,7 +123,7 @@ Both need `APP_ENV=test`, `DATABASE_URL` and `PAYLOAD_SECRET` set.
 
 Env templates: `apps/cms/.env.{dev,prod}.example`, `apps/site/.env.example`, `apps/brand/.env.example`, `workers/contact/.dev.vars.example`. Copy them without the `.example` suffix; the copies are git-ignored.
 
-### Contact Worker (`workers/contact`)
+#### Contact Worker (`workers/contact`)
 
 Receives contact-form posts: checks the origin, validates with Zod, drops honeypot hits,
 verifies Turnstile, inserts into `inquiries` as the insert-only `contact_worker` role, and
