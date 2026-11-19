@@ -55,6 +55,7 @@ Answers from each checkpoint in `docs/SPEC.md`, recorded before work continues. 
 2026-10-31. Uvesh asked to keep the remaining Phase 1 account steps for later and move on: the Vercel deploy of the demo admin (with where demo media lives, since Vercel can't keep uploads on disk) and the Publish token. Phase 1 is not signed off yet.
 
 - Media: Uvesh chose not to add a payment card, which Cloudflare needs before R2 can be enabled. Uploads stay on the admin's local disk for now; R2, or another store, gets decided later.
+- Demo reset: the nightly schedule in `.github/workflows/demo-reset.yml` is paused until the demo admin is deployed, since nothing serves the demo database yet. Restore the `schedule` trigger when it goes live; it can still be run by hand.
 
 ## Flutter demos
 

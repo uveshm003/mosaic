@@ -1,10 +1,13 @@
 name: Demo reset
 
-# Restores the public demo admin every night: migrations, fresh demo seed data and
-# the read-only reviewer login. Secrets live on the `demo` environment.
+# Restores the public demo admin: migrations, fresh demo seed data and the
+# read-only reviewer login. Secrets live on the `demo` environment.
+#
+# The nightly schedule is paused until the demo admin is deployed (see "Phase 1:
+# what waits" in docs/checkpoints.md). When it goes live, restore:
+#   schedule:
+#     - cron: '17 2 * * *'
 on:
-  schedule:
-    - cron: '17 2 * * *'
   workflow_dispatch:
 
 permissions:
