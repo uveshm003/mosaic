@@ -1,6 +1,5 @@
 'use client'
 
-import Image from 'next/image'
 import { useState } from 'react'
 import { demoPoster, demoSrc, type FlutterDemo } from '../../lib/demos'
 
@@ -43,12 +42,15 @@ export function DemoLab({ demos }: { demos: FlutterDemo[] }) {
             />
           ) : (
             <>
-              <Image
+              {/* A plain img: the export has no image optimizer, so next/image would only add
+                  its runtime, which the bundler also shares with the hub page. */}
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
                 src={demoPoster(demo.slug)}
                 alt=""
-                fill
-                sizes="(min-width: 1024px) 60vw, 100vw"
-                className="object-cover object-top opacity-60"
+                loading="lazy"
+                decoding="async"
+                className="absolute inset-0 size-full object-cover object-top opacity-60"
               />
               <div className="absolute inset-0 grid place-items-center bg-gradient-to-t from-bg via-bg/40 to-transparent">
                 <button
