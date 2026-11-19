@@ -15,7 +15,7 @@ catalog:
   '@faker-js/faker': 10.6.0
   '@neondatabase/serverless': 1.2.0
   '@tailwindcss/postcss': 4.3.3
-  '@next/eslint-plugin-next': 16.4.3
+  '@next/eslint-plugin-next': 16.4.6
   '@payloadcms/db-postgres': 3.92.1
   '@payloadcms/next': 3.92.1
   '@payloadcms/richtext-lexical': 3.92.1
@@ -28,7 +28,7 @@ catalog:
   eslint-config-prettier: 10.1.8
   globals: 17.13.0
   graphql: 16.14.2
-  next: 16.4.3
+  next: 16.4.6
   payload: 3.92.1
   pg: 8.23.1
   prettier: 3.9.10
@@ -46,3 +46,9 @@ catalog:
 
 minimumReleaseAgeExclude:
   - '@cloudflare/workers-types@5.20261030.1'
+
+# Security fixes for transitive dependencies, until the packages that pull them in catch up.
+overrides:
+  # Monaco (Payload's code field) still asks for an older DOMPurify. GHSA-cg2g-xh64-v4q7,
+  # GHSA-mrv2-3pqr-j5jr and others are fixed in 3.4.17.
+  dompurify: ^3.4.17
