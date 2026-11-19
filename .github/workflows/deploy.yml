@@ -51,14 +51,15 @@ jobs:
           # Without this, Pages runs Jekyll, which drops the _next folder.
           touch dist/.nojekyll
       # The checks that don't depend on what the content says, run on the real content before it
-      # goes live: no broken links, WCAG 2.2 AA, the script budget and the Lighthouse budgets.
+      # goes live: no broken links, WCAG 2.2 AA, reduced motion, and the script and Lighthouse
+      # budgets.
       - name: Install the browser for the checks
         run: pnpm --filter @mosaic/e2e exec playwright install --with-deps chromium
-      - name: Links, accessibility and the script budget
+      - name: Links, accessibility, reduced motion and the script budget
         run: |
           rm -rf e2e/.dist
           cp -R dist e2e/.dist
-          pnpm --filter @mosaic/e2e exec playwright test tests/crawl.spec.ts tests/a11y.spec.ts tests/budget.spec.ts
+          pnpm --filter @mosaic/e2e exec playwright test tests/crawl.spec.ts tests/a11y.spec.ts tests/motion.spec.ts tests/budget.spec.ts
       - name: Lighthouse budgets on every page template
         run: pnpm --filter @mosaic/e2e lighthouse
       - name: Keep the Lighthouse reports

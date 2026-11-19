@@ -16,7 +16,7 @@ My portfolio platform, live at **[uveshm003.github.io](https://uveshm003.github.
 - **Edited in a CMS, served as static files.** Content is written in a local Payload admin backed by Postgres. CI exports the published content to a JSON snapshot and builds both sites as static exports for GitHub Pages, so nothing runs on a server in production. A production build refuses a snapshot that contains seed data or drafts.
 - **Schema changes are guarded.** Development syncs the schema from code; production changes only through migrations. CI fails when the schema changes without a migration, or when the generated Payload files drift.
 - **A contact form with no app server.** A Cloudflare Worker checks the origin, validates with Zod, drops honeypot hits and verifies Turnstile, then inserts as an insert-only database role and sends one notification email with every value HTML-escaped.
-- **Tested end to end, with budgets.** Every pull request builds both sites from seed data, assembles them like the deploy, then crawls and smoke-tests every portfolio with Playwright. Every page is checked against WCAG 2.2 AA with axe in light and dark, and against a 150 KB script budget, and Lighthouse runs on every page template. The deploy runs the same checks on the real content before it publishes. The Flutter web demos in the Flutter portfolio's demo lab are analyzed, tested and built in CI too.
+- **Tested end to end, with budgets.** Every pull request builds both sites from seed data, assembles them like the deploy, then crawls and smoke-tests every portfolio with Playwright. Every page is checked against WCAG 2.2 AA with axe in light and dark, for no motion when reduced motion is asked for, and against a 150 KB script budget, and Lighthouse runs on every page template. The deploy runs the same checks on the real content before it publishes. The Flutter web demos in the Flutter portfolio's demo lab are analyzed, tested and built in CI too.
 
 ```mermaid
 flowchart LR
@@ -148,7 +148,7 @@ served the way GitHub Pages serves them (gzipped, `/a` from `a.html`):
 ```sh
 pnpm --filter @mosaic/site build && pnpm --filter @mosaic/brand build
 pnpm --filter @mosaic/e2e assemble
-pnpm --filter @mosaic/e2e test:e2e     # crawl, smoke tests, WCAG 2.2 AA, 150 KB script budget
+pnpm --filter @mosaic/e2e test:e2e     # crawl, smoke, WCAG 2.2 AA, reduced motion, script budget
 pnpm --filter @mosaic/e2e lighthouse   # mobile, one page per template; reports in e2e/.lighthouseci
 pnpm --filter @mosaic/e2e og:images    # share images and icons, after a tagline, colour or font change
 ```
