@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { pageMetadata } from '../../../../lib/seo'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { RichText } from '@mosaic/ui'
@@ -26,9 +27,15 @@ export function generateStaticParams() {
 export const dynamicParams = false
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const project = isEnabled('flutter') ? projectFor('flutter', (await params).slug) : null
+  const { slug } = await params
+  const project = isEnabled('flutter') ? projectFor('flutter', slug) : null
   if (!project) return {}
-  return { title: `${project.title} · Flutter`, description: project.summary ?? undefined }
+  return pageMetadata({
+    title: `${project.title} · Flutter`,
+    description: project.summary,
+    path: `/flutter/${slug}`,
+    image: 'flutter',
+  })
 }
 
 const kindLabel = {

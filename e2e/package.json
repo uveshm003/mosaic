@@ -6,7 +6,8 @@
     "assemble": "node assemble.mjs",
     "test:e2e": "playwright test",
     "lint": "eslint .",
-    "typecheck": "tsc"
+    "typecheck": "tsc",
+    "og:images": "node og-images.mjs"
   },
   "devDependencies": {
     "@mosaic/config": "workspace:*",

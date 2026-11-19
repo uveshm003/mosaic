@@ -1,5 +1,6 @@
 import { RichText } from '@mosaic/ui'
 import type { Metadata } from 'next'
+import { pageMetadata } from '../../../../lib/seo'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import {
@@ -28,9 +29,15 @@ export const dynamicParams = false
 const strip = (text: string) => text.replace(/^Sample: /, '')
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const project = isEnabled('freelance') ? projectFor('freelance', (await params).slug) : null
+  const { slug } = await params
+  const project = isEnabled('freelance') ? projectFor('freelance', slug) : null
   if (!project) return {}
-  return { title: `${strip(project.title)} · Freelance`, description: project.summary ?? undefined }
+  return pageMetadata({
+    title: `${strip(project.title)} · Freelance`,
+    description: project.summary,
+    path: `/freelance/${slug}`,
+    image: 'freelance',
+  })
 }
 
 // A freelance case study: the same project as elsewhere, in its freelance wording.

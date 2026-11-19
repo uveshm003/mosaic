@@ -1,6 +1,7 @@
 import { demoReviewer } from '@mosaic/content'
 import { RichText } from '@mosaic/ui'
 import type { Metadata } from 'next'
+import { pageMetadata } from '../../../../lib/seo'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { ArchitectureDiagram } from '../../../../components/fullstack/ArchitectureDiagram'
@@ -30,12 +31,15 @@ export function generateStaticParams() {
 export const dynamicParams = false
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const project = isEnabled('fullstack') ? projectFor('fullstack', (await params).slug) : null
+  const { slug } = await params
+  const project = isEnabled('fullstack') ? projectFor('fullstack', slug) : null
   if (!project) return {}
-  return {
+  return pageMetadata({
     title: `${strip(project.title)} · Full-stack`,
-    description: project.summary ?? undefined,
-  }
+    description: project.summary,
+    path: `/fullstack/${slug}`,
+    image: 'fullstack',
+  })
 }
 
 // A full-stack case study: the architecture first, then the story, the stack and the links.

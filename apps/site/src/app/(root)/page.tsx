@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { pageMetadata } from '../../lib/seo'
 import Link from 'next/link'
 import type { ReactNode } from 'react'
 import { CursorGlow } from '../../components/CursorGlow'
@@ -18,7 +19,13 @@ import { SITE_URL } from '../../lib/site'
 export function generateMetadata(): Metadata {
   if (!isEnabled('root')) return {}
   const seo = profile('root')
-  return { title: seo.title ?? person().name ?? undefined, description: seo.tagline ?? undefined }
+  return pageMetadata({
+    title: seo.title ?? person().name ?? 'Uvesh Menpurwala',
+    description: seo.tagline,
+    path: '/',
+    image: 'root',
+    absolute: true,
+  })
 }
 
 function Placeholder() {
