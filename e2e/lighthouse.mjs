@@ -2,6 +2,10 @@
 // (lighthouserc.json). Personal site: Performance, Accessibility and Best Practices 95+,
 // SEO 100. Brand: Performance 85+, Accessibility 95+, and no SEO score while it is noindex.
 // Run after `pnpm assemble`. Reports land in e2e/.lighthouseci.
+//
+// Each page runs three times and is judged on its best run. Keep it at three: on a fresh CI
+// runner the first run of all starts Chrome cold and has scored 74 where the next two scored
+// 99 and 100, so a single run fails at random.
 import { spawnSync } from 'node:child_process'
 import { readdirSync, statSync } from 'node:fs'
 import path from 'node:path'
