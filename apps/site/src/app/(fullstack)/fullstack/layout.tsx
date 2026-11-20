@@ -46,7 +46,10 @@ export default function FullstackLayout({ children }: { children: ReactNode }) {
       <div
         className={`${themeClass.fullstack} ${sans.variable} ${mono.variable} min-h-screen bg-bg font-body text-fg antialiased lg:grid lg:grid-cols-[15rem_1fr]`}
       >
-        <aside className="border-line max-lg:border-b lg:sticky lg:top-0 lg:h-screen lg:overflow-y-auto lg:border-r">
+        <aside
+          aria-label="Sidebar"
+          className="border-line max-lg:border-b lg:sticky lg:top-0 lg:h-screen lg:overflow-y-auto lg:border-r"
+        >
           <div className="flex items-center justify-between gap-3 px-4 py-4">
             <Link href="/fullstack" className="flex items-center gap-2 font-semibold">
               <span

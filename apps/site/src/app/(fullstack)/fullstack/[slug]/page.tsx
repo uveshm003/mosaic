@@ -131,7 +131,7 @@ export default async function FullstackCaseStudy({ params }: Props) {
         ) : (
           <div />
         )}
-        <aside className="space-y-5">
+        <aside aria-label="At a glance" className="space-y-5">
           {(project.highlights.length > 0 || project.metrics.length > 0) && (
             <section
               aria-labelledby="results"

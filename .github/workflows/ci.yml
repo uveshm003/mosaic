@@ -95,8 +95,20 @@ jobs:
           pnpm --filter @mosaic/e2e assemble
       - name: Install the browser for end-to-end tests
         run: pnpm --filter @mosaic/e2e exec playwright install --with-deps chromium
-      - name: End-to-end tests
+      - name: End-to-end tests, accessibility and the script budget
         run: pnpm --filter @mosaic/e2e test:e2e
+      - name: Lighthouse budgets on every page template
+        run: pnpm --filter @mosaic/e2e lighthouse
+      - name: Keep the Lighthouse reports
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: lighthouse-seed
+          path: e2e/.lighthouseci
+          # The folder name starts with a dot, which upload-artifact skips by default.
+          include-hidden-files: true
+          if-no-files-found: ignore
+          retention-days: 14
 
   flutter-demos:
     runs-on: ubuntu-latest

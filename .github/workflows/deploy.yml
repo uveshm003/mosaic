@@ -50,6 +50,28 @@ jobs:
           cp -R apps/brand/out/. dist/brand/
           # Without this, Pages runs Jekyll, which drops the _next folder.
           touch dist/.nojekyll
+      # The checks that don't depend on what the content says, run on the real content before it
+      # goes live: no broken links, WCAG 2.2 AA, keyboard use, reduced motion, and the script and
+      # Lighthouse budgets.
+      - name: Install the browser for the checks
+        run: pnpm --filter @mosaic/e2e exec playwright install --with-deps chromium
+      - name: Links, accessibility, keyboard, reduced motion and the script budget
+        run: |
+          rm -rf e2e/.dist
+          cp -R dist e2e/.dist
+          pnpm --filter @mosaic/e2e exec playwright test tests/crawl.spec.ts tests/a11y.spec.ts tests/keyboard.spec.ts tests/motion.spec.ts tests/budget.spec.ts
+      - name: Lighthouse budgets on every page template
+        run: pnpm --filter @mosaic/e2e lighthouse
+      - name: Keep the Lighthouse reports
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: lighthouse-production
+          path: e2e/.lighthouseci
+          # The folder name starts with a dot, which upload-artifact skips by default.
+          include-hidden-files: true
+          if-no-files-found: ignore
+          retention-days: 30
       - name: Publish to uveshm003.github.io
         env:
           DEPLOY_KEY: ${{ secrets.PAGES_DEPLOY_KEY }}

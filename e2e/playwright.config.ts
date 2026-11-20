@@ -11,7 +11,12 @@ export default defineConfig({
   use: { baseURL: `http://localhost:${String(port)}`, reducedMotion: 'reduce' },
   projects: [
     { name: 'desktop', use: { ...devices['Desktop Chrome'] } },
-    { name: 'phone', use: { ...devices['Pixel 7'] } },
+    // Colours, markup and scripts are the same on a phone, and phones rarely have a keyboard.
+    {
+      name: 'phone',
+      use: { ...devices['Pixel 7'] },
+      testIgnore: ['a11y.spec.ts', 'budget.spec.ts', 'keyboard.spec.ts'],
+    },
   ],
   webServer: {
     command: 'node server.mjs',

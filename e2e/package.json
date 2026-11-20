@@ -7,9 +7,12 @@
     "test:e2e": "playwright test",
     "lint": "eslint .",
     "typecheck": "tsc",
-    "og:images": "node og-images.mjs"
+    "og:images": "node og-images.mjs",
+    "lighthouse": "node lighthouse.mjs"
   },
   "devDependencies": {
+    "@axe-core/playwright": "catalog:",
+    "@lhci/cli": "catalog:",
     "@mosaic/config": "workspace:*",
     "@playwright/test": "catalog:",
     "@types/node": "catalog:",

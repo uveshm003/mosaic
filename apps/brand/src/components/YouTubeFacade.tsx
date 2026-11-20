@@ -40,11 +40,14 @@ export function YouTubeFacade({
           type="button"
           onClick={() => setPlaying(true)}
           className="group absolute inset-0 grid place-items-center bg-[repeating-linear-gradient(135deg,transparent_0_14px,rgb(127_127_127/0.08)_14px_28px)]"
-          aria-label={`Play video: ${title}`}
         >
-          <span className="grid size-20 place-items-center rounded-full bg-[#ff3b1f] text-3xl text-white transition group-hover:scale-110">
+          <span
+            aria-hidden
+            className="grid size-20 place-items-center rounded-full bg-[#ff3b1f] text-3xl text-white transition group-hover:scale-110"
+          >
             ▶
           </span>
+          <span className="sr-only">Play video: {title}.</span>
           <span className="absolute bottom-3 left-4 text-xs">Plays from YouTube</span>
         </button>
       )}

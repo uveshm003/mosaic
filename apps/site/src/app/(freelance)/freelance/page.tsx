@@ -148,7 +148,7 @@ export default function Freelance() {
   }
 
   return (
-    <>
+    <main>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
@@ -498,6 +498,6 @@ export default function Freelance() {
           </div>
         </div>
       </section>
-    </>
+    </main>
   )
 }

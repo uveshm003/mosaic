@@ -78,7 +78,7 @@ export function WorkIndex({ cards }: { cards: WorkCard[] }) {
                 {c.canvas.map((part) => (
                   <span
                     key={part}
-                    className="rounded-sm bg-accent-2/60 px-1.5 py-0.5 font-mono text-[10px] text-[var(--sticky-fg)] uppercase"
+                    className="rounded-sm bg-accent-2/60 px-1.5 dark:bg-accent-2 py-0.5 font-mono text-[10px] text-[var(--sticky-fg)] uppercase"
                   >
                     {part}
                   </span>

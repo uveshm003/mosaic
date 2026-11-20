@@ -147,12 +147,12 @@ export default function FlutterHome() {
               <SideNav sections={sections.filter((s) => s.id !== 'writing' || posts.length > 0)} />
             </div>
           </div>
-          <ul className="mt-8 flex flex-wrap gap-x-5 gap-y-2 font-mono text-xs text-muted lg:mt-0">
+          <ul className="mt-8 flex flex-wrap gap-x-5 font-mono text-xs text-muted lg:mt-0">
             {links.map((link) => (
               <li key={link.url}>
                 <a
                   href={link.url}
-                  className="transition hover:text-accent focus-visible:outline-2 focus-visible:outline-accent"
+                  className="inline-flex min-h-6 items-center transition hover:text-accent focus-visible:outline-2 focus-visible:outline-accent"
                 >
                   {link.label} ↗
                 </a>
